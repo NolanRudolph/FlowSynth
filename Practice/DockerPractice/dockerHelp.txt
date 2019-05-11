@@ -1,0 +1,14 @@
+Run docker image in interactive mode:
+$ docker run -it [IMAGE] bash
+
+Kill all running containers:
+$ docker kill $(docker ps -q)
+
+Delete all stopped containers:
+$ docker rm $(docker ps -a -q)
+
+Delete all images:
+$ docker rmi $(docker images -q)
+
+Keep container running in background:
+$ docker run -d -t -p [HOST PORT]:[CONTAINER PORT] --name [CONTAINER NAME] [IMAGE]

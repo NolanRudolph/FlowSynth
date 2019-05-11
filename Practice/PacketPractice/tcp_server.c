@@ -1,15 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include <arpa/inet.h>
 #include <netinet/in.h>
 
 /* Things to Research */
-// 1.) bind() man page
-// 2.) listen() man page
-// 3.) accept() man page
 // 4.) Investigate https://youtu.be/LtXEMwSG5-8?t=2024
 // 5.) *** send() man page -- very important
 
@@ -35,7 +34,7 @@ int main() {
 	int client_socket;
 	client_socket = accept(server_socket, NULL, NULL);
 	
-   char server_message[256] = "Its-a me, a-mario!";
+	char server_message[256] = "Its-a me, a-mario!";
 
 	// Send a message with send()
 	send(client_socket, server_message, sizeof(server_message), 0);

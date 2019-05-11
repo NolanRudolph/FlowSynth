@@ -1,0 +1,8 @@
+Terminal 1:
+$ sudo tcpdump -v -i lo icmp
+
+Terminal 2:
+$ ping 127.0.0.1
+
+Testing Purposes:
+Replace Terminal 2 with $ ./<ICMP Script>
