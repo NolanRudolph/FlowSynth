@@ -16,21 +16,23 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 
-void create_socket(int* sock, int on);
+void create_socket(int* sock, int on, uint8_t proto);
 void configure_IP(struct ip *ip, uint8_t proto);
 void configure_ICMP(struct icmp *icmp);
 void configure_UDP(struct udphdr *udp);
-void send_packets(int sock, struct ip *ip, struct icmp *icmp, struct sockaddr_in sendto_addr);
+void send_icmp_packets(int sock, struct ip *ip, struct icmp *icmp, struct sockaddr_in sendto_addr);
+void send_udp_packets(int sock, struct ip *ip, struct udphdr *udp, struct sockaddr_in sendto_addr);
+
 
 int main(int argc, char* argv[]) {
 	/* Socket Creation and Allowing Socket Options */	
-	int sock;
+	int sockICMP;
 	int on;
 
-	create_socket(&sock, on);
+	create_socket(&sockICMP, on, IPPROTO_ICMP);
 
 	// This File Descriptor will be used for sendto()
-	printf("Created Socket with File Descriptor %d.\n", sock);
+	printf("Created Socket with File Descriptor %d.\n", sockICMP);
 
 	// Specify Address * CHANGE ME IF NOT TESTING *
 	char address[] = "127.0.0.1";
@@ -63,6 +65,9 @@ int main(int argc, char* argv[]) {
 
 		/********* UDP *********/
 	
+	int sockUDP;
+	create_socket(&sockUDP, on, IPPROTO_UDP);
+
 	struct ip *ipUDP = NULL;
 	ipUDP = (struct ip *)malloc(sizeof(struct ip));
 
@@ -78,14 +83,14 @@ int main(int argc, char* argv[]) {
 
 	/* Transmitting Packets */
 	int i;
-	send_packets(sock, ipICMP, icmp, sendto_addr);
-
+	send_icmp_packets(sockICMP, ipICMP, icmp, sendto_addr);
+	send_udp_packets(sockUDP, ipUDP, udp, sendto_addr);
 	return 0;
 
 }
 
-void create_socket(int* sock, int on) {
-	if ((*sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) {
+void create_socket(int* sock, int on, uint8_t proto) {
+	if ((*sock = socket(AF_INET, SOCK_RAW, proto)) < 0) {
 		perror("socket() error");
 		exit(EXIT_FAILURE);
 	}
@@ -99,7 +104,7 @@ void create_socket(int* sock, int on) {
 void configure_IP(struct ip *ip, uint8_t proto) {
 
 	ip -> ip_v = 4;
-	ip -> ip_hl = 5;
+	ip -> ip_hl = 10;
 	ip -> ip_tos = 0;
 	ip -> ip_p = proto;
 	ip -> ip_ttl = 255;
@@ -120,18 +125,30 @@ void configure_ICMP(struct icmp *icmp) {
 
 void configure_UDP(struct udphdr *udp) {
 	
-	udp -> uh_sport = 123;
-	udp -> uh_dport = 123;
+	udp -> source = 123;
+	udp -> dest = 123;
 	// Add uh_ulen & uh_sum
 
 }
 
 
-void send_packets(int sock, struct ip *ip, struct icmp *icmp, struct sockaddr_in sendto_addr) {	
+void send_icmp_packets(int sock, struct ip *ip, struct icmp *icmp, struct sockaddr_in sendto_addr) {	
 
 	int bytes_sent;
 
 	if ((bytes_sent = sendto(sock, ip, sizeof(ip) + sizeof(icmp), 0, \
+		(struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
+		perror("sendto() error");
+		exit(EXIT_FAILURE);
+	}
+
+}
+
+
+void send_udp_packets(int sock, struct ip *ip, struct udphdr *udp, struct sockaddr_in sendto_addr) {	
+	int bytes_sent;
+
+	if ((bytes_sent = sendto(sock, ip, sizeof(ip) + sizeof(udp), 0, \
 		(struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
 		perror("sendto() error");
 		exit(EXIT_FAILURE);
