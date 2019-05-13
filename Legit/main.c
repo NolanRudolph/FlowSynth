@@ -12,6 +12,7 @@
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/igmp.h>
+#include <netinet/tcp.h>
 #include <netinet/udp.h>
 
 #include <arpa/inet.h>
@@ -21,11 +22,20 @@ void create_socket(int* sock, int on, uint8_t proto);
 void configure_IP(struct ip *ip, uint8_t proto);
 void configure_ICMP(struct icmp *icmp);
 void configure_IGMP(struct igmp *igmp);
+void configure_TCP(struct tcphdr *tcp);
 void configure_UDP(struct udphdr *udp);
 void send_icmp_packets(int sock, struct ip *ip, struct icmp *icmp, struct sockaddr_in sendto_addr);
 void send_igmp_packets(int sock, struct ip *ip, struct igmp *igmp, struct sockaddr_in sendto_addr);
+void send_tcp_packets(int sock, struct ip *ip, struct tcphdr *tcp, struct sockaddr_in sento_addr);
 void send_udp_packets(int sock, struct ip *ip, struct udphdr *udp, struct sockaddr_in sendto_addr);
+void send_packet(int proto, struct sockaddr_in sendto_addr);
 
+/* Question (5)
+struct icmp icmp;
+struct igmp igmp;
+struct tcphdr tcp;
+struct udphdr udp;
+*/
 
 int main(int argc, char* argv[]) {
 	/* Socket Creation and Allowing Socket Options */	
@@ -84,7 +94,24 @@ int main(int argc, char* argv[]) {
 	struct igmp *igmp = (struct igmp *)(ipIGMP + 1);
 	configure_IGMP(igmp); 
 
+		/********* TCP *********/
 
+    int sockTCP;
+    create_socket(&sockTCP, on, IPPROTO_TCP);
+    printf("Created TCP Socket with File Descriptor %d.\n", sockTCP);
+
+    struct ip *ipTCP = NULL;
+    ipTCP = (struct ip *)malloc(sizeof(struct ip));
+
+    if (ipTCP == NULL) {
+        fprintf(stderr, "Malloc error for TCP'S IP struct.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    configure_IP(ipTCP, IPPROTO_TCP);
+
+    struct tcphdr *tcp = (struct tcphdr *)(ipTCP + 1);
+    configure_TCP(tcp);
 
 		/********* UDP *********/
 	
@@ -106,10 +133,48 @@ int main(int argc, char* argv[]) {
 	configure_UDP(udp);
 
 	/* Transmitting Packets */
-	int i;
-	send_icmp_packets(sockICMP, ipICMP, icmp, sendto_addr);
-	send_igmp_packets(sockIGMP, ipIGMP, igmp, sendto_addr);
-	send_udp_packets(sockUDP, ipUDP, udp, sendto_addr);
+	// int i;
+	// send_icmp_packets(sockICMP, ipICMP, icmp, sendto_addr);
+	// send_igmp_packets(sockIGMP, ipIGMP, igmp, sendto_addr);
+	// send_tcp_packets(sockTCP, ipTCP, tcp, sendto_addr);
+	// send_udp_packets(sockUDP, ipUDP, udp, sendto_addr);
+	
+	/* READING NETFLOW FROM CSV */
+
+	if (argc != 2) {
+		printf("Usage: $ ./a.out [FILE]\n");
+		exit(EXIT_FAILURE);
+	}
+
+	int cc = 0;
+	FILE * fp;
+	char ch;
+	char _proto[3];
+	int i = 0;
+	int proto;
+
+	printf("Hello!\n");
+
+	// Generic IP used for sendto's
+
+	fp = fopen(argv[1], "r");
+	while ((ch = getc(fp)) != EOF) {
+		if (ch == ',') {
+			++cc;
+		}
+		else if (cc == 6) {
+			_proto[i++] = ch;
+		}
+		if (cc == 15) {
+			cc = 0;
+			i = 0;
+			proto = atoi(_proto);
+			memset(_proto, ' ', sizeof(_proto)*sizeof(char));
+			printf("%d\n", proto);
+			send_packet(proto, sendto_addr);	
+		}
+	}
+
 	return 0;
 
 }
@@ -148,6 +213,23 @@ void configure_ICMP(struct icmp *icmp) {
 
 }
 
+void configure_IGMP(struct igmp *igmp) {
+
+    igmp -> igmp_type = 0;
+    igmp -> igmp_code = 0;
+    // Add igmp_cksum, maybe in_addr.igmp_group
+
+}
+
+void configure_TCP(struct tcphdr *tcp) {
+
+	tcp -> source = 123;
+	tcp -> dest = 123;
+	// Skipping sequence number and ACK number
+
+}
+
+
 void configure_UDP(struct udphdr *udp) {
 	
 	udp -> source = 123;
@@ -155,15 +237,6 @@ void configure_UDP(struct udphdr *udp) {
 	// Add uh_ulen & uh_sum
 
 }
-
-void configure_IGMP(struct igmp *igmp) {
-
-	igmp -> igmp_type = 0;
-	igmp -> igmp_code = 0;
-	// Add igmp_cksum, maybe in_addr.igmp_group
-
-}
-
 
 void send_icmp_packets(int sock, struct ip *ip, struct icmp *icmp, struct sockaddr_in sendto_addr) {	
 
@@ -188,6 +261,18 @@ void send_igmp_packets(int sock, struct ip *ip, struct igmp *igmp, struct sockad
 	}
 
 }
+
+void send_tcp_packets(int sock, struct ip *ip, struct tcphdr *tcp, struct sockaddr_in sendto_addr) {	
+	int bytes_sent;
+
+	if ((bytes_sent = sendto(sock, ip, sizeof(ip) + sizeof(tcp), 0, \
+		(struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
+		perror("TCP sendto() error");
+		exit(EXIT_FAILURE);
+	}
+
+}
+
 void send_udp_packets(int sock, struct ip *ip, struct udphdr *udp, struct sockaddr_in sendto_addr) {	
 	int bytes_sent;
 
@@ -197,6 +282,51 @@ void send_udp_packets(int sock, struct ip *ip, struct udphdr *udp, struct sockad
 		exit(EXIT_FAILURE);
 	}
 
+}
+
+void send_packet(int proto, struct sockaddr_in sendto_addr) {
+	int sock, on;
+
+	struct ip *ip = NULL;
+    ip = (struct ip *)malloc(sizeof(struct ip));
+
+	if (ip == NULL) {
+		fprintf(stderr, "Malloc error for IP struct.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// ICMP
+	if (proto == 1) {
+		struct icmp *icmp = (struct icmp *)(ip + 1);
+		configure_ICMP(icmp);
+		
+		create_socket(&sock, on, IPPROTO_ICMP);
+
+		send_icmp_packets(sock, ip, icmp, sendto_addr);
+	} else if (proto == 2) {
+		struct igmp *igmp = (struct igmp *)(ip + 1);
+		configure_IGMP(igmp);
+
+		create_socket(&sock, on, IPPROTO_IGMP);
+
+		send_igmp_packets(sock, ip, igmp, sendto_addr);
+	} else if (proto == 6) {
+		struct tcphdr *tcp = (struct tcphdr *)(ip + 1);
+		configure_TCP(tcp);
+
+		create_socket(&sock, on, IPPROTO_TCP);
+
+		send_tcp_packets(sock, ip, tcp, sendto_addr);
+	} else if (proto == 17) {
+		struct udphdr *udp = (struct udphdr *)(ip + 1);
+		configure_UDP(udp);
+
+		create_socket(&sock, on, IPPROTO_UDP);
+
+		send_udp_packets(sock, ip, udp, sendto_addr);
+	}
+
+	free(ip);
 }
 
 
