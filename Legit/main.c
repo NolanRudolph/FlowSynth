@@ -215,21 +215,27 @@ void send_packet(int proto, struct ip *ip, struct sockaddr_in sendto_addr) {
 		create_socket(&sock, on, IPPROTO_ICMP);
 
 		send_icmp_packets(sock, ip, icmp, sendto_addr);
-	} else if (proto == 2) {
+	} 
+	// IGMP
+	else if (proto == 2) {
 		struct igmp *igmp = (struct igmp *)(ip + 1);
 		configure_IGMP(igmp);
 
 		create_socket(&sock, on, IPPROTO_IGMP);
 
 		send_igmp_packets(sock, ip, igmp, sendto_addr);
-	} else if (proto == 6) {
+	}
+	// TCP 
+	else if (proto == 6) {
 		struct tcphdr *tcp = (struct tcphdr *)(ip + 1);
 		configure_TCP(tcp);
 
 		create_socket(&sock, on, IPPROTO_TCP);
 
 		send_tcp_packets(sock, ip, tcp, sendto_addr);
-	} else if (proto == 17) {
+	} 
+	// UDP
+	else if (proto == 17) {
 		struct udphdr *udp = (struct udphdr *)(ip + 1);
 		configure_UDP(udp);
 
