@@ -42,11 +42,6 @@ int main(int argc, char* argv[]) {
 	int sockICMP;
 	int on;
 
-	create_socket(&sockICMP, on, IPPROTO_ICMP);
-
-	// This File Descriptor will be used for sendto()
-	printf("Created ICMP Socket with File Descriptor %d.\n", sockICMP);
-
 	// Specify Address * CHANGE ME IF NOT TESTING *
 	char address[] = "127.0.0.1";
 
@@ -56,89 +51,6 @@ int main(int argc, char* argv[]) {
 	sendto_addr.sin_port = htons(9001);
 	sendto_addr.sin_addr.s_addr = inet_addr(address);
 	
-		/******** ICMP ********/
-
-	/* Constructing IP Struct */
-	struct ip *ipICMP = NULL;
-	ipICMP = (struct ip *)malloc(sizeof(struct ip));		
-	
-	// Memory Error Handling
-	if (ipICMP == NULL) {
-		fprintf(stderr, "Malloc error for ICMP'S IP struct.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	configure_IP(ipICMP, IPPROTO_ICMP);
-
-	
-	/* Constructing ICMP Struct */
-	struct icmp *icmp = (struct icmp *)(ipICMP + 1);	
-	configure_ICMP(icmp);
-
-		/********* IGMP *********/
-
-	int sockIGMP;
-	create_socket(&sockIGMP, on, IPPROTO_IGMP);
-	printf("Created IGMP Socket with File Descriptor %d.\n", sockIGMP);
-
-	struct ip *ipIGMP = NULL;
-	ipIGMP = (struct ip *)malloc(sizeof(struct ip));
-
-	if (ipIGMP == NULL) {
-		fprintf(stderr, "Malloc error for IGMP's IP struct.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	configure_IP(ipIGMP, IPPROTO_IGMP);
-
-	struct igmp *igmp = (struct igmp *)(ipIGMP + 1);
-	configure_IGMP(igmp); 
-
-		/********* TCP *********/
-
-    int sockTCP;
-    create_socket(&sockTCP, on, IPPROTO_TCP);
-    printf("Created TCP Socket with File Descriptor %d.\n", sockTCP);
-
-    struct ip *ipTCP = NULL;
-    ipTCP = (struct ip *)malloc(sizeof(struct ip));
-
-    if (ipTCP == NULL) {
-        fprintf(stderr, "Malloc error for TCP'S IP struct.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    configure_IP(ipTCP, IPPROTO_TCP);
-
-    struct tcphdr *tcp = (struct tcphdr *)(ipTCP + 1);
-    configure_TCP(tcp);
-
-		/********* UDP *********/
-	
-	int sockUDP;
-	create_socket(&sockUDP, on, IPPROTO_UDP);
-	printf("Created UDP Socket with File Descriptor %d.\n", sockUDP);
-
-	struct ip *ipUDP = NULL;
-	ipUDP = (struct ip *)malloc(sizeof(struct ip));
-
-	if (ipUDP == NULL) {
-		fprintf(stderr, "Malloc error for UDP'S IP struct.\n");
-		exit(EXIT_FAILURE);
-	}
-
-	configure_IP(ipUDP, IPPROTO_UDP);
-
-	struct udphdr *udp = (struct udphdr *)(ipUDP + 1);
-	configure_UDP(udp);
-
-	/* Transmitting Packets */
-	// int i;
-	// send_icmp_packets(sockICMP, ipICMP, icmp, sendto_addr);
-	// send_igmp_packets(sockIGMP, ipIGMP, igmp, sendto_addr);
-	// send_tcp_packets(sockTCP, ipTCP, tcp, sendto_addr);
-	// send_udp_packets(sockUDP, ipUDP, udp, sendto_addr);
-	
 	/* READING NETFLOW FROM CSV */
 
 	if (argc != 2) {
@@ -146,14 +58,12 @@ int main(int argc, char* argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	int cc = 0;
+	int cc = 0; // Comma-Count, method only viable for csv
 	FILE * fp;
 	char ch;
 	char _proto[3];
 	int i = 0;
 	int proto;
-
-	printf("Hello!\n");
 
 	// Generic IP used for sendto's
 
@@ -170,7 +80,6 @@ int main(int argc, char* argv[]) {
 			i = 0;
 			proto = atoi(_proto);
 			memset(_proto, ' ', sizeof(_proto)*sizeof(char));
-			printf("%d\n", proto);
 			send_packet(proto, sendto_addr);	
 		}
 	}
