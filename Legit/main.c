@@ -28,7 +28,7 @@ void send_icmp_packets(int sock, struct ip *ip, struct icmp *icmp, struct sockad
 void send_igmp_packets(int sock, struct ip *ip, struct igmp *igmp, struct sockaddr_in sendto_addr);
 void send_tcp_packets(int sock, struct ip *ip, struct tcphdr *tcp, struct sockaddr_in sento_addr);
 void send_udp_packets(int sock, struct ip *ip, struct udphdr *udp, struct sockaddr_in sendto_addr);
-void send_packet(int proto, struct sockaddr_in sendto_addr);
+void send_packet(int proto, struct ip *ip, struct sockaddr_in sendto_addr);
 
 /* Question (5)
 struct icmp icmp;
@@ -50,6 +50,16 @@ int main(int argc, char* argv[]) {
 	sendto_addr.sin_family = AF_INET;
 	sendto_addr.sin_port = htons(9001);
 	sendto_addr.sin_addr.s_addr = inet_addr(address);
+
+	// Specifying IP for Later Configuration
+	struct ip *ip = NULL;
+    ip = (struct ip *)malloc(sizeof(struct ip));
+
+    if (ip == NULL) {
+        fprintf(stderr, "Malloc error for IP struct.\n");
+        exit(EXIT_FAILURE);
+    }
+
 	
 	/* READING NETFLOW FROM CSV */
 
@@ -80,10 +90,11 @@ int main(int argc, char* argv[]) {
 			i = 0;
 			proto = atoi(_proto);
 			memset(_proto, ' ', sizeof(_proto)*sizeof(char));
-			send_packet(proto, sendto_addr);	
+			send_packet(proto, ip, sendto_addr);	
 		}
 	}
 
+	free(ip);	
 	return 0;
 
 }
@@ -193,16 +204,8 @@ void send_udp_packets(int sock, struct ip *ip, struct udphdr *udp, struct sockad
 
 }
 
-void send_packet(int proto, struct sockaddr_in sendto_addr) {
+void send_packet(int proto, struct ip *ip, struct sockaddr_in sendto_addr) {
 	int sock, on;
-
-	struct ip *ip = NULL;
-    ip = (struct ip *)malloc(sizeof(struct ip));
-
-	if (ip == NULL) {
-		fprintf(stderr, "Malloc error for IP struct.\n");
-		exit(EXIT_FAILURE);
-	}
 
 	// ICMP
 	if (proto == 1) {
@@ -234,8 +237,6 @@ void send_packet(int proto, struct sockaddr_in sendto_addr) {
 
 		send_udp_packets(sock, ip, udp, sendto_addr);
 	}
-
-	free(ip);
 }
 
 
