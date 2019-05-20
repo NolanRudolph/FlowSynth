@@ -58,43 +58,43 @@ void send_UDP(int socket, struct udp_packet packet, struct sockaddr_in sendto_ad
 int main(int argc, char* argv[]) {
 
 	// Usage Error Handling
-    if (argc != 2) {
-        printf("Usage: $ ./a.out [FILE]\n");
-        exit(EXIT_FAILURE);
-    }
+	if (argc != 2) {
+		printf("Usage: $ ./a.out [FILE]\n");
+		exit(EXIT_FAILURE);
+	}
 
 		/* Socket Creation */	
 	
 	// ICMP
 	int icmp_sock;
-    if ((icmp_sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) {
-        perror("socket() error");
-        exit(EXIT_FAILURE);
-    }
+	if ((icmp_sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)) < 0) {
+		perror("socket() error");
+		exit(EXIT_FAILURE);
+	}
 
 	// IGMP
 	int igmp_sock;
-    if ((igmp_sock = socket(AF_INET, SOCK_RAW, IPPROTO_IGMP)) < 0) {
-        perror("socket() error");
-        exit(EXIT_FAILURE);
-    }
+	if ((igmp_sock = socket(AF_INET, SOCK_RAW, IPPROTO_IGMP)) < 0) {
+		perror("socket() error");
+		exit(EXIT_FAILURE);
+	}
 
 	// TCP
 	int tcp_sock;
-    if ((tcp_sock = socket(AF_INET, SOCK_RAW, IPPROTO_TCP)) < 0) {
-        perror("socket() error");
-        exit(EXIT_FAILURE);
-    }
+	if ((tcp_sock = socket(AF_INET, SOCK_RAW, IPPROTO_TCP)) < 0) {
+		perror("socket() error");
+		exit(EXIT_FAILURE);
+	}
 
 	// UDP
 	int udp_sock;
-    if ((udp_sock = socket(AF_INET, SOCK_RAW, IPPROTO_UDP)) < 0) {
-        perror("socket() error");
-        exit(EXIT_FAILURE);
-    }
+	if ((udp_sock = socket(AF_INET, SOCK_RAW, IPPROTO_UDP)) < 0) {
+		perror("socket() error");
+		exit(EXIT_FAILURE);
+	}
 
-    // Specify Address
-    char address[] = "127.0.0.1";
+	// Specify Address
+	char address[] = "127.0.0.1";
     
 	// Specifying Address for Socket
 	struct sockaddr_in sendto_addr;
@@ -113,42 +113,41 @@ int main(int argc, char* argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-    icmp -> ip = (struct ip *)malloc(sizeof(struct ip));
-    icmp -> icmp = (struct icmp *)malloc(sizeof(struct icmp));
-
+	icmp -> ip = (struct ip *)malloc(sizeof(struct ip));
+	icmp -> icmp = (struct icmp *)malloc(sizeof(struct icmp));
 
 	// IGMP
 	struct igmp_packet *igmp = NULL;
 	igmp = (struct igmp_packet *)malloc(sizeof(struct igmp_packet));
-    if (igmp == NULL) {
-        fprintf(stderr, "Malloc error for IGMP struct.\n");
-        exit(EXIT_FAILURE);
-    }
+	if (igmp == NULL) {
+		fprintf(stderr, "Malloc error for IGMP struct.\n");
+		exit(EXIT_FAILURE);
+	}
 
 	igmp -> ip = (struct ip *)malloc(sizeof(struct ip));
-    igmp -> igmp = (struct igmp *)malloc(sizeof(struct igmp));
-	
+	igmp -> igmp = (struct igmp *)malloc(sizeof(struct igmp));
+
 	// TCP
 	struct tcp_packet *tcp = NULL;
 	tcp = (struct tcp_packet *)malloc(sizeof(struct tcp_packet));
-    if (tcp == NULL) {
-        fprintf(stderr, "Malloc error for TCP struct.\n");
-        exit(EXIT_FAILURE);
-    }
+	if (tcp == NULL) {
+		fprintf(stderr, "Malloc error for TCP struct.\n");
+		exit(EXIT_FAILURE);
+	}
 
 	tcp -> ip = (struct ip *)malloc(sizeof(struct ip));
-    tcp -> tcp = (struct tcphdr *)malloc(sizeof(struct tcphdr));
+	tcp -> tcp = (struct tcphdr *)malloc(sizeof(struct tcphdr));
 
 	// UDP
 	struct udp_packet *udp = NULL;
 	udp = (struct udp_packet *)malloc(sizeof(struct udp_packet));
-    if (udp == NULL) {
-        fprintf(stderr, "Malloc error for UDP struct.\n");
-        exit(EXIT_FAILURE);
-    }
+	if (udp == NULL) {
+		fprintf(stderr, "Malloc error for UDP struct.\n");
+		exit(EXIT_FAILURE);
+	}
 
 	udp -> ip = (struct ip *)malloc(sizeof(struct ip));
-    udp -> udp = (struct udphdr *)malloc(sizeof(struct udphdr));
+	udp -> udp = (struct udphdr *)malloc(sizeof(struct udphdr));
 
 
 	/* READING NETFLOW FROM CSV */
@@ -259,18 +258,19 @@ int main(int argc, char* argv[]) {
 					is_dot = 0;
 					
 					#if 0 // Testing for Assuring Accuracy
-		            printf("Protocol is %d\n", atoi(proto));
-	            	printf("IP_source is %s\n", IP_source);
-    	        	printf("IP_dest is %s\n", IP_dest);
-        	    	printf("Source may be %d\n", atoi(source));
-            		printf("Dest may be %d\n", atoi(dest));
-            		printf("Type may be %d\n", type);
-            		printf("Code may be %d\n", atoi(code));
-            		printf("TOS may be %d\n", TOS);
+					printf("Protocol is %d\n", atoi(proto));
+					printf("IP_source is %s\n", IP_source);
+					printf("IP_dest is %s\n", IP_dest);
+					printf("Source may be %d\n", atoi(source));
+					printf("Dest may be %d\n", atoi(dest));
+					printf("Type may be %d\n", type);
+					printf("Code may be %d\n", atoi(code));
+					printf("TOS may be %d\n", TOS);
 					printf("Packets is %d\n", atoi(packets));
 					printf("Bytes is %d\n", atoi(bytes));
-            		printf("TCP_flags may be %d\n\n\n", atoi(TCP_flags));
-	
+					printf("TCP_flags may be %d\n\n\n", atoi(TCP_flags));
+					#endif
+					
 					memset(IP_source, ' ', sizeof(IP_source));
 					memset(IP_dest, ' ', sizeof(IP_dest));
 					memset(source, ' ', sizeof(source));
@@ -278,7 +278,7 @@ int main(int argc, char* argv[]) {
 					memset(dest, ' ', sizeof(dest));
 					memset(proto, ' ', sizeof(proto));
 					memset(TCP_flags, ' ', sizeof(TCP_flags));
-					#endif
+					
 					// send_packet(proto, mainSock, packet, ip, sendto_addr);
 					break;
 			}
@@ -318,8 +318,8 @@ void configure_ICMP(struct icmp *icmp, uint8_t type, uint8_t code) {
 
 void configure_IGMP(struct igmp *igmp, uint8_t type, uint8_t code) {
 
-    igmp -> igmp_type = type;
-    igmp -> igmp_code = code;
+	igmp -> igmp_type = type;
+	igmp -> igmp_code = code;
     // Add igmp_cksum, maybe in_addr.igmp_group
 
 }
@@ -342,42 +342,42 @@ void configure_UDP(struct udphdr *udp, uint8_t source, uint8_t dest) {
 }
 
 void send_ICMP(int socket, struct icmp_packet packet, struct sockaddr_in sendto_addr) {
-    int bytes_sent;
+	int bytes_sent;
 
-    if ((bytes_sent = sendto(socket, &packet, sizeof(struct icmp_packet), 0, \
-        (struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
-        perror("ICMP sendto() error");
-        exit(EXIT_FAILURE);
-    }
+	if ((bytes_sent = sendto(socket, &packet, sizeof(struct icmp_packet), 0, \
+		(struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
+		perror("ICMP sendto() error");
+		exit(EXIT_FAILURE);
+	}
 }
 
 void send_IGMP(int socket, struct igmp_packet packet, struct sockaddr_in sendto_addr){
-    int bytes_sent;
+	int bytes_sent;
 
-    if ((bytes_sent = sendto(socket, &packet, sizeof(struct igmp_packet), 0, \
-        (struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
-        perror("IGMP sendto() error");
-        exit(EXIT_FAILURE);
-    }
+	if ((bytes_sent = sendto(socket, &packet, sizeof(struct igmp_packet), 0, \
+		(struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
+		perror("IGMP sendto() error");
+		exit(EXIT_FAILURE);
+	}
 }
 
 void send_TCP(int socket, struct tcp_packet packet, struct sockaddr_in sendto_addr){
 	int bytes_sent;
 
-    if ((bytes_sent = sendto(socket, &packet, sizeof(struct tcp_packet), 0, \
-        (struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
-        perror("TCP sendto() error");
-        exit(EXIT_FAILURE);
-    }
+	if ((bytes_sent = sendto(socket, &packet, sizeof(struct tcp_packet), 0, \
+		(struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
+		perror("TCP sendto() error");
+		exit(EXIT_FAILURE);
+	}
 }
 
 void send_UDP(int socket, struct udp_packet packet, struct sockaddr_in sendto_addr){
-    int bytes_sent;
+	int bytes_sent;
 
-    if ((bytes_sent = sendto(socket, &packet, sizeof(struct udp_packet), 0, \
-        (struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
-        perror("TCP sendto() error");
-        exit(EXIT_FAILURE);
-    }
+	if ((bytes_sent = sendto(socket, &packet, sizeof(struct udp_packet), 0, \
+		(struct sockaddr *)&sendto_addr, sizeof(sendto_addr))) < 0) {
+		perror("TCP sendto() error");
+		exit(EXIT_FAILURE);
+	}
 }
 
