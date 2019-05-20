@@ -213,7 +213,6 @@ int main(int argc, char* argv[]) {
 	char bytes[15];
 	memset(source, ' ', sizeof(bytes));
 
-	// Generic IP used for sendto's
 	fp = fopen(argv[1], "r");
 	while ((ch = getc(fp)) != EOF) {
 		if (ch == ',') {
