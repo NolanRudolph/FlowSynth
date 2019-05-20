@@ -24,7 +24,6 @@ void configure_IGMP(struct igmp *igmp, uint8_t type, uint8_t code);
 void configure_TCP(struct tcphdr *tcp, uint8_t source, uint8_t dest);
 void configure_UDP(struct udphdr *udp, uint8_t source, uint8_t dest);
 void configure_socket(int sockfd, uint8_t proto);
-void send_icmp(void);
 
 struct icmp_packet
 {
@@ -54,6 +53,8 @@ void send_ICMP(int socket, struct icmp_packet packet, struct sockaddr_in sendto_
 void send_IGMP(int socket, struct igmp_packet packet, struct sockaddr_in sendto_addr);
 void send_TCP(int socket, struct tcp_packet packet, struct sockaddr_in sendto_addr);
 void send_UDP(int socket, struct udp_packet packet, struct sockaddr_in sendto_addr);
+void free_structs(struct icmp_packet *icmp, struct igmp_packet *igmp, \
+				  struct tcp_packet *tcp, struct udp_packet *udp);
 
 
 int main(int argc, char* argv[]) {
@@ -331,10 +332,11 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	
-	// configure_IP(tcp -> ip, IPPROTO_TCP);
-	// configure_TCP(tcp -> tcp, 123, 123);
-
-	// send_TCP(tcp_sock, *tcp, sendto_addr);	
+	free_structs(icmp, igmp, tcp, udp);
+	close(icmp_sock);
+	close(igmp_sock);
+	close(tcp_sock);
+	close(udp_sock);
 	
 	return 0;
 
@@ -428,3 +430,13 @@ void send_UDP(int socket, struct udp_packet packet, struct sockaddr_in sendto_ad
 	}
 }
 
+void free_structs(struct icmp_packet *icmp, struct igmp_packet *igmp, \
+				  struct tcp_packet *tcp, struct udp_packet *udp) {
+	free(icmp -> ip);
+	free(icmp -> icmp);
+	free(icmp);
+
+	free(igmp -> ip);
+	free(igmp -> igmp);
+	free(igmp);
+}	
