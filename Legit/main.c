@@ -159,6 +159,8 @@ int main(int argc, char* argv[]) {
 
 /*
  *  * PACKET ATTRIBUTES *
+ *  -= cc stands for comma count, see below =-
+ *
  *  cc = 0   Start Timestamp in Epoch Format
  *  cc = 1   End Timestamp in Epoch Format
  *  cc = 2   Source IP Address
