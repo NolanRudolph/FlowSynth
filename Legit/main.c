@@ -17,7 +17,8 @@
 
 #include <arpa/inet.h>
 #include <sys/time.h>
-void configure_IP(struct ip *ip, uint8_t proto);
+void configure_IP(struct ip *ip, uint8_t version, uint8_t tos, char *src, \
+                  char *dst, uint8_t proto);
 void configure_ICMP(struct icmp *icmp, uint8_t type, uint8_t code);
 void configure_IGMP(struct igmp *igmp, uint8_t type, uint8_t code);
 void configure_TCP(struct tcphdr *tcp, uint8_t source, uint8_t dest);
@@ -178,6 +179,7 @@ int main(int argc, char* argv[]) {
 	char ch;
 	char proto[3]; 	  // 1 <= proto <= 255 : three ints
 	int val;
+	int is_ipv6 = 0;
 
 	// IP Attributes
 	char IP_source[20];
@@ -220,6 +222,9 @@ int main(int argc, char* argv[]) {
 					IP_source[i++] = ch;
 					break;
 				case 3:
+					if (ch == ':') {
+						is_ipv6 = 1;
+					}
 					IP_dest[i++] = ch;
 					break;
 				case 4:
@@ -270,6 +275,44 @@ int main(int argc, char* argv[]) {
 					printf("Bytes is %d\n", atoi(bytes));
 					printf("TCP_flags may be %d\n\n\n", atoi(TCP_flags));
 					#endif
+					switch (atoi(proto)) {
+						case 1:
+							if (!is_ipv6)
+								configure_IP(icmp -> ip, 4, TOS, IP_source, IP_dest, 1); 
+							else
+								configure_IP(icmp -> ip, 6, TOS, IP_source, IP_dest, 1);
+							configure_ICMP(icmp -> icmp, type, atoi(code));
+							send_ICMP(icmp_sock, *icmp, sendto_addr);
+							break;
+
+						case 2:
+							if (!is_ipv6)
+								configure_IP(igmp -> ip, 4, TOS, IP_source, IP_dest, 2);
+							else
+								configure_IP(igmp -> ip, 6, TOS, IP_source, IP_dest, 2);
+							configure_IGMP(igmp -> igmp, type, atoi(code));
+							send_IGMP(igmp_sock, *igmp, sendto_addr);
+							break;
+
+						case 6:
+							if (!is_ipv6)
+                                configure_IP(tcp -> ip, 4, TOS, IP_source, IP_dest, 6);
+                            else
+                                configure_IP(tcp -> ip, 6, TOS, IP_source, IP_dest, 6);
+                            configure_TCP(tcp -> tcp, atoi(source), atoi(dest));
+                            send_TCP(tcp_sock, *tcp, sendto_addr);
+							break;
+
+						case 17:
+							if (!is_ipv6)
+								configure_IP(udp -> ip, 4, TOS, IP_source, IP_dest, 17);
+							else
+								configure_IP(udp -> ip, 6, TOS, IP_source, IP_dest, 17);
+							configure_UDP(udp -> udp, atoi(source), atoi(dest));
+							send_UDP(udp_sock, *udp, sendto_addr);
+							break;
+					}
+
 					
 					memset(IP_source, ' ', sizeof(IP_source));
 					memset(IP_dest, ' ', sizeof(IP_dest));
@@ -278,7 +321,7 @@ int main(int argc, char* argv[]) {
 					memset(dest, ' ', sizeof(dest));
 					memset(proto, ' ', sizeof(proto));
 					memset(TCP_flags, ' ', sizeof(TCP_flags));
-					
+					is_ipv6 = 0;
 					// send_packet(proto, mainSock, packet, ip, sendto_addr);
 					break;
 			}
@@ -294,17 +337,18 @@ int main(int argc, char* argv[]) {
 
 }
 
-void configure_IP(struct ip *ip, uint8_t proto) {
+void configure_IP(struct ip *ip, uint8_t version, uint8_t tos, char *src, \
+				  char *dst, uint8_t proto) {
 
-	ip -> ip_v = 4;
-	ip -> ip_hl = 10;
-	ip -> ip_tos = 0;
+	ip -> ip_v = version;
+	ip -> ip_hl = 5;
+	ip -> ip_tos = tos;
 	ip -> ip_p = proto;
 	ip -> ip_ttl = 255;
 
 	// Temporary Testing on Localhost
-	ip -> ip_src.s_addr = inet_addr("127.0.0.1");
-	ip -> ip_dst.s_addr = inet_addr("127.0.0.1");
+	ip -> ip_src.s_addr = inet_addr(src);
+	ip -> ip_dst.s_addr = inet_addr(dst);
 
 }
 
