@@ -379,8 +379,8 @@ void configure_TCP(struct tcphdr *tcp, uint8_t source, uint8_t dest) {
 
 void configure_UDP(struct udphdr *udp, uint8_t source, uint8_t dest) {
 	
-	udp -> source = 123;
-	udp -> dest = 123;
+	udp -> source = source;
+	udp -> dest = dest;
 	// Add uh_ulen & uh_sum
 
 }
