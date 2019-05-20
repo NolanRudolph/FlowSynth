@@ -439,4 +439,12 @@ void free_structs(struct icmp_packet *icmp, struct igmp_packet *igmp, \
 	free(igmp -> ip);
 	free(igmp -> igmp);
 	free(igmp);
+
+	free(tcp -> ip);
+	free(tcp -> tcp);
+	free(tcp);
+
+	free(udp -> ip);
+	free(udp -> udp);
+	free(udp);
 }	
