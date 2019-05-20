@@ -296,11 +296,11 @@ int main(int argc, char* argv[]) {
 
 						case 6:
 							if (!is_ipv6)
-                                configure_IP(tcp -> ip, 4, TOS, IP_source, IP_dest, 6);
-                            else
-                                configure_IP(tcp -> ip, 6, TOS, IP_source, IP_dest, 6);
-                            configure_TCP(tcp -> tcp, atoi(source), atoi(dest));
-                            send_TCP(tcp_sock, *tcp, sendto_addr);
+								configure_IP(tcp -> ip, 4, TOS, IP_source, IP_dest, 6);
+							else
+								configure_IP(tcp -> ip, 6, TOS, IP_source, IP_dest, 6);
+							configure_TCP(tcp -> tcp, atoi(source), atoi(dest));
+							send_TCP(tcp_sock, *tcp, sendto_addr);
 							break;
 
 						case 17:
