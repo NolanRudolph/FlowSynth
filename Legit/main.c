@@ -155,54 +155,141 @@ int main(int argc, char* argv[]) {
 
 /*
  *  * PACKET ATTRIBUTES *
- *  1   Start Timestamp in Epoch Format
- *  2   End Timestamp in Epoch Format
- *  3   Source IP Address
- *  4   Destination IP Address
- *  5   Source Port Number
- *  6   Destination Port Number
- *  7   IP Header Protocol Number
- *  8   TOS Value in IP Header
- *  9   TCP Flags
- *  10  Number of Packets
- *  11  Number of Bytes
- *  12  Router Ingress Port
- *  13  Router Egress Port
- *  14  Source ASN
- *  15  Destination ASN
+ *  cc = 0   Start Timestamp in Epoch Format
+ *  cc = 1   End Timestamp in Epoch Format
+ *  cc = 2   Source IP Address
+ *  cc = 3   Destination IP Address
+ *  cc = 4   Source Port Number
+ *  cc = 5   Destination Port Number (or type.code if ICMP/IGMP)
+ *  cc = 6   IP Header Protocol Number
+ *  cc = 7   TOS Value in IP Header
+ *  cc = 8   TCP Flags
+ *  cc = 9   Number of Packets
+ *  cc = 10  Number of Bytes
+ *  cc = 11  Router Ingress Port
+ *  cc = 12  Router Egress Port
+ *  cc = 13  Source ASN
+ *  cc = 14  Destination ASN
  *  
 */
 
-/*
-	int cc = 0; // Comma-Count, method only viable for csv
+	int i = 0;
+	int cc = 0; 	  // Comma-Count, method only viable for csv
 	FILE * fp;
 	char ch;
-	char _proto[3];
-	int i = 0;
-	int proto;
+	char proto[3]; 	  // 1 <= proto <= 255 : three ints
+	int val;
+
+	// IP Attributes
+	char IP_source[20];
+	char IP_dest[20];
+	memset(IP_source, ' ', sizeof(IP_source));
+	memset(IP_dest, ' ', sizeof(IP_dest));
+
+	int TOS = 0;       // 0 <= TOS <= 7 : 1 int (our dataset has 3 digit values?)
+	char TCP_flags[2]; // 0 <= TCP_flags <= 31 : 2 ints
+		
+
+	// ICMP/IGMP Attributes
+	int type = 0;     // 0 <= type <= 7 : 1 int
+	char code[2]; 	  // 8 <= code <= 15 : 2 ints
+	memset(code, ' ', sizeof(code));
+	int is_dot = 0;   // Used to tell when to switch from type to code
+
+	// TCP/UDP Attributes
+	char source[5];   // 0 <= src port <= 65535 : 5 ints
+	memset(source, ' ', sizeof(source));
+	char dest[5];  	  // 0 <= dest port <= 65535 : 5 ints
+	memset(dest, ' ', sizeof(dest));
+
+	// Packet Sending Attributes
+	char packets[10];
+	memset(source, ' ', sizeof(packets));
+	char bytes[15];
+	memset(source, ' ', sizeof(bytes));
 
 	// Generic IP used for sendto's
 	fp = fopen(argv[1], "r");
 	while ((ch = getc(fp)) != EOF) {
 		if (ch == ',') {
-			++cc;
-		}
-		else if (cc == 6) {
-			_proto[i++] = ch;
-		}
-		if (cc == 15) {
-			cc = 0;
 			i = 0;
-			proto = atoi(_proto);
-			memset(_proto, ' ', sizeof(_proto)*sizeof(char));
-			send_packet(proto, mainSock, packet, ip, sendto_addr);	
+			++cc;  // Found comma, moving onto next section
+		} else {   // Else, lets grab attributes for our packet
+			val = ch - '0'; // ch - '0' returns non-ASCII integer value of 0 - 9
+			switch(cc) {
+				case 2:
+					IP_source[i++] = ch;
+					break;
+				case 3:
+					IP_dest[i++] = ch;
+					break;
+				case 4:
+					source[i++] = ch;
+					break;
+				case 5: // This can be either the dest port or code.type for ICMP | IGMP 
+					if (ch == '.') {
+						is_dot = 1;
+					}
+					else if (!is_dot) {
+						dest[i++] = ch; // Dest will always record, in case TCP | UDP
+						code[i] = ch;
+					}
+					else {
+						type = val; // We found a dot, must be ICMP | IGMP
+					}
+					break;
+				case 6: 
+					proto[i++] = ch; // Fill protocol buffer
+					break;
+				case 7:
+					TOS = val;
+					break;
+				case 8:
+					TCP_flags[i++] = ch;
+					break;
+				case 9:
+					packets[i++] = ch;
+					break;
+				case 10:
+					bytes[i++] = ch;
+					break;
+				case 15:
+					// Reset Section
+					cc = 0;
+					is_dot = 0;
+					
+					#if 0 // Testing for Assuring Accuracy
+		            printf("Protocol is %d\n", atoi(proto));
+	            	printf("IP_source is %s\n", IP_source);
+    	        	printf("IP_dest is %s\n", IP_dest);
+        	    	printf("Source may be %d\n", atoi(source));
+            		printf("Dest may be %d\n", atoi(dest));
+            		printf("Type may be %d\n", type);
+            		printf("Code may be %d\n", atoi(code));
+            		printf("TOS may be %d\n", TOS);
+					printf("Packets is %d\n", atoi(packets));
+					printf("Bytes is %d\n", atoi(bytes));
+            		printf("TCP_flags may be %d\n\n\n", atoi(TCP_flags));
+	
+					memset(IP_source, ' ', sizeof(IP_source));
+					memset(IP_dest, ' ', sizeof(IP_dest));
+					memset(source, ' ', sizeof(source));
+					memset(code, ' ', sizeof(code));
+					memset(dest, ' ', sizeof(dest));
+					memset(proto, ' ', sizeof(proto));
+					memset(TCP_flags, ' ', sizeof(TCP_flags));
+					#endif
+					// send_packet(proto, mainSock, packet, ip, sendto_addr);
+					break;
+			}
 		}
 	}
-	*/
-	configure_IP(tcp -> ip, IPPROTO_TCP);
-	configure_TCP(tcp -> tcp, 123, 123);
+	
+	// configure_IP(tcp -> ip, IPPROTO_TCP);
+	// configure_TCP(tcp -> tcp, 123, 123);
 
-	send_TCP(tcp_sock, *tcp, sendto_addr);	
+	// send_TCP(tcp_sock, *tcp, sendto_addr);	
+	
 	return 0;
 
 }
