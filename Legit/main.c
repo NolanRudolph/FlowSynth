@@ -173,16 +173,15 @@ int main(int argc, char* argv[]) {
  *  
 */
 
+/*
 	int cc = 0; // Comma-Count, method only viable for csv
 	FILE * fp;
 	char ch;
 	char _proto[3];
 	int i = 0;
 	int proto;
-	char packet[65535];  // Initialized to max packet size
 
 	// Generic IP used for sendto's
-	/*
 	fp = fopen(argv[1], "r");
 	while ((ch = getc(fp)) != EOF) {
 		if (ch == ',') {
@@ -196,7 +195,6 @@ int main(int argc, char* argv[]) {
 			i = 0;
 			proto = atoi(_proto);
 			memset(_proto, ' ', sizeof(_proto)*sizeof(char));
-			memset(packet, 0, 65535);  // Reset content of packet
 			send_packet(proto, mainSock, packet, ip, sendto_addr);	
 		}
 	}
