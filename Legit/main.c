@@ -94,6 +94,9 @@ int main(int argc, char* argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
+
+		/* Initialize Delivery Address */
+
 	// Specify Address
 	char address[] = "127.0.0.1";
     
