@@ -16,7 +16,7 @@ lib:
 	$(CC) $(CFLAGS) -c -fPIC -o $@ $<
 
 ./lib/libdaLib.so: ./obj/next.o ./obj/conf.o
-	$(CC) $(CFLAGS) -shared -o $@ $^
+	$(CC) -shared -o $@ $^
 
 packetize: ./src/main.c ./lib/libdaLib.so
 	$(CC) $(CFLAGS) -o $@ $< ./lib/libdaLib.so

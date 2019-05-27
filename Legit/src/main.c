@@ -189,7 +189,7 @@ int main(int argc, char* argv[]) {
                     bytes[++i] = '\0';
                     break;
                 case 15:
-                    #if 1 // Testing for Assuring Accuracy
+                    #if 0 // Testing for Assuring Accuracy
                     printf("Protocol is %d\n", atoi(proto));
                     printf("Start time is %s\n", start);
                     printf("End time is %s\n", end);
