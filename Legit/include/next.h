@@ -5,9 +5,17 @@
 #include <string.h>
 #include "conf.h"
 
+struct grand_packet
+{
+	char *buff;
+	unsigned int packets_left;
+	float d_time;
+	unsigned short int length;
+};
+
 void begin(char *fname);
 
-void get_next(struct ether_header *ether, struct ip *ip, struct icmp *icmp,\
+struct grand_packet get_next(struct ether_header *ether, struct ip *ip, struct icmp *icmp,\
 			  struct igmp *igmp, struct tcphdr *tcp, struct udphdr *udp);
 
 #endif

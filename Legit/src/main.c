@@ -16,13 +16,6 @@
 #include "conf.h"
 #include "next.h"
 
-struct grand_packet
-{
-    char *buff;
-    int packets_left;
-    int d_time;
-};
-
 void send_packet(int socket, struct grand_packet packet, struct sockaddr_in addr);
 
 
