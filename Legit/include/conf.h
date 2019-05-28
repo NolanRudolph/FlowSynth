@@ -15,7 +15,7 @@ void configure_IP(struct ip *ip, uint8_t version, uint8_t tos, char *src, \
                   char *dst, uint8_t proto);
 void configure_ICMP(struct icmp *icmp, uint8_t type, uint8_t code);
 void configure_IGMP(struct igmp *igmp, uint8_t type, uint8_t code);
-void configure_TCP(struct tcphdr *tcp, uint8_t source, uint8_t dest);
+void configure_TCP(struct tcphdr *tcp, int source, int dest); // Changed uint8_t to int
 void configure_UDP(struct udphdr *udp, uint8_t source, uint8_t dest);
 void configure_socket(int sockfd, uint8_t proto); 
 

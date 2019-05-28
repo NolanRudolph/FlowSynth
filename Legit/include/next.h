@@ -1,5 +1,6 @@
 #ifndef NEXT_H
 #define NEXT_H
+#define MAXBUF 1024
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,16 +8,16 @@
 
 struct grand_packet
 {
-	char *buff;
+	char buff[MAXBUF];
 	unsigned int packets_left;
 	float d_time;
-	float cur_time;
-	unsigned short int length;
+	double cur_time;
+	unsigned short length;
 };
 
 void begin(char *fname);
 
-struct grand_packet get_next(struct ether_header *ether, struct ip *ip, struct icmp *icmp,\
+struct grand_packet * get_next(struct ether_header *ether, struct ip *ip, struct icmp *icmp,\
 			  struct igmp *igmp, struct tcphdr *tcp, struct udphdr *udp);
 
 #endif

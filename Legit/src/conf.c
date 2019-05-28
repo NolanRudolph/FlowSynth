@@ -45,8 +45,8 @@ void configure_IGMP(struct igmp *igmp, uint8_t type, uint8_t code) {
  
 }
   
-void configure_TCP(struct tcphdr *tcp, uint8_t source, uint8_t dest) {
- 
+void configure_TCP(struct tcphdr *tcp, int source, int dest) {
+    printf("We received the source %d\n", source);
     tcp -> source = source;
     tcp -> dest = dest;
     // Skipping sequence number and ACK number

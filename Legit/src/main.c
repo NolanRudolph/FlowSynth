@@ -62,8 +62,26 @@ int main(int argc, char* argv[]) {
     struct udphdr *udp = (struct udphdr *)malloc(sizeof(struct udphdr));
 
     begin(argv[1]);  // Relay file to "next.c"
-    get_next(ether, ip, icmp, igmp, tcp, udp);
-    get_next(ether, ip, icmp, igmp, tcp, udp);
+    
+    struct grand_packet *ret_packet;
+    ret_packet = get_next(ether, ip, icmp, igmp, tcp, udp);
+    
+#if 1 // Testing if data is in correct location
+    printf("Received packet at %#010x\n", ret_packet);
+    
+    struct tcphdr *temp = (struct tcphdr *)(ret_packet -> buff + \
+                           sizeof(struct ether_header) + sizeof(struct ip));
+    printf("Looking for TCP source at %#010x\n", ret_packet -> buff + \
+                           sizeof(struct ether_header) + sizeof(struct ip));
+    //printf("TCP source is %d\n", temp->source); // Comment me out if not TCP
+    
+    printf("\n\n*** TESTING FOR CORRECT GRAND PACKET ATTRIBUTES ***\n\n");
+    printf("Packets Left: %d\n", ret_packet -> packets_left);
+    printf("Delta Time: %f\n", ret_packet -> d_time);
+    printf("Current Time: %f\n", ret_packet -> cur_time);
+    printf("Length of Packet: %d\n", ret_packet -> length);
+#endif
+
 	
     free(ether);
     free(ip);
