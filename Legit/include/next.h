@@ -10,6 +10,7 @@ struct grand_packet
 	char *buff;
 	unsigned int packets_left;
 	float d_time;
+	float cur_time;
 	unsigned short int length;
 };
 

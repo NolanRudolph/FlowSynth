@@ -62,9 +62,10 @@ float d_time;
 unsigned short int length = 0;
 
 /* struct grand_packet attributes:
- * char *buff                 // Used for storing all the data, contingently
+ * char *buff                 // Used for storing all the packet data adjacently
  * unsigned int packets_left  // Maintains how many packets are left to send
  * float d_time               // Delta time between sending packets
+ * float cur_time             // Keeps track of current time, added to by d_time
  * unsigned short int length  // Length of all of a packet's contents
 */
 
