@@ -80,8 +80,20 @@ unsigned short length = 0;
 
 struct grand_packet * get_next(struct ether_header *ether, struct ip *ip, struct icmp *icmp,\
               struct igmp *igmp, struct tcphdr *tcp, struct udphdr *udp) {
+    // Reset Section
+    cc = 0;
+    is_dot = 0;
+    is_ipv6 = 0;
+    length = 0;
+    memset(ether -> ether_dhost, 0, sizeof(ether -> ether_dhost));
+    memset(ether -> ether_shost, 0, sizeof(ether -> ether_shost));
     
-    while ((ch = getc(fp)) != '\n') {
+    /* Reading from File */
+    // Error Handling (No more file left to read)
+    if ((ch = getc(fp)) == EOF) {
+        return NULL;
+    }
+    do {
         if (ch == ',') {
             i = 0;
             ++cc;               // Found comma, moving onto next section
@@ -147,7 +159,7 @@ struct grand_packet * get_next(struct ether_header *ether, struct ip *ip, struct
                     break;
             }
         }
-    }
+    } while ((ch = getc(fp)) != '\n');
     // Get int prototype
     proto = atoi(_proto);
     
@@ -177,23 +189,51 @@ struct grand_packet * get_next(struct ether_header *ether, struct ip *ip, struct
     
     // All packets will have same Ether and IP length
     length += sizeof(struct ether_header) + sizeof(struct ip);
+    
+    // Configuration of Grand Packets
     switch (proto) {
         case 1:
+                // Setting pointers to correct spots in grand_icmp's buffer
+                ether = (struct ether_header *)grand_tcp.buff;
+                ip = (struct ip *)(grand_icmp.buff + sizeof(struct ether_header));
+                icmp = (struct icmp *)(grand_icmp.buff + sizeof(struct ether_header) + \
+                                                         sizeof(struct ip));
                 if (!is_ipv6)
                     configure_IP(ip, 4, TOS, IP_source, IP_dest, 1); 
                 else
                     configure_IP(ip, 6, TOS, IP_source, IP_dest, 1);
                 configure_ICMP(icmp, type, atoi(code));
                 length += sizeof(struct icmp);
+                
+                // Setting remainder of grand_packet's attributes
+                grand_icmp.length = length;
+                grand_icmp.d_time = d_time;
+                grand_icmp.cur_time = atof(start);
+                grand_icmp.packets_left = atoi(packets);
                 break;
 
         case 2:
+                // Setting pointers to correct spots in grand_igmp's buffer
+                ether = (struct ether_header *)grand_tcp.buff;
+                ip = (struct ip *)(grand_igmp.buff + sizeof(struct ether_header));
+                igmp = (struct igmp *)(grand_igmp.buff + sizeof(struct ether_header) + \
+                                                         sizeof(struct ip));
+                
+                // Configuring said pointers to hold correct attributes
                 if (!is_ipv6)
                     configure_IP(ip, 4, TOS, IP_source, IP_dest, 2);
                 else
                     configure_IP(ip, 6, TOS, IP_source, IP_dest, 2);
                 configure_IGMP(igmp, type, atoi(code));
+
+                // Adjust length of packet
                 length += sizeof(struct igmp);
+                
+                // Setting remainder of grand_packet's attributes
+                grand_igmp.length = length;
+                grand_igmp.d_time = d_time;
+                grand_igmp.cur_time = atof(start);
+                grand_igmp.packets_left = atoi(packets);
                 break;
 
         case 6:
@@ -221,25 +261,50 @@ struct grand_packet * get_next(struct ether_header *ether, struct ip *ip, struct
                 break;
 
         case 17:
+                // Setting pointers to correct spots in grand_udp's buffer
+                ether = (struct ether_header *)grand_udp.buff;
+                ip = (struct ip *)(grand_udp.buff + sizeof(struct ether_header));
+                udp = (struct udphdr *)(grand_udp.buff + sizeof(struct ether_header) + \
+                                                         sizeof(struct ip));
+
+                // Configuring said pointers to hold correct attributes
                 if (!is_ipv6)
                     configure_IP(ip, 4, TOS, IP_source, IP_dest, 17);
                 else
                     configure_IP(ip, 6, TOS, IP_source, IP_dest, 17);
                 configure_UDP(udp, atoi(source), atoi(dest));
+                
+                // Adjust length of packet
                 length += sizeof(struct udphdr);
+                
+                // Setting remainder of grand_packet's attributes
+                grand_udp.length = length;
+                grand_udp.d_time = d_time;
+                grand_udp.cur_time = atof(start);
+                grand_udp.packets_left = atoi(packets);
                 break;
     }
     
-    // Reset Section
-    cc = 0;
-    is_dot = 0;
-    is_ipv6 = 0;
-    length = 0;
-    memset(ether -> ether_dhost, 0, sizeof(ether -> ether_dhost));
-    memset(ether -> ether_shost, 0, sizeof(ether -> ether_shost));
 #if 1 // Linked with line 69 in main.c
     printf("\n\n*** PACKET POINTER TRANSFER DETAILS ***\n\n");
-    printf("Returning packet from %#010x\n", &grand_tcp);
+    if (proto == 1)
+        printf("Returning ICMP packet from %#010x\n", &grand_icmp);
+    else if (proto == 2)
+        printf("Returning IGMP packet from %#010x\n", &grand_igmp);
+    else if (proto == 6)
+        printf("Returning TCP packet from %#010x\n", &grand_tcp);
+    else if (proto == 17)
+        printf("Returning UDP packet from %#010x\n", &grand_udp);
 #endif
-    return &grand_tcp;
+    
+    if (proto == 1)
+        return &grand_icmp;
+    else if (proto == 2)
+        return &grand_igmp;
+    else if (proto == 6)
+        return &grand_tcp;
+    else if (proto == 17)
+        return &grand_udp;
+    else
+        return &grand_tcp;
 }

@@ -61,25 +61,44 @@ int main(int argc, char* argv[]) {
 
     struct udphdr *udp = (struct udphdr *)malloc(sizeof(struct udphdr));
 
+    /* Coordinating with next.c to generate packets based off argv[1] */
+    // Essentially starting up the module, initializing global variables, etc.
     begin(argv[1]);  // Relay file to "next.c"
     
+    struct grand_packet *grand_list = (struct grand_packet *)malloc\
+                                      (sizeof(struct grand_packet) * 1000);
+    int list_i = 0; // Number of grand_packet's already allocated
+    
+    printf("The size of a packet is %d\n", sizeof(struct grand_packet));
+    printf("Grand List pointer starts at %#010x\n", &grand_list);
     struct grand_packet *ret_packet;
-    ret_packet = get_next(ether, ip, icmp, igmp, tcp, udp);
+    while ((ret_packet = get_next(ether, ip, icmp, igmp, tcp, udp)) != NULL) {
+        printf("Received packet at %#010x\n", ret_packet);
+
+        memcpy(grand_list + list_i, ret_packet, sizeof(struct grand_packet));
+        ++list_i;
+    }
     
-#if 1 // Testing if data is in correct location
-    printf("Received packet at %#010x\n", ret_packet);
-    
+#if 0  // TCP Specefic Testing
     struct tcphdr *temp = (struct tcphdr *)(ret_packet -> buff + \
                            sizeof(struct ether_header) + sizeof(struct ip));
-    printf("Looking for TCP source at %#010x\n", ret_packet -> buff + \
+
+    // printf("Looking for TCP source at %#010x\n", ret_packet -> buff + \
                            sizeof(struct ether_header) + sizeof(struct ip));
-    //printf("TCP source is %d\n", temp->source); // Comment me out if not TCP
-    
+    //printf("TCP source is %d\n", temp->source); 
+#endif
+
+#if 1 // Testing if data is in correct location
     printf("\n\n*** TESTING FOR CORRECT GRAND PACKET ATTRIBUTES ***\n\n");
-    printf("Packets Left: %d\n", ret_packet -> packets_left);
-    printf("Delta Time: %f\n", ret_packet -> d_time);
-    printf("Current Time: %f\n", ret_packet -> cur_time);
-    printf("Length of Packet: %d\n", ret_packet -> length);
+    int i;
+    for (i = 0; i < list_i; ++i) {
+        printf("Got to %d\n", i);
+        printf("Packets Left: %d\n", grand_list[i].packets_left);
+        printf("Delta Time: %f\n", grand_list[i].d_time);
+        printf("Current Time: %f\n", grand_list[i].cur_time);
+        printf("Length of Packet: %d\n\n", grand_list[i].length);
+    }
+
 #endif
 
 	
