@@ -45,34 +45,24 @@ int main(int argc, char* argv[]) {
     sendto_addr.sin_port = htons(9001);
     sendto_addr.sin_addr.s_addr = inet_addr(address);
 
-
-    /* Initialize All Protocol Structures */
-    struct ether_header *ether = (struct ether_header *)\
-                                  malloc(sizeof(struct ether_header));
-    ether -> ether_type = ETHERTYPE_IP; // Ethernet type remains constant
     
-    struct ip *ip = (struct ip *)malloc(sizeof(struct ip));
-    
-    struct icmp *icmp = (struct icmp *)malloc(sizeof(struct icmp));
-
-    struct igmp *igmp = (struct igmp *)malloc(sizeof(struct igmp));
-
-    struct tcphdr *tcp = (struct tcphdr *)malloc(sizeof(struct tcphdr));
-
-    struct udphdr *udp = (struct udphdr *)malloc(sizeof(struct udphdr));
-
     /* Coordinating with next.c to generate packets based off argv[1] */
+    
     // Essentially starting up the module, initializing global variables, etc.
     begin(argv[1]);  // Relay file to "next.c"
     
+    // This list will be the main list used for holding packets/scheduling
     struct grand_packet *grand_list = (struct grand_packet *)malloc\
                                       (sizeof(struct grand_packet) * 1000);
-    int list_i = 0; // Number of grand_packet's already allocated
+    
+    // Number of grand_packet's already allocated
+    int list_i = 0; 
+
     
     printf("The size of a packet is %d\n", sizeof(struct grand_packet));
     printf("Grand List pointer starts at %#010x\n", &grand_list);
     struct grand_packet *ret_packet;
-    while ((ret_packet = get_next(ether, ip, icmp, igmp, tcp, udp)) != NULL) {
+    while ((ret_packet = get_next()) != NULL) {
         printf("Received packet at %#010x\n", ret_packet);
 
         memcpy(grand_list + list_i, ret_packet, sizeof(struct grand_packet));
@@ -101,13 +91,6 @@ int main(int argc, char* argv[]) {
 
 #endif
 
-	
-    free(ether);
-    free(ip);
-    free(icmp);
-    free(igmp);
-    free(tcp);
-    free(udp);
     close(sockfd);
 
     return 0;

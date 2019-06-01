@@ -17,7 +17,8 @@ struct grand_packet
 
 void begin(char *fname);
 
-struct grand_packet * get_next(struct ether_header *ether, struct ip *ip, struct icmp *icmp,\
-			  struct igmp *igmp, struct tcphdr *tcp, struct udphdr *udp);
+void stop(void);
+
+struct grand_packet * get_next(void);
 
 #endif

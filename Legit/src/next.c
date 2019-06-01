@@ -1,17 +1,43 @@
 #include "next.h"
 
+// Global File Pointer
 FILE *fp;
 
+/* Initialize All Grand Packets */
 struct grand_packet grand_icmp;
 struct grand_packet grand_igmp;
 struct grand_packet grand_tcp;
 struct grand_packet grand_udp;
 
+/* Initialize All Protocol Structures */
+struct ether_header *ether;
+struct ip *ip;
+struct icmp *icmp;
+struct igmp *igmp;
+struct tcphdr *tcp;
+struct udphdr *udp;
+
 void begin(char *fname) {
     fp = fopen(fname, "r");
     
-    /* Global Grand Packets -- This eliminates having to constantly make new structs */
+    /* Allocate Memory for Structures */
+    ether = (struct ether_header *)malloc(sizeof(struct ether_header));
+    ether -> ether_type = ETHERTYPE_IP;
+    ip = (struct ip *)malloc(sizeof(struct ip));
+    icmp = (struct icmp *)malloc(sizeof(struct icmp));
+    igmp = (struct igmp *)malloc(sizeof(struct igmp));
+    tcp = (struct tcphdr *)malloc(sizeof(struct tcphdr));
+    udp = (struct udphdr *)malloc(sizeof(struct udphdr));
+}
 
+void stop() {
+    free(ether);
+    free(ip);
+    free(icmp);
+    free(igmp);
+    free(tcp);
+    free(udp);
+    close(fp);
 }
 
 /* READING NETFLOW FROM CSV */
@@ -78,8 +104,7 @@ unsigned short length = 0;
  * unsigned short int length  // Length of all of a packet's contents
 */
 
-struct grand_packet * get_next(struct ether_header *ether, struct ip *ip, struct icmp *icmp,\
-              struct igmp *igmp, struct tcphdr *tcp, struct udphdr *udp) {
+struct grand_packet * get_next() {
     // Reset Section
     cc = 0;
     is_dot = 0;
