@@ -102,6 +102,7 @@ unsigned short length = 0;
  * float d_time               // Delta time between sending packets
  * float cur_time             // Keeps track of current time, added to by d_time
  * unsigned short int length  // Length of all of a packet's contents
+ * struct grand_packet next  // Next packet in grand_list used for round-robin
 */
 
 struct grand_packet * get_next() {
@@ -188,7 +189,7 @@ struct grand_packet * get_next() {
     // Get int prototype
     proto = atoi(_proto);
     
-    #if 1 // Testing for Assuring Accuracy
+    #if 0 // Testing for Assuring Accuracy
     printf("\n*** PACKET DETAILS ***\n\n");
     printf("Protocol is %d\n", proto);
     printf("Start time is %s\n", start);
@@ -310,7 +311,7 @@ struct grand_packet * get_next() {
                 break;
     }
     
-#if 1 // Linked with line 69 in main.c
+#if 0 // Linked with line 69 in main.c
     printf("\n\n*** PACKET POINTER TRANSFER DETAILS ***\n\n");
     if (proto == 1)
         printf("Returning ICMP packet from %#010x\n", &grand_icmp);

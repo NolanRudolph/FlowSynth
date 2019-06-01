@@ -14,8 +14,8 @@ void configure_ETHER(struct ether_header *ether, char *dst, char *src) {
     
 }
 
-void configure_IP(struct ip *ip, uint8_t version, uint8_t tos, char *src, \
-				  char *dst, uint8_t proto) {
+void configure_IP(struct ip *ip, int version, int tos, char *src, \
+				  char *dst, int proto) {
 
     ip -> ip_v = version;
     ip -> ip_hl = 5;
@@ -29,7 +29,7 @@ void configure_IP(struct ip *ip, uint8_t version, uint8_t tos, char *src, \
 }
 
 
-void configure_ICMP(struct icmp *icmp, uint8_t type, uint8_t code) {
+void configure_ICMP(struct icmp *icmp, int type, int code) {
 
 	icmp -> icmp_type = type;
     icmp -> icmp_code = code;
@@ -37,7 +37,7 @@ void configure_ICMP(struct icmp *icmp, uint8_t type, uint8_t code) {
 }
 
 
-void configure_IGMP(struct igmp *igmp, uint8_t type, uint8_t code) {
+void configure_IGMP(struct igmp *igmp, int type, int code) {
 
     igmp -> igmp_type = type;
     igmp -> igmp_code = code;
@@ -53,7 +53,7 @@ void configure_TCP(struct tcphdr *tcp, int source, int dest) {
 }
 
 
-void configure_UDP(struct udphdr *udp, uint8_t source, uint8_t dest) {
+void configure_UDP(struct udphdr *udp, int source, int dest) {
                                              	
     udp -> source = source;
     udp -> dest = dest;

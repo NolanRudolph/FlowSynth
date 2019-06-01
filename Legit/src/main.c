@@ -53,29 +53,29 @@ int main(int argc, char* argv[]) {
     
     // This list will be the main list used for holding packets/scheduling
     struct grand_packet *grand_list = (struct grand_packet *)malloc\
-                                      (sizeof(struct grand_packet) * 1000);
+                                      (sizeof(struct grand_packet) * 1000000);
     
     // Number of grand_packet's already allocated
     int list_i = 0; 
 
-    
-    printf("The size of a packet is %d\n", sizeof(struct grand_packet));
-    printf("Grand List pointer starts at %#010x\n", &grand_list);
+    // Temporary Variable for Storing Packet
     struct grand_packet *ret_packet;
+            
     while ((ret_packet = get_next()) != NULL) {
-        printf("Received packet at %#010x\n", ret_packet);
-
         memcpy(grand_list + list_i, ret_packet, sizeof(struct grand_packet));
+        grand_list[list_i - 1].next = &grand_list[list_i];
         ++list_i;
     }
+    grand_list[list_i -1].next = grand_list;
     
 #if 0  // TCP Specefic Testing
-    struct tcphdr *temp = (struct tcphdr *)(ret_packet -> buff + \
+    printf("greand_list is at %#010x\n", &grand_list->buff);
+    struct tcphdr *temp = (struct tcphdr *)((grand_list+2) -> buff + \
                            sizeof(struct ether_header) + sizeof(struct ip));
 
-    // printf("Looking for TCP source at %#010x\n", ret_packet -> buff + \
+    printf("Looking for TCP source at %#010x\n", (grand_list+2) -> buff + \
                            sizeof(struct ether_header) + sizeof(struct ip));
-    //printf("TCP source is %d\n", temp->source); 
+    printf("TCP source is %d\n", temp->source); 
 #endif
 
 #if 1 // Testing if data is in correct location
@@ -86,7 +86,8 @@ int main(int argc, char* argv[]) {
         printf("Packets Left: %d\n", grand_list[i].packets_left);
         printf("Delta Time: %f\n", grand_list[i].d_time);
         printf("Current Time: %f\n", grand_list[i].cur_time);
-        printf("Length of Packet: %d\n\n", grand_list[i].length);
+        printf("Length of Packet: %d\n", grand_list[i].length);
+        printf("Next Packet has %d packets.\n\n", grand_list[i].next -> packets_left);
     }
 
 #endif

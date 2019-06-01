@@ -13,6 +13,7 @@ struct grand_packet
 	float d_time;
 	double cur_time;
 	unsigned short length;
+	struct grand_packet *next;
 };
 
 void begin(char *fname);
