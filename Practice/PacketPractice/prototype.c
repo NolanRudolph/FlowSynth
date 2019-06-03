@@ -33,17 +33,10 @@ int main(int argc, char *argv[]) {
     /* Address Stuff */
     in_addr_t address = inet_addr("127.0.0.1");
 
-    /*
-    struct sockaddr_ll sendto_addr;
-    sendto_addr.sin_family = AF_INET;
-    sendto_addr.sin_port = htons(9001);
-    sendto_addr.sin_addr.s_addr = address;
-     */
     struct sockaddr_ll socket_address;
-    socket_address.sll_ifindex = 2;
+    socket_address.sll_ifindex = 1;
     socket_address.sll_halen = ETH_ALEN;
     
-
 
     /* LAYER 2 - Ethernet Header Configuration */
     struct ether_header *ether = (struct ether_header *)sendbuf;

@@ -20,6 +20,8 @@ void begin(char *fname);
 
 void stop(void);
 
+void get_first(void);
+
 struct grand_packet * get_next(void);
 
 #endif

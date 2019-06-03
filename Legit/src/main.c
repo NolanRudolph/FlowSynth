@@ -9,6 +9,9 @@
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 
+// For sockaddr_ll
+#include <linux/if_packet.h>
+
 #include <arpa/inet.h>
 #include <sys/time.h>
 
@@ -40,20 +43,19 @@ int main(int argc, char* argv[]) {
     char address[] = "127.0.0.1";
 
     // Specifying Address for Socket
-    struct sockaddr_in sendto_addr;
-    sendto_addr.sin_family = AF_INET;
-    sendto_addr.sin_port = htons(9001);
-    sendto_addr.sin_addr.s_addr = inet_addr(address);
+    struct sockaddr_ll socket_address;
+    socket_address.sll_ifindex = 1;
+    socket_address.sll_halen = ETH_ALEN;
 
     
     /* Coordinating with next.c to generate packets based off argv[1] */
     
     // Essentially starting up the module, initializing global variables, etc.
     begin(argv[1]);  // Relay file to "next.c"
-    
+
     // This list will be the main list used for holding packets/scheduling
     struct grand_packet *grand_list = (struct grand_packet *)malloc\
-                                      (sizeof(struct grand_packet) * 1000000);
+                                      (sizeof(struct grand_packet) * 100000);
     
     // Number of grand_packet's already allocated
     int list_i = 0; 
@@ -66,6 +68,7 @@ int main(int argc, char* argv[]) {
         grand_list[list_i - 1].next = &grand_list[list_i];
         ++list_i;
     }
+    // Complete the Circle
     grand_list[list_i -1].next = grand_list;
     
 #if 0  // TCP Specefic Testing
@@ -82,7 +85,7 @@ int main(int argc, char* argv[]) {
     printf("\n\n*** TESTING FOR CORRECT GRAND PACKET ATTRIBUTES ***\n\n");
     int i;
     for (i = 0; i < list_i; ++i) {
-        printf("Got to %d\n", i);
+        printf("Packet %d\n", i);
         printf("Packets Left: %d\n", grand_list[i].packets_left);
         printf("Delta Time: %f\n", grand_list[i].d_time);
         printf("Current Time: %f\n", grand_list[i].cur_time);
@@ -100,7 +103,7 @@ int main(int argc, char* argv[]) {
 
 void send_packet(int socket, struct grand_packet packet, struct sockaddr_in addr){
     if (sendto(socket, &packet, sizeof(struct grand_packet), 0, \
-            (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+            (struct sockaddr *)&addr, sizeof(struct sockaddr_ll)) < 0) {
             perror("TCP sendto() error");
             exit(EXIT_FAILURE);
     }
