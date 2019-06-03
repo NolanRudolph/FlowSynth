@@ -112,7 +112,8 @@ unsigned short length = 0;
  * float d_time               // Delta time between sending packets
  * float cur_time             // Keeps track of current time, added to by d_time
  * unsigned short int length  // Length of all of a packet's contents
- * struct grand_packet next  // Next packet in grand_list used for round-robin
+ * struct grand_packet last   // Previous packet in grand_list for round-robin
+ * struct grand_packet next   // Next packet in grand_list used for round-robin
 */
 
 /* This function serves to get the first packet, which is very important b/c:
@@ -589,4 +590,8 @@ struct grand_packet * get_next() {
     
     // Return the temporary variable
     return &cur_packet;
+}
+
+double get_next_time() {
+    return next_time;
 }

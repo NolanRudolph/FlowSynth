@@ -18,6 +18,7 @@
 #include <errno.h>
 #include "conf.h"
 #include "next.h"
+#include "scheduler.h"
 
 void send_packet(int socket, struct grand_packet packet, struct sockaddr_in addr);
 
@@ -55,7 +56,7 @@ int main(int argc, char* argv[]) {
 
     // This list will be the main list used for holding packets/scheduling
     struct grand_packet *grand_list = (struct grand_packet *)malloc\
-                                      (sizeof(struct grand_packet) * 100000);
+                                      (sizeof(struct grand_packet) * 1000000);
     
     // Number of grand_packet's already allocated
     int list_i = 0; 
@@ -65,11 +66,14 @@ int main(int argc, char* argv[]) {
             
     while ((ret_packet = get_next()) != NULL) {
         memcpy(grand_list + list_i, ret_packet, sizeof(struct grand_packet));
-        grand_list[list_i - 1].next = &grand_list[list_i];
+        grand_list[list_i].last = &grand_list[list_i - 1];  // Set last to previous
+        grand_list[list_i - 1].next = &grand_list[list_i];  // Set last next to this
         ++list_i;
     }
+    --list_i;
     // Complete the Circle
-    grand_list[list_i -1].next = grand_list;
+    grand_list[0].last = &grand_list[list_i];
+    grand_list[list_i].next = grand_list;
     
 #if 0  // TCP Specefic Testing
     printf("greand_list is at %#010x\n", &grand_list->buff);
@@ -81,20 +85,26 @@ int main(int argc, char* argv[]) {
     printf("TCP source is %d\n", temp->source); 
 #endif
 
-#if 1 // Testing if data is in correct location
+#if 1 // List contents of all packets in grand_list
     printf("\n\n*** TESTING FOR CORRECT GRAND PACKET ATTRIBUTES ***\n\n");
     int i;
-    for (i = 0; i < list_i; ++i) {
+    for (i = 0; i <= list_i; ++i) {
         printf("Packet %d\n", i);
+        printf("Last Packet had %d packets.\n", grand_list[i].last -> packets_left);
         printf("Packets Left: %d\n", grand_list[i].packets_left);
-        printf("Delta Time: %f\n", grand_list[i].d_time);
-        printf("Current Time: %f\n", grand_list[i].cur_time);
+        printf("Delta Time: %lf\n", grand_list[i].d_time);
+        printf("Current Time: %lf\n", grand_list[i].cur_time);
         printf("Length of Packet: %d\n", grand_list[i].length);
         printf("Next Packet has %d packets.\n\n", grand_list[i].next -> packets_left);
     }
 
 #endif
-
+    
+    /* Round Robin Testing */
+    round_robin(grand_list, list_i);
+    
+    
+    
     close(sockfd);
 
     return 0;
