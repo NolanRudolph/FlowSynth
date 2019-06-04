@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
     grand_list[list_i].next = grand_list;
     
 #if 0  // TCP Specefic Testing
-    printf("greand_list is at %#010x\n", &grand_list->buff);
+    printf("grand_list is at %#010x\n", &grand_list->buff);
     struct tcphdr *temp = (struct tcphdr *)((grand_list+2) -> buff + \
                            sizeof(struct ether_header) + sizeof(struct ip));
 
