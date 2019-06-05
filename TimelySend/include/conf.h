@@ -11,11 +11,15 @@
 #include <sys/socket.h>
 
 void configure_ETHER(struct ether_header *ether, char *dst, char *src);
-void configure_IP(struct ip *ip, int version, int tos, char *src, \
-                  char *dst, int proto);
-void configure_ICMP(struct icmp *icmp, int type, int code);
-void configure_IGMP(struct igmp *igmp, int type, int code);
-void configure_TCP(struct tcphdr *tcp, int source, int dest); // Changed uint8_t to int
-void configure_UDP(struct udphdr *udp, int source, int dest);
+void configure_IP(struct ip *ip, unsigned short int version, unsigned \
+		short int tos, char *src, char *dst, unsigned short int proto);
+void configure_ICMP(struct icmp *icmp, unsigned short int type, \
+					unsigned short int code);
+void configure_IGMP(struct igmp *igmp, unsigned short int type, \
+					unsigned short int code);
+void configure_TCP(struct tcphdr *tcp, unsigned short int source, \
+				   unsigned short int dest);
+void configure_UDP(struct udphdr *udp, unsigned short int source, \
+				   unsigned short int dest);
 
 #endif 

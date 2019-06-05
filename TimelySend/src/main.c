@@ -1,18 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
-#include <sys/types.h>
-
-#include <netdb.h>
-
-#include <netinet/in.h>
-#include <netinet/in_systm.h>
-
-#include <arpa/inet.h>
-#include <sys/time.h>
-
-#include <errno.h>
 #include "conf.h"
 #include "next.h"
 #include "scheduler.h"

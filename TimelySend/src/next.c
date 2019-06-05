@@ -30,7 +30,6 @@ void begin(char *fname) {
     
     /* Allocate Memory for Structures */
     ether = (struct ether_header *)malloc(sizeof(struct ether_header));
-    ether -> ether_type = ETHERTYPE_IP;
     ip = (struct ip *)malloc(sizeof(struct ip));
     icmp = (struct icmp *)malloc(sizeof(struct icmp));
     igmp = (struct igmp *)malloc(sizeof(struct igmp));
@@ -77,22 +76,22 @@ void stop() {
 int i = 0;
 int cc = 0; 	  // Comma-Count, method only viable for csv
 char ch;
-unsigned int val;
-unsigned int is_ipv6 = 0;
+unsigned short int val;
+unsigned short int is_ipv6 = 0;
 
 // IP Attributes
 char IP_source[30];
 char IP_dest[30];
 char _proto[3];     // 1 <= proto <= 255 : three ints
-unsigned short proto;
+unsigned short int proto;
 
-unsigned int TOS = 0;       // 0 <= TOS <= 7 : 1 int (our dataset has 3 digit values?)
+unsigned short int TOS = 0;       // 0 <= TOS <= 7 : 1 int
 char TCP_flags[2]; // 0 <= TCP_flags <= 31 : 2 ints
 
 // ICMP/IGMP Attributes
-unsigned int type = 0;     // 0 <= type <= 7 : 1 int
+unsigned short int type = 0;     // 0 <= type <= 7 : 1 int
 char code[2];     // 8 <= code <= 15 : 2 ints
-unsigned int is_dot = 0;   // Used to tell when to switch from type to code
+unsigned short int is_dot = 0;   // Used to tell when to switch from type to code
 
 // TCP/UDP Attributes
 char source[5];   // 0 <= src port <= 65535 : 5 ints
@@ -104,7 +103,7 @@ char end[15];
 char packets[10];
 char bytes[15];
 float d_time;
-unsigned short length = 0;
+unsigned int length = 0;
 
 /* struct grand_packet attributes:
  * char *buff                 // Used for storing all the packet data adjacently
@@ -269,7 +268,9 @@ void get_first() {
                     configure_IP(ip, 4, TOS, IP_source, IP_dest, 1); 
                 else
                     configure_IP(ip, 6, TOS, IP_source, IP_dest, 1);
-                configure_ICMP(icmp, type, atoi(code));
+                ip -> ip_len = htons(length - sizeof(struct ether_header));
+                
+                configure_ICMP(icmp, type, (short)atoi(code));
                 length += sizeof(struct icmp);
                 
                 // Setting remainder of grand_packet's attributes
@@ -291,7 +292,9 @@ void get_first() {
                     configure_IP(ip, 4, TOS, IP_source, IP_dest, 2);
                 else
                     configure_IP(ip, 6, TOS, IP_source, IP_dest, 2);
-                configure_IGMP(igmp, type, atoi(code));
+                ip -> ip_len = htons(length - sizeof(struct ether_header));
+                
+                configure_IGMP(igmp, type, (short)atoi(code));
 
                 // Adjust length of packet
                 length += sizeof(struct igmp);
@@ -315,7 +318,9 @@ void get_first() {
                     configure_IP(ip, 4, TOS, IP_source, IP_dest, 6);
                 else
                     configure_IP(ip, 6, TOS, IP_source, IP_dest, 6);
-                configure_TCP(tcp, atoi(source), atoi(dest));
+                ip -> ip_len = htons(length - sizeof(struct ether_header));
+                
+                configure_TCP(tcp, (short)atoi(source), (short)atoi(dest));
                 
                 // Adjust length of packet
                 length += sizeof(struct tcphdr);
@@ -339,7 +344,11 @@ void get_first() {
                     configure_IP(ip, 4, TOS, IP_source, IP_dest, 17);
                 else
                     configure_IP(ip, 6, TOS, IP_source, IP_dest, 17);
-                configure_UDP(udp, atoi(source), atoi(dest));
+                ip -> ip_len = htons(length - sizeof(struct ether_header));
+                
+                configure_UDP(udp, (short)atoi(source), (short)atoi(dest));
+                udp -> len = htons(length - sizeof(struct ether_header) - \
+                                               sizeof(struct ip));
                 
                 // Adjust length of packet
                 length += sizeof(struct udphdr);
