@@ -8,7 +8,7 @@ void configure_ETHER(struct ether_header *ether, char *dst, char *src) {
     for (i = 0; src[i] != '\0'; ++i) {
         ether -> ether_shost[i] = src[i];
     }
-    ether -> ether_type = ETHERTYPE_IP;
+    ether -> ether_type = htons(ETHERTYPE_IP);
 }
 
 void configure_IP(struct ip *ip, unsigned short int version, unsigned \
@@ -62,8 +62,8 @@ void configure_IGMP(struct igmp *igmp, unsigned short int type, \
 void configure_TCP(struct tcphdr *tcp, unsigned short int source, \
                    unsigned short int dest) {
     
-    tcp -> source = source;
-    tcp -> dest = dest;
+    tcp -> source = htons(source);
+    tcp -> dest = htons(dest);
     
 #if 0  // Big endian
     tcp -> source = htons(source);

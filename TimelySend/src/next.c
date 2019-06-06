@@ -3,6 +3,9 @@
 // Global File Pointer
 FILE *fp;
 
+// Given the method setup, we need a way of delivering the last packet.
+int send_last = 0;
+
 /* Initialize All Grand Packets */
 struct grand_packet grand_icmp;
 struct grand_packet grand_igmp;
@@ -260,7 +263,7 @@ void get_first() {
     switch (proto) {
         case 1:
                 // Setting pointers to correct spots in grand_icmp's buffer
-                ether = (struct ether_header *)grand_tcp.buff;
+                ether = (struct ether_header *)grand_icmp.buff;
                 ip = (struct ip *)(grand_icmp.buff + sizeof(struct ether_header));
                 icmp = (struct icmp *)(grand_icmp.buff + sizeof(struct ether_header) + \
                                                          sizeof(struct ip));
@@ -282,7 +285,7 @@ void get_first() {
 
         case 2:
                 // Setting pointers to correct spots in grand_igmp's buffer
-                ether = (struct ether_header *)grand_tcp.buff;
+                ether = (struct ether_header *)grand_igmp.buff;
                 ip = (struct ip *)(grand_igmp.buff + sizeof(struct ether_header));
                 igmp = (struct igmp *)(grand_igmp.buff + sizeof(struct ether_header) + \
                                                          sizeof(struct ip));
@@ -320,6 +323,7 @@ void get_first() {
                     configure_IP(ip, 6, TOS, IP_source, IP_dest, 6);
                 ip -> ip_len = htons(length - sizeof(struct ether_header));
                 
+                printf("Using %s for source and %s for dest.\n", source, dest);
                 configure_TCP(tcp, (short)atoi(source), (short)atoi(dest));
                 
                 // Adjust length of packet
@@ -401,7 +405,15 @@ struct grand_packet * get_next() {
     /* Reading from File */
     // Error Handling (No more file left to read)
     if ((ch = getc(fp)) == EOF) {
-        return NULL;
+        if (send_last == 0) {
+            send_last = 1;
+            next_time = INFINITY;
+            printf("We're returning the last packet with %d packets_left\n", \
+                    next_packet.packets_left);
+            return &next_packet;
+        }
+        else 
+            return NULL;
     }
     do {
         if (ch == ',') {
@@ -598,6 +610,7 @@ struct grand_packet * get_next() {
     next_time = atof(start) - first_time;
     
     // Return the temporary variable
+    printf("We're returning packet with %d packets_left\n", cur_packet.packets_left);
     return &cur_packet;
 }
 

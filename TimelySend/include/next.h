@@ -2,6 +2,7 @@
 #define NEXT_H
 #define MAXBUF 1024
 #include <string.h>
+#include <math.h>
 #include "conf.h"
 
 struct grand_packet
