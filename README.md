@@ -2,7 +2,6 @@
   <b>At Scale Packet Synthesizer for University of Oregon Netflow</b>
 </p>
 </br>
-</br>
 <p>
   The project should be compiled and run by the following steps:
   <ol>
