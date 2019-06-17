@@ -39,6 +39,7 @@ void begin(char *fname) {
     tcp = (struct tcphdr *)malloc(sizeof(struct tcphdr));
     udp = (struct udphdr *)malloc(sizeof(struct udphdr));
     
+    // Initialize the dataset analyzing process
     get_first();
 }
 
@@ -138,13 +139,14 @@ unsigned int length = 0;
  *         construction for all packets using just the first packet.
 */ 
 void get_first() {
+    printf("WE ARE CALLING GET FIRST\n");
     // Reset Section
     cc = 0;
     is_dot = 0;
     is_ipv6 = 0;
     length = 0;
-    memset(ether -> ether_dhost, 0, sizeof(ether -> ether_dhost));
-    memset(ether -> ether_shost, 0, sizeof(ether -> ether_shost));
+    memset(ether -> ether_dhost, ' ', sizeof(ether -> ether_dhost));
+    memset(ether -> ether_shost, ' ', sizeof(ether -> ether_shost));
     
     /* Reading from File */
     // Error Handling (No content in file to read from)
@@ -323,7 +325,6 @@ void get_first() {
                     configure_IP(ip, 6, TOS, IP_source, IP_dest, 6);
                 ip -> ip_len = htons(length - sizeof(struct ether_header));
                 
-                printf("Using %s for source and %s for dest.\n", source, dest);
                 configure_TCP(tcp, (short)atoi(source), (short)atoi(dest));
                 
                 // Adjust length of packet
@@ -388,6 +389,8 @@ void get_first() {
         next_packet = grand_udp;
     else
         next_packet = grand_tcp;
+    
+    printf("So next_packet has %d packets left.\n", next_packet.packets_left);
 }
 
 
@@ -399,14 +402,16 @@ struct grand_packet * get_next() {
     is_dot = 0;
     is_ipv6 = 0;
     length = 0;
-    memset(ether -> ether_dhost, 0, sizeof(ether -> ether_dhost));
-    memset(ether -> ether_shost, 0, sizeof(ether -> ether_shost));
+    memset(ether -> ether_dhost, ' ', sizeof(ether -> ether_dhost));
+    memset(ether -> ether_shost, ' ', sizeof(ether -> ether_shost));
     
     /* Reading from File */
     // Error Handling (No more file left to read)
     if ((ch = getc(fp)) == EOF) {
         if (send_last == 0) {
             send_last = 1;
+            // Don't forget to set the pre-assessed current time of the packet
+            next_packet.cur_time = next_time;
             next_time = INFINITY;
             printf("We're returning the last packet with %d packets_left\n", \
                     next_packet.packets_left);
@@ -592,6 +597,7 @@ struct grand_packet * get_next() {
     
     // Temporarily store the next_packet at global variable cur_packet
     cur_packet = next_packet;
+    // next_time was set to correct time last iteration
     cur_packet.cur_time = next_time;
     
     // Set the next_packet
@@ -608,12 +614,14 @@ struct grand_packet * get_next() {
     
     // Set the next_time
     next_time = atof(start) - first_time;
+    printf("Start: %lf // First: %lf // Result (Next): %lf\n", atof(start), first_time, next_time);
     
     // Return the temporary variable
     printf("We're returning packet with %d packets_left\n", cur_packet.packets_left);
     return &cur_packet;
 }
 
+// How the Round-robin scheduler knows when to append new entries
 double get_next_time() {
     return next_time;
 }

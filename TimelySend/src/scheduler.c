@@ -30,21 +30,18 @@ void round_robin_init() {
             perror("socket() error");
             exit(EXIT_FAILURE);
     }
-    
-//    get_first();
 }
 
 void round_robin() {
     const time_t start = time(NULL);
     double now = 0.0;
-    printf("Time is %lld\n", start);
     
     struct grand_packet *temp;
     temp = &grand_list[0];
     
     int i;    
     while (size != 0 || response) {
-        for (i = 0; size != 0 && i <= size; ++i) {
+        for (i = 0; size != 0 && i < size; ++i) {
             if (temp -> cur_time <= now) {
                 // Sending packet & Adjusting packet attributes
                 printf("Sending packet %d\n", i);
@@ -53,14 +50,17 @@ void round_robin() {
                 temp -> cur_time += temp -> d_time;
             
                 // If the packet has no packets left, delete it
-                while (temp -> packets_left == 0) {
+                if (temp -> packets_left == 0) {
                     temp -> last -> next = temp -> next;
                     temp -> next -> last = temp -> last;
                     temp = temp -> next;
                     size -= 1;
                 }
+                else
+                    temp = temp -> next;
             }
-            temp = temp -> next;
+            else
+                temp = temp -> next;
         }
         
         now = time(NULL) - start;
@@ -68,15 +68,16 @@ void round_robin() {
         // If a new entry falls within the time frame, append to our grand_list
         if (response)
             response = add_candidates(now);
-            
     }
-    
+
     close(sockfd);
     printf("Done\n");
 }
 
 int add_candidates(double time) {
     struct grand_packet *next;
+    
+    // Change assesses if anything other than the first entry was implemented
     int change = 0;
     
     if (size == 0 && get_next_time() <= time) {
@@ -112,9 +113,7 @@ int add_candidates(double time) {
         memcpy(&grand_list[size], next, sizeof(struct grand_packet));
         
         // Link packets together, hence "round" robin
-        printf("Setting packet %d's next to %d.\n", size - 1, size);
         grand_list[size - 1].next = &grand_list[size];
-        printf("Setting packet %d's last to %d.\n", size, size - 1);
         grand_list[size].last = &grand_list[size - 1];
 
         printf("We added packet with packets_left %d at size %d\n", \
@@ -124,27 +123,24 @@ int add_candidates(double time) {
     // We changed our list, so we need to complete the circle
     if (change) {
         printf("Adding more...\n");
-        // Readjust size b/c of gratuitous ++size
-        --size;
-        printf("Size is %d\n", size);
         // Complete the circle and return to scheduler
-        printf("Setting packet %d's next to %d\n", size, 0);
-        grand_list[size].next = &grand_list[0];
-        printf("Setting packet %d's last to %d\n", 0, size);
-        grand_list[0].last = &grand_list[size];
+        grand_list[size - 1].next = &grand_list[0];
+        grand_list[0].last = &grand_list[size - 1];
         
         int i;
         struct grand_packet *temp;
         temp = &grand_list[0];
-        for (i = 0; i <= size; ++i) {
+        for (i = 0; i < size; ++i) {
             printf("Packet has packets_left %d\n", temp -> packets_left);
             temp = temp -> next;
             
         }
     }
     // If we have reached EOF, this function shouldn't be called anymore
-    if (get_next_time() == INFINITY)
+    if (get_next_time() == INFINITY) {
+        printf("We're ending at size %d\n", size);
         return 0;
+    }
     else
         return 1;
 }
