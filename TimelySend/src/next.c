@@ -558,6 +558,7 @@ struct grand_packet * get_next() {
                     configure_IP(ip, 4, TOS, IP_source, IP_dest, 6);
                 else
                     configure_IP(ip, 6, TOS, IP_source, IP_dest, 6);
+
                 configure_TCP(tcp, atoi(source), atoi(dest));
                 
                 // Adjust length of packet
