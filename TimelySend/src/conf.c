@@ -19,9 +19,8 @@ void configure_IP(struct ip *ip, unsigned short int version, unsigned \
     ip -> ip_tos = htons(tos);
     ip -> ip_p = htons(proto);
     ip -> ip_ttl = htons(255);
-
     ip -> ip_src.s_addr = inet_addr(src);
-    ip -> ip_dst.s_addr = inet_addr(dst);
+    
 }
 
 
@@ -53,7 +52,7 @@ void configure_TCP(struct tcphdr *tcp, unsigned short int source, \
 
 void configure_UDP(struct udphdr *udp, unsigned short int source, \
                    unsigned short int dest) {
-                             
+                            
     udp -> source = htons(source);
     udp -> dest = htons(dest);
 

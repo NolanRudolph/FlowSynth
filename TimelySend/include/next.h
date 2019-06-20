@@ -22,8 +22,6 @@ void stop(void);
 
 void get_first(void);
 
-struct grand_packet * get_next(void);
-
-double get_next_time(void);
+int get_next(struct grand_packet *, time_t);
 
 #endif

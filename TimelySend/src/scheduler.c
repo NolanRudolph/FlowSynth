@@ -78,85 +78,74 @@ int add_candidates(double time) {
     struct grand_packet *next;
     
     // Change assesses if anything other than the first entry was implemented
+    int res;
     int change = 0;
     
-    if (size == 0 && get_next_time() <= time) {
-        printf("Adding first packet.\n");
+    if (size == 0 && (res = get_next(&grand_list[size], time))) {
+        printf("Retrived response from passed in %#010x\n", &grand_list[size]);
         
-        next = get_next();
-        
-        // EOF Checking, and will stop scheduler from further add_candidates()
-        if (next == NULL) 
-            return 0;
-        
-        // Copy packet contents to first address in grand_packet
-        memcpy(&grand_list[0], next, sizeof(struct grand_packet));
+        // Setting first to itself for round_robin scheduler
         grand_list[0].next = &grand_list[0];
         grand_list[0].last = &grand_list[0];
         
-        printf("We added packet with packets_left %d at size %d\n", \
-                grand_list[size].packets_left, size);
         size = 1;
+        
+        printf("We added first packet with packets_left %d // size is now %d\n", \
+                grand_list[size - 1].packets_left, size);
+        
+        # if 0  // Packet Retrieval Testing
+            printf("\n\n***** TESTING *****\n");
+            printf("Packets left is %d\n", grand_list[0].packets_left);
+            printf("Current time is %lf\n", grand_list[0].cur_time);
+
+            struct tcphdr *temp = (struct tcphdr *)(grand_list[0].buff + \
+                                   sizeof(struct ether_header) + sizeof(struct ip));
+            printf("TCP source is %d\n", ntohs(temp -> source));
+
+            printf("\n\n");
+        #endif
     }
+    
     // While loop because many packets will come in at each second
-    while (get_next_time() <= time) {
-        // Detected a new packet that should be implemented
+    while (res = get_next(&grand_list[size], time)) {
+        printf("Retrived response from passed in %#010x\n", &grand_list[size]);
+        
+        if (res == -1) {
+            printf("But it was the EOF\n");
+            break;
+        }
+        
+        // For completing circles
         change = 1;
         
-        next = get_next();
-        
-        // EOF Checking, we must break the while loop
-        if (next == NULL)
-            break;
-        
-        // Copy packet contents to next unused address in grand_packet
-        memcpy(&grand_list[size], next, sizeof(struct grand_packet));
-        
-        // Link packets together, hence "round" robin
+        // Link packets together for round-robin scheduler
         grand_list[size - 1].next = &grand_list[size];
         grand_list[size].last = &grand_list[size - 1];
-
-        printf("We added packet with packets_left %d at size %d\n", \
-                grand_list[size].packets_left, size);
+        
         ++size;
+        
+        printf("We added new packet with packets_left %d // size is now %d\n", \
+                grand_list[size - 1].packets_left, size);
     }
-    // We changed our list, so we need to complete the circle
+    
     if (change) {
-        printf("Adding more...\n");
-        // Complete the circle and return to scheduler
+        // Complete the circle for round-robin scheduler
         grand_list[size - 1].next = &grand_list[0];
         grand_list[0].last = &grand_list[size - 1];
         
-        int i;
-        struct grand_packet *temp;
-        temp = &grand_list[0];
-        for (i = 0; i < size; ++i) {
-            printf("Packet has packets_left %d\n", temp -> packets_left);
-            temp = temp -> next;
-            
-        }
     }
+    
     // If we have reached EOF, this function shouldn't be called anymore
-    if (get_next_time() == INFINITY) {
-        printf("We're ending at size %d\n", size);
+    if (res == -1) {
+        printf("Reached EOF at size %d\n", size);
         return 0;
     }
     else
         return 1;
 }
 
-int p_size;
-
 void send_packet(struct grand_packet packet) {
-    p_size = packet.length;
-    
-#if 0 // TCP Buffer Testing
-    struct tcphdr *temp = (struct tcphdr *)(packet.buff + \
-                           sizeof(struct ether_header) + sizeof(struct ip));
-    printf("TCP source is %d\n", temp -> source);
-#endif
-    
-    if (sendto(sockfd, &packet.buff, p_size, 0, \
+    if (sendto(sockfd, &packet.buff, packet.length, 0, \
             (struct sockaddr *)&addr, sizeof(struct sockaddr_ll)) < 0) {
             perror("sendto() error");
             exit(EXIT_FAILURE);
