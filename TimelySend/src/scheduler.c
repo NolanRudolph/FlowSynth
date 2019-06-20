@@ -82,7 +82,6 @@ int add_candidates(double time) {
     int change = 0;
     
     if (size == 0 && (res = get_next(&grand_list[size], time))) {
-        printf("Retrived response from passed in %#010x\n", &grand_list[size]);
         
         // Setting first to itself for round_robin scheduler
         grand_list[0].next = &grand_list[0];
@@ -93,14 +92,27 @@ int add_candidates(double time) {
         printf("We added first packet with packets_left %d // size is now %d\n", \
                 grand_list[size - 1].packets_left, size);
         
-        # if 0  // Packet Retrieval Testing
+        # if 1  // Packet Retrieval Testing
             printf("\n\n***** TESTING *****\n");
+            printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
             printf("Packets left is %d\n", grand_list[0].packets_left);
             printf("Current time is %lf\n", grand_list[0].cur_time);
+            
+            printf("\n*** ETHERNET ATTRIBUTES ***\n");
+            struct ether_header *ether = (struct ether_header *)(grand_list[0].buff);
+            printf("Ether dest is %s\n", ether -> ether_dhost);
+            printf("Ether host is %s\n", ether -> ether_shost);
+            
+            printf("\n*** IP ATTRIBUTES ***\n");
+            struct ip *ip = (struct ip *)(grand_list[0].buff + sizeof(struct ether_header));
+            printf("IP prototype is %d\n", ntohs(ip -> ip_p));
+            printf("IP TTL is %d\n", ntohs(ip -> ip_ttl));
 
+            printf("\n*** TCP ATTRIBUTES ***\n");
             struct tcphdr *temp = (struct tcphdr *)(grand_list[0].buff + \
                                    sizeof(struct ether_header) + sizeof(struct ip));
             printf("TCP source is %d\n", ntohs(temp -> source));
+            printf("TCP dest is %d\n", ntohs(temp -> dest));
 
             printf("\n\n");
         #endif
@@ -108,12 +120,10 @@ int add_candidates(double time) {
     
     // While loop because many packets will come in at each second
     while (res = get_next(&grand_list[size], time)) {
-        printf("Retrived response from passed in %#010x\n", &grand_list[size]);
         
-        if (res == -1) {
-            printf("But it was the EOF\n");
+        // Reached EOF
+        if (res == -1)
             break;
-        }
         
         // For completing circles
         change = 1;

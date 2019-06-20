@@ -20,6 +20,7 @@ void configure_IP(struct ip *ip, unsigned short int version, unsigned \
     ip -> ip_p = htons(proto);
     ip -> ip_ttl = htons(255);
     ip -> ip_src.s_addr = inet_addr(src);
+    ip -> ip_dst.s_addr = inet_addr(dst);
     
 }
 

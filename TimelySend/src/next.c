@@ -5,8 +5,6 @@ FILE *fp;
 
 double first_time = -1.0;
 
-double next_time = 0.0;
-
 void begin(char *fname) {
     fp = fopen(fname, "r");
 }
