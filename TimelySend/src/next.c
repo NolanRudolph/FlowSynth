@@ -61,7 +61,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     char IP_source[30];
     char IP_dest[30];
     char _proto[3];     // 1 <= proto <= 255 : three ints
-    unsigned short int proto;
+    int proto;
 
     unsigned short int TOS = 0;       // 0 <= TOS <= 7 : 1 int
     char TCP_flags[2]; // 0 <= TCP_flags <= 31 : 2 ints
@@ -83,15 +83,15 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     float d_time;
     unsigned int length = 0;
 
-	// Hard Code Ethernet Hosts
-	unsigned char sHost[6] = 
-	{
-		0x00, 0x01, 0x02, 0x03, 0x04, 0x05
-	};
-	unsigned char dHost[6] =
-	{
-		0x00, 0x09, 0x08, 0x07, 0x06, 0x05
-	};    
+    // Hard Code Ethernet Hosts
+    unsigned char sHost[6] = 
+    {
+            0x00, 0x01, 0x02, 0x03, 0x04, 0x05
+    };
+    unsigned char dHost[6] =
+    {
+            0x00, 0x09, 0x08, 0x07, 0x06, 0x05
+    };    
     
     /* Reading from File */
     // Error Handling (No more file left to read)
@@ -308,7 +308,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             // Adjust length of packet for correct buffer sending
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
                     sizeof(struct tcphdr);
-
+            
             // Setting remainder of grand_packet's attributes
             grand_tcp.length = length;
             grand_tcp.d_time = d_time;

@@ -100,19 +100,30 @@ int add_candidates(double time) {
             
             printf("\n*** ETHERNET ATTRIBUTES ***\n");
             struct ether_header *ether = (struct ether_header *)(grand_list[0].buff);
-            printf("Ether dest is %s\n", ether -> ether_dhost);
-            printf("Ether host is %s\n", ether -> ether_shost);
+            printf("Ether dest is ");
+            int i;
+            for (i = 0; i < 6; ++i) {
+                printf("%u", ether -> ether_shost[i]);
+            }
+            printf("\n");
+            printf("Ether host is ");
+            for (i = 0; i < 6; ++i) {
+                printf("%u", ether -> ether_dhost[i]);
+            }
+            printf("\n");
             
             printf("\n*** IP ATTRIBUTES ***\n");
             struct ip *ip = (struct ip *)(grand_list[0].buff + sizeof(struct ether_header));
-            printf("IP prototype is %d\n", ntohs(ip -> ip_p));
-            printf("IP TTL is %d\n", ntohs(ip -> ip_ttl));
+            printf("IP protocol is %hu\n", ip -> ip_p);
+            printf("IP TTL is %hu\n", ip -> ip_ttl);
 
             printf("\n*** TCP ATTRIBUTES ***\n");
-            struct tcphdr *temp = (struct tcphdr *)(grand_list[0].buff + \
+            struct tcphdr *tcp = (struct tcphdr *)(grand_list[0].buff + \
                                    sizeof(struct ether_header) + sizeof(struct ip));
-            printf("TCP source is %d\n", ntohs(temp -> source));
-            printf("TCP dest is %d\n", ntohs(temp -> dest));
+            printf("TCP source is %d\n", ntohs(tcp -> source));
+            printf("TCP dest is %d\n", ntohs(tcp -> dest));
+            printf("TCP offset is %d\n", tcp -> doff);
+            printf("TCP checksum is %d\n", tcp -> check);
 
             printf("\n\n");
         #endif

@@ -11,8 +11,8 @@
 #include <sys/socket.h>
 
 void configure_ETHER(struct ether_header *ether, unsigned char *dst, unsigned char *src);
-void configure_IP(struct ip *ip, unsigned short int version, unsigned \
-		short int tos, char *src, char *dst, unsigned short int proto);
+void configure_IP(struct ip *ip, unsigned char version, unsigned \
+		char tos, char *src, char *dst, unsigned char proto);
 void configure_ICMP(struct icmp *icmp, unsigned short int type, \
 					unsigned short int code);
 void configure_IGMP(struct igmp *igmp, unsigned short int type, \

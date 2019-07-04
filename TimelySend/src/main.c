@@ -5,6 +5,9 @@
 #include "next.h"
 #include "scheduler.h"
 
+#define _BSD_SOURCE 1
+#define __FAVOR_BSD 1
+
 
 int main(int argc, char* argv[]) {
 

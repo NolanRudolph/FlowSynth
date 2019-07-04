@@ -11,14 +11,16 @@ void configure_ETHER(struct ether_header *ether, unsigned char *dst, unsigned ch
     ether -> ether_type = htons(ETHERTYPE_IP);
 }
 
-void configure_IP(struct ip *ip, unsigned short int version, unsigned \
-        short int tos, char *src, char *dst, unsigned short int proto) {
+void configure_IP(struct ip *ip, unsigned char version, unsigned \
+        char tos, char *src, char *dst, unsigned char proto) {
 
-    ip -> ip_v = htons(version);
-    ip -> ip_hl = htons(5);
-    ip -> ip_tos = htons(tos);
-    ip -> ip_p = htons(proto);
-    ip -> ip_ttl = htons(255);
+    ip -> ip_v = version;
+    ip -> ip_hl = 5;
+    ip -> ip_tos = tos;
+    ip -> ip_p = proto;
+    ip -> ip_ttl = 255;
+    ip -> ip_len = 1;
+    ip -> ip_sum = 16;
     ip -> ip_src.s_addr = inet_addr(src);
     ip -> ip_dst.s_addr = inet_addr(dst);
     
@@ -47,6 +49,7 @@ void configure_TCP(struct tcphdr *tcp, unsigned short int source, \
     
     tcp -> source = htons(source);
     tcp -> dest = htons(dest);
+    tcp -> doff = 5;
 
 }
 
@@ -56,5 +59,6 @@ void configure_UDP(struct udphdr *udp, unsigned short int source, \
                             
     udp -> source = htons(source);
     udp -> dest = htons(dest);
+    udp -> len = 8; // Change me once constructing real packets
 
 }
