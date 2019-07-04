@@ -309,6 +309,19 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
                     sizeof(struct tcphdr);
             
+            /* IP LENGTH TESTING SECTION */
+            
+            char *ptr = grand_tcp.buff + sizeof(struct ether_header) + \
+                    sizeof(struct ip) + sizeof(struct tcphdr);
+            
+            for (i = 0; i < 216; ++i) {
+                *ptr = 0x01;
+                length += 1;
+                ptr++;
+            }
+            
+            /* END TESTING SECTION */
+            
             // Setting remainder of grand_packet's attributes
             grand_tcp.length = length;
             grand_tcp.d_time = d_time;
