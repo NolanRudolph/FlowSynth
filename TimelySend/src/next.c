@@ -82,7 +82,16 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     char bytes[15];
     float d_time;
     unsigned int length = 0;
-    
+
+	// Hard Code Ethernet Hosts
+	unsigned char sHost[6] = 
+	{
+		0x00, 0x01, 0x02, 0x03, 0x04, 0x05
+	};
+	unsigned char dHost[6] =
+	{
+		0x00, 0x09, 0x08, 0x07, 0x06, 0x05
+	};    
     
     /* Reading from File */
     // Error Handling (No more file left to read)
@@ -209,7 +218,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                                                      sizeof(struct ip));
             
             // Ether Configuration
-            configure_ETHER(ether, dest, source);
+            configure_ETHER(ether, dHost, sHost);
             
             // IP Configuration
             if (!is_ipv6)
@@ -247,7 +256,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                                                      sizeof(struct ip));
 
             // Ether Configuration
-            configure_ETHER(ether, dest, source);
+            configure_ETHER(ether, dHost, sHost);
             
             // IP Configuration
             if (!is_ipv6)
@@ -285,7 +294,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                                                      sizeof(struct ip));
 
             // Ether Configuration
-            configure_ETHER(ether, dest, source);
+            configure_ETHER(ether, dHost, sHost);
             
             // IP Configuration
             if (!is_ipv6)
@@ -323,7 +332,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                                                      sizeof(struct ip));
 
             // Ether Configuration
-            configure_ETHER(ether, dest, source);
+            configure_ETHER(ether, dHost, sHost);
             
             // IP Configuration
             if (!is_ipv6)

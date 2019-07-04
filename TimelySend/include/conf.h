@@ -10,7 +10,7 @@
 #include <netinet/udp.h>
 #include <sys/socket.h>
 
-void configure_ETHER(struct ether_header *ether, char *dst, char *src);
+void configure_ETHER(struct ether_header *ether, unsigned char *dst, unsigned char *src);
 void configure_IP(struct ip *ip, unsigned short int version, unsigned \
 		short int tos, char *src, char *dst, unsigned short int proto);
 void configure_ICMP(struct icmp *icmp, unsigned short int type, \

@@ -1,11 +1,11 @@
 #include "conf.h"
 
-void configure_ETHER(struct ether_header *ether, char *dst, char *src) {
+void configure_ETHER(struct ether_header *ether, unsigned char *dst, unsigned char *src) {
     int i;
-    for (i = 0; dst[i] != '\0'; ++i) {
+    for (i = 0; i < 6; ++i) {
         ether -> ether_dhost[i] = dst[i];
     }
-    for (i = 0; src[i] != '\0'; ++i) {
+    for (i = 0; i < 6; ++i) {
         ether -> ether_shost[i] = src[i];
     }
     ether -> ether_type = htons(ETHERTYPE_IP);
