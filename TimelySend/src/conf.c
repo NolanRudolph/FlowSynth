@@ -49,6 +49,21 @@ void configure_TCP(struct tcphdr *tcp, unsigned short int source, \
     tcp -> source = htons(source);
     tcp -> dest = htons(dest);
     tcp -> doff = 5;
+    tcp -> seq = 0;
+    tcp -> ack_seq = 0;
+    tcp -> res1 = 0;
+    tcp -> check = 0;
+    tcp -> window = 0;
+    
+    // Flags
+    tcp -> fin = 0;
+    tcp -> syn = 0;
+    tcp -> rst = 0;
+    tcp -> psh = 0;
+    tcp -> ack = 0;
+    tcp -> urg = 0;
+    
+    tcp -> urg_ptr = 0;
 
 }
 

@@ -116,6 +116,8 @@ int add_candidates(double time) {
             struct ip *ip = (struct ip *)(grand_list[0].buff + sizeof(struct ether_header));
             printf("IP protocol is %hu\n", ip -> ip_p);
             printf("IP TTL is %hu\n", ip -> ip_ttl);
+            printf("IP's Header Length is %hu\n", ip -> ip_hl);
+            printf("IP's Total Length is %hu\n", ntohs(ip -> ip_len));
 
             printf("\n*** TCP ATTRIBUTES ***\n");
             struct tcphdr *tcp = (struct tcphdr *)(grand_list[0].buff + \
@@ -147,6 +149,48 @@ int add_candidates(double time) {
         
         printf("We added new packet with packets_left %d // size is now %d\n", \
                 grand_list[size - 1].packets_left, size);
+        
+        # if 1  // Packet Retrieval Testing
+            printf("\n\n***** TESTING *****\n");
+            printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
+            printf("Packets left is %d\n", grand_list[size - 1].packets_left);
+            printf("Current time is %lf\n", grand_list[size - 1].cur_time);
+            
+            printf("\n*** ETHERNET ATTRIBUTES ***\n");
+            struct ether_header *ether = (struct ether_header *)\
+                                        (grand_list[size - 1].buff);
+            printf("Ether dest is ");
+            int i;
+            for (i = 0; i < 6; ++i) {
+                printf("%u", ether -> ether_shost[i]);
+            }
+            printf("\n");
+            printf("Ether host is ");
+            for (i = 0; i < 6; ++i) {
+                printf("%u", ether -> ether_dhost[i]);
+            }
+            printf("\n");
+            
+            printf("\n*** IP ATTRIBUTES ***\n");
+            struct ip *ip = (struct ip *)(grand_list[size - 1].buff + \
+                            sizeof(struct ether_header));
+            printf("IP protocol is %hu\n", ip -> ip_p);
+            printf("IP TTL is %hu\n", ip -> ip_ttl);
+            printf("IP's Header Length is %hu\n", ip -> ip_hl);
+            printf("IP's Total Length is %hu\n", ntohs(ip -> ip_len));
+
+
+            if (ip -> ip_p == 6) {
+                printf("\n*** TCP ATTRIBUTES ***\n");
+                struct tcphdr *tcp = (struct tcphdr *)(grand_list[size - 1].buff + \
+                                       sizeof(struct ether_header) + sizeof(struct ip));
+                printf("TCP source is %d\n", ntohs(tcp -> source));
+                printf("TCP dest is %d\n", ntohs(tcp -> dest));
+                printf("TCP offset is %d\n", tcp -> doff);
+                printf("TCP checksum is %d\n", tcp -> check);
+            }
+            printf("\n\n");
+        #endif
     }
     
     if (change) {
@@ -166,6 +210,51 @@ int add_candidates(double time) {
 }
 
 void send_packet(struct grand_packet packet) {
+    struct ip *tempFix = (struct ip *)(packet.buff + \
+                    sizeof(struct ether_header));
+    tempFix -> ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr));
+    # if 1  // Packet Retrieval Testing
+        printf("\n\n***** SENDING THIS *****\n");
+        printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
+        printf("Packets left is %d\n", packet.packets_left);
+        printf("Current time is %lf\n", packet.cur_time);
+
+        printf("\n*** ETHERNET ATTRIBUTES ***\n");
+        struct ether_header *ether = (struct ether_header *)\
+                                    (packet.buff);
+        printf("Ether dest is ");
+        int i;
+        for (i = 0; i < 6; ++i) {
+            printf("%u", ether -> ether_shost[i]);
+        }
+        printf("\n");
+        printf("Ether host is ");
+        for (i = 0; i < 6; ++i) {
+            printf("%u", ether -> ether_dhost[i]);
+        }
+        printf("\n");
+
+        printf("\n*** IP ATTRIBUTES ***\n");
+        struct ip *ip = (struct ip *)(packet.buff + \
+                        sizeof(struct ether_header));
+        printf("IP protocol is %hu\n", ip -> ip_p);
+        printf("IP TTL is %hu\n", ip -> ip_ttl);
+        printf("IP's Header Length is %hu\n", ip -> ip_hl);
+        printf("IP's Total Length is %hu\n", ntohs(ip -> ip_len));
+
+
+        if (ip -> ip_p == 6) {
+            printf("\n*** TCP ATTRIBUTES ***\n");
+            struct tcphdr *tcp = (struct tcphdr *)(packet.buff + \
+                                   sizeof(struct ether_header) + sizeof(struct ip));
+            printf("TCP source is %d\n", ntohs(tcp -> source));
+            printf("TCP dest is %d\n", ntohs(tcp -> dest));
+            printf("TCP offset is %d\n", tcp -> doff);
+            printf("TCP checksum is %d\n", tcp -> check);
+        }
+        printf("\n\n");
+    #endif
+    
     if (sendto(sockfd, &packet.buff, packet.length, 0, \
             (struct sockaddr *)&addr, sizeof(struct sockaddr_ll)) < 0) {
             perror("sendto() error");

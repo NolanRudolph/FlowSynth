@@ -200,21 +200,23 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     printf("D_time is %f\n\n", d_time);
     #endif
     
-    /* Initialize Ethernet and IP Structures */
+    /* Initialize Structures */
     struct ether_header *ether;
     struct ip *ip;
+    struct icmp *icmp;
+    struct igmp *igmp;
+    struct tcphdr *tcp;
+    struct udphdr *udp;
+    struct grand_packet grand_ret;
     
     // Configuration of Grand Packets
     switch (proto) {
         // ICMP Flow
-        case 1:; // ";" because of C's syntax of labeled-statements
-            struct grand_packet grand_icmp;
-            struct icmp *icmp;
-
-            // Setting pointers to correct spots in grand_icmp's buffer
-            ether = (struct ether_header *)grand_icmp.buff;
-            ip = (struct ip *)(grand_icmp.buff + sizeof(struct ether_header));
-            icmp = (struct icmp *)(grand_icmp.buff + sizeof(struct ether_header) + \
+        case 1: // ";" because of C's syntax of labeled-statements
+            // Setting pointers to correct spots in grand_ret's buffer
+            ether = (struct ether_header *)grand_ret.buff;
+            ip = (struct ip *)(grand_ret.buff + sizeof(struct ether_header));
+            icmp = (struct icmp *)(grand_ret.buff + sizeof(struct ether_header) + \
                                                      sizeof(struct ip));
             
             // Ether Configuration
@@ -226,6 +228,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             else
                 configure_IP(ip, 6, TOS, IP_source, IP_dest, 1);
             
+            // Configure me later
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct icmp));
+            
             // ICMP Configuration
             configure_ICMP(icmp, type, atoi(code));
             
@@ -233,26 +238,14 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
                     sizeof(struct icmp);
 
-            // Setting remainder of grand_packet's attributes
-            grand_icmp.length = length;
-            grand_icmp.d_time = d_time;
-            grand_icmp.cur_time = atof(start) - first_time;
-            grand_icmp.packets_left = atoi(packets);
-            
-            memcpy(placeHere, &grand_icmp, sizeof(struct grand_packet));
-            printf("Memcpy'd grand_icmp w/ packets_left %d to %#010x\n", \
-                    grand_icmp.packets_left, *placeHere);
             break;
 
         // IGMP Flow
-        case 2:;
-            struct grand_packet grand_igmp;
-            struct igmp *igmp;
-            
-            // Setting pointers to correct spots in grand_igmp's buffer
-            ether = (struct ether_header *)grand_igmp.buff;
-            ip = (struct ip *)(grand_igmp.buff + sizeof(struct ether_header));
-            igmp = (struct igmp *)(grand_igmp.buff + sizeof(struct ether_header) + \
+        case 2:
+            // Setting pointers to correct spots in grand_ret's buffer
+            ether = (struct ether_header *)grand_ret.buff;
+            ip = (struct ip *)(grand_ret.buff + sizeof(struct ether_header));
+            igmp = (struct igmp *)(grand_ret.buff + sizeof(struct ether_header) + \
                                                      sizeof(struct ip));
 
             // Ether Configuration
@@ -264,6 +257,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             else
                 configure_IP(ip, 6, TOS, IP_source, IP_dest, 2);
             
+            // Configure me later
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct igmp));
+            
             // IGMP Configuration
             configure_IGMP(igmp, type, atoi(code));
 
@@ -271,26 +267,14 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
                     sizeof(struct igmp);
 
-            // Setting remainder of grand_packet's attributes
-            grand_igmp.length = length;
-            grand_igmp.d_time = d_time;
-            grand_igmp.cur_time = atof(start) - first_time;
-            grand_igmp.packets_left = atoi(packets);
-            
-            memcpy(placeHere, &grand_igmp, sizeof(struct grand_packet));
-            printf("Memcpy'd grand_igmp w/ packet_size %d to %#010x\n", \
-                    grand_igmp.packets_left, placeHere);
             break;
 
         // TCP Flow
-        case 6:;
-            struct grand_packet grand_tcp;
-            struct tcphdr *tcp;
-            
-            // Setting pointers to correct spots in grand_tcp's buffer
-            ether = (struct ether_header *)grand_tcp.buff;
-            ip = (struct ip *)(grand_tcp.buff + sizeof(struct ether_header));
-            tcp = (struct tcphdr *)(grand_tcp.buff + sizeof(struct ether_header) + \
+        case 6:
+            // Setting pointers to correct spots in grand_ret's buffer
+            ether = (struct ether_header *)grand_ret.buff;
+            ip = (struct ip *)(grand_ret.buff + sizeof(struct ether_header));
+            tcp = (struct tcphdr *)(grand_ret.buff + sizeof(struct ether_header) + \
                                                      sizeof(struct ip));
 
             // Ether Configuration
@@ -312,39 +296,14 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
                     sizeof(struct tcphdr);
             
-            /* IP LENGTH TESTING SECTION 
-            
-            char *ptr = grand_tcp.buff + sizeof(struct ether_header) + \
-                    sizeof(struct ip) + sizeof(struct tcphdr);
-            
-            for (i = 0; i < 216; ++i) {
-                *ptr = 0x01;
-                length += 1;
-                ptr++;
-            }
-            
-            END TESTING SECTION */
-            
-            // Setting remainder of grand_packet's attributes
-            grand_tcp.length = length;
-            grand_tcp.d_time = d_time;
-            grand_tcp.cur_time = atof(start) - first_time;
-            grand_tcp.packets_left = atoi(packets);
-            
-            memcpy(placeHere, &grand_tcp, sizeof(struct grand_packet));
-            printf("Memcpy'd grand_tcp w/ packet_size %d to %#010x\n", \
-                    grand_tcp.packets_left, placeHere);
             break;
 
         // UDP Flow
-        case 17:;
-            struct grand_packet grand_udp;
-            struct udphdr *udp;
-            
+        case 17:
             // Setting pointers to correct spots in grand_tcp's buffer
-            ether = (struct ether_header *)grand_udp.buff;
-            ip = (struct ip *)(grand_udp.buff + sizeof(struct ether_header));
-            udp = (struct udphdr *)(grand_udp.buff + sizeof(struct ether_header) + \
+            ether = (struct ether_header *)grand_ret.buff;
+            ip = (struct ip *)(grand_ret.buff + sizeof(struct ether_header));
+            udp = (struct udphdr *)(grand_ret.buff + sizeof(struct ether_header) + \
                                                      sizeof(struct ip));
 
             // Ether Configuration
@@ -356,6 +315,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             else
                 configure_IP(ip, 6, TOS, IP_source, IP_dest, 17);
             
+            // Configure me later
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr));            
+
             // UDP Configuration
             configure_UDP(udp, atoi(source), atoi(dest));
 
@@ -363,17 +325,15 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
                     sizeof(struct udphdr);
 
-            // Setting remainder of grand_packet's attributes
-            grand_udp.length = length;
-            grand_udp.d_time = d_time;
-            grand_udp.cur_time = atof(start) - first_time;
-            grand_udp.packets_left = atoi(packets);
-            
-            memcpy(placeHere, &grand_udp, sizeof(struct grand_packet));
-            printf("Memcpy'd grand_udp w/ packet_size %d to %#010x\n", \
-                    grand_udp.packets_left, placeHere);
             break;
     }
+    
+    // Setting remainder of grand_packet's attributes
+    grand_ret.length = length;
+    grand_ret.d_time = d_time;
+    grand_ret.cur_time = atof(start) - first_time;
+    grand_ret.packets_left = atoi(packets);
+    memcpy(placeHere, &grand_ret, sizeof(struct grand_packet));
     
     return 1;
 }
