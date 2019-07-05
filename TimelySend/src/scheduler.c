@@ -210,9 +210,6 @@ int add_candidates(double time) {
 }
 
 void send_packet(struct grand_packet packet) {
-    struct ip *tempFix = (struct ip *)(packet.buff + \
-                    sizeof(struct ether_header));
-    tempFix -> ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr));
     # if 1  // Packet Retrieval Testing
         printf("\n\n***** SENDING THIS *****\n");
         printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
