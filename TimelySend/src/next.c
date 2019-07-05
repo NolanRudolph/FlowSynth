@@ -224,9 +224,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             
             // IP Configuration
             if (!is_ipv6)
-                configure_IP(ip, 4, TOS, IP_source, IP_dest, 1); 
+                configure_IP(ip, '4', TOS, IP_source, IP_dest, 1); 
             else
-                configure_IP(ip, 6, TOS, IP_source, IP_dest, 1);
+                configure_IP(ip, '6', TOS, IP_source, IP_dest, 1);
             
             // Configure me later
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct icmp));
@@ -253,9 +253,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             
             // IP Configuration
             if (!is_ipv6)
-                configure_IP(ip, 4, TOS, IP_source, IP_dest, 2);
+                configure_IP(ip, '4', TOS, IP_source, IP_dest, 2);
             else
-                configure_IP(ip, 6, TOS, IP_source, IP_dest, 2);
+                configure_IP(ip, '6', TOS, IP_source, IP_dest, 2);
             
             // Configure me later
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct igmp));
@@ -282,15 +282,19 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             
             // IP Configuration
             if (!is_ipv6)
-                configure_IP(ip, 4, TOS, IP_source, IP_dest, 6);
+                configure_IP(ip, '4', TOS, IP_source, IP_dest, 6);
             else
-                configure_IP(ip, 6, TOS, IP_source, IP_dest, 6);
+                configure_IP(ip, '6', TOS, IP_source, IP_dest, 6);
             
             // Configure me later
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr));
-
+//            ip -> ip_sum = htons(calcCheckSum(grand_ret.buff + sizeof(struct ip)));
+            ip -> ip_sum = 0;
+            
             // TCP Configuration
             configure_TCP(tcp, atoi(source), atoi(dest));
+//            tcp -> check = htons(calcCheckSum(&tcp));
+            tcp -> check = 0;
 
             // Adjust length of packet for correct buffer sending
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
@@ -311,9 +315,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             
             // IP Configuration
             if (!is_ipv6)
-                configure_IP(ip, 4, TOS, IP_source, IP_dest, 17);
+                configure_IP(ip, '4', TOS, IP_source, IP_dest, 17);
             else
-                configure_IP(ip, 6, TOS, IP_source, IP_dest, 17);
+                configure_IP(ip, '6', TOS, IP_source, IP_dest, 17);
             
             // Configure me later
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr));            

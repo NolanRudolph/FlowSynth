@@ -118,6 +118,7 @@ int add_candidates(double time) {
             printf("IP TTL is %hu\n", ip -> ip_ttl);
             printf("IP's Header Length is %hu\n", ip -> ip_hl);
             printf("IP's Total Length is %hu\n", ntohs(ip -> ip_len));
+            printf("IP's Checksum is %hu\n", ntohs(ip -> ip_sum));
 
             printf("\n*** TCP ATTRIBUTES ***\n");
             struct tcphdr *tcp = (struct tcphdr *)(grand_list[0].buff + \
@@ -178,6 +179,7 @@ int add_candidates(double time) {
             printf("IP TTL is %hu\n", ip -> ip_ttl);
             printf("IP's Header Length is %hu\n", ip -> ip_hl);
             printf("IP's Total Length is %hu\n", ntohs(ip -> ip_len));
+            printf("IP's Checksum is %hu\n", ntohs(ip -> ip_sum));
 
 
             if (ip -> ip_p == 6) {
@@ -210,7 +212,7 @@ int add_candidates(double time) {
 }
 
 void send_packet(struct grand_packet packet) {
-    # if 1  // Packet Retrieval Testing
+    # if 0  // Packet Retrieval Testing
         printf("\n\n***** SENDING THIS *****\n");
         printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
         printf("Packets left is %d\n", packet.packets_left);

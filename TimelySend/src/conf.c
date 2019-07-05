@@ -19,7 +19,6 @@ void configure_IP(struct ip *ip, unsigned char version, unsigned \
     ip -> ip_tos = tos;
     ip -> ip_p = proto;
     ip -> ip_ttl = 255;
-    ip -> ip_sum = 1;
     ip -> ip_src.s_addr = inet_addr(src);
     ip -> ip_dst.s_addr = inet_addr(dst);
     
@@ -67,7 +66,6 @@ void configure_TCP(struct tcphdr *tcp, unsigned short int source, \
 
 }
 
-
 void configure_UDP(struct udphdr *udp, unsigned short int source, \
                    unsigned short int dest) {
                             
@@ -75,4 +73,41 @@ void configure_UDP(struct udphdr *udp, unsigned short int source, \
     udp -> dest = htons(dest);
     udp -> len = htons(8); // Change me once constructing real packets
 
+}
+
+int calcCheckSum(void *p) {
+    int i;
+    long int sum = 0;
+    int curVal;
+    int *ptr = (int *)p;
+    printf("First byte is at %#010x\n", ptr);
+
+    // Using null pointer to add all bytes (paired in two using ints)
+    for (i = 0; i < 10; ++i) {
+        // Ignore checksum byte
+        if (i != 5) {
+            sum += *ptr;
+        }
+        ptr++;
+    }
+
+    // Calculating length (e.g. 0x532F3 is 5 and 0x32F3 is 4)
+    long int temp = sum;
+    int len = 0;
+    
+    while (temp & 0xFFFFF) {
+        temp >>= 4;
+        len += 1;
+    }
+
+    // Calculating Carry (e.g. The carry of 0x532F3 is 5)
+    long int carry = (sum & 0xF0000) >> 4 * (len - 1);
+    sum &= 0xFFFF;
+
+    // Adding Carry back to Sum
+    sum += carry;
+
+    printf("Resulting checksum is %#010x\n", sum);
+    
+    return sum;
 }
