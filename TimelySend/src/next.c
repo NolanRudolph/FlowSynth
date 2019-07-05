@@ -301,6 +301,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                 configure_IP(ip, 4, TOS, IP_source, IP_dest, 6);
             else
                 configure_IP(ip, 6, TOS, IP_source, IP_dest, 6);
+            
+            // Configure me later
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr));
 
             // TCP Configuration
             configure_TCP(tcp, atoi(source), atoi(dest));
@@ -309,7 +312,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
                     sizeof(struct tcphdr);
             
-            /* IP LENGTH TESTING SECTION */
+            /* IP LENGTH TESTING SECTION 
             
             char *ptr = grand_tcp.buff + sizeof(struct ether_header) + \
                     sizeof(struct ip) + sizeof(struct tcphdr);
@@ -320,7 +323,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                 ptr++;
             }
             
-            /* END TESTING SECTION */
+            END TESTING SECTION */
             
             // Setting remainder of grand_packet's attributes
             grand_tcp.length = length;

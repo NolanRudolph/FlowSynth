@@ -19,7 +19,6 @@ void configure_IP(struct ip *ip, unsigned char version, unsigned \
     ip -> ip_tos = tos;
     ip -> ip_p = proto;
     ip -> ip_ttl = 255;
-    ip -> ip_len = 1;
     ip -> ip_sum = 1;
     ip -> ip_src.s_addr = inet_addr(src);
     ip -> ip_dst.s_addr = inet_addr(dst);
@@ -59,6 +58,6 @@ void configure_UDP(struct udphdr *udp, unsigned short int source, \
                             
     udp -> source = htons(source);
     udp -> dest = htons(dest);
-    udp -> len = 1; // Change me once constructing real packets
+    udp -> len = htons(8); // Change me once constructing real packets
 
 }
