@@ -1,6 +1,5 @@
 # Generalized Ignores
-a.out
-*csv
+*.csv
 notes*
 backup*
 
