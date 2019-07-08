@@ -1,5 +1,5 @@
 Raw Capture: 1526284499.759,1526284799.785,41.75.63.186,24.21.6.142,9305,9305,17,2,0,48,12000,1441,1419,65535,7922,
 
-Scapy Source: Ether(dst="9:8:7:6:5",src="1:2:3:4:5")/IP(src="41.75.63.186",dst="24.21.6.142",ttl=255,tos=2,id=0)/UDP(sport=9305,dport=9305)
+Scapy Source: Ether(dst="0:9:8:7:6:5",src="0:1:2:3:4:5")/IP(src="41.75.63.186",dst="24.21.6.142",ttl=255,tos=2,id=0)/UDP(sport=9305,dport=9305,chksum=0)
 
 Testfile: ../../Timelysend/csv/udp2.csv

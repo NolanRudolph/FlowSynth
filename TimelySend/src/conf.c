@@ -12,7 +12,7 @@ void configure_ETHER(struct ether_header *ether, unsigned char *dst, unsigned ch
 }
 
 void configure_IP(struct ip *ip, unsigned char version, unsigned \
-        char tos, char *src, char *dst, unsigned char proto) {
+        short int tos, char *src, char *dst, unsigned char proto) {
 
     ip -> ip_v = version;
     ip -> ip_hl = 5;
@@ -27,20 +27,25 @@ void configure_IP(struct ip *ip, unsigned char version, unsigned \
 }
 
 
-void configure_ICMP(struct icmp *icmp, unsigned short int type, \
+void configure_ICMP(struct icmphdr *icmp, unsigned short int type, \
                     unsigned short int code) {
 
-    icmp -> icmp_type = htons(type);
-    icmp -> icmp_code = htons(code);
+    icmp -> type = type;
+    icmp -> code = code;
+
+    icmp -> un.echo.id = 0;
+    icmp -> un.echo.sequence = 0;
+
 
 }
 
 
 void configure_IGMP(struct igmp *igmp, unsigned short int type, \
-                    unsigned short int code) {
+                    unsigned short int code, char *addr) {
 
-    igmp -> igmp_type = htons(type);
-    igmp -> igmp_code = htons(code);
+    igmp -> igmp_type = type;
+    igmp -> igmp_code = code;
+    igmp -> igmp_group.s_addr = inet_addr(addr);
  
 }
   
@@ -81,11 +86,8 @@ void configure_UDP(struct udphdr *udp, unsigned short int source, \
 uint16_t calcCheck(uint8_t *data, int len) {
     uint32_t sum = 0;
     while (len > 1) {
-        printf("Adding %#010x\n and %#010x\n together.\n", data[0] << 8, data[1]);
         sum += (data[0] << 8) + data[1];
         if (sum & 0x80000000) {
-            printf("Overflow, sum: %#010x will go to %#010x\n", sum, \
-                                        (sum & 0xFFFF) + (sum >> 16));
             sum = (sum & 0xFFFF) + (sum >> 16);
         }
         len -= 2;
@@ -99,8 +101,6 @@ uint16_t calcCheck(uint8_t *data, int len) {
     while (sum >> 16) {
         sum = (sum & 0xFFFF) + (sum >> 16);
     }
-    
-    printf("Resulting checksum is %#010x\n", ~sum & 0xFFFF);
 
     return htons(~sum);
 }

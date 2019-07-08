@@ -63,12 +63,12 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     char _proto[3];     // 1 <= proto <= 255 : three ints
     int proto;
 
-    unsigned short int TOS = 0;       // 0 <= TOS <= 7 : 1 int
+    char TOS[3];       // 0 <= TOS <= 255 : 1 int
     char TCP_flags[2]; // 0 <= TCP_flags <= 31 : 2 ints
 
     // ICMP/IGMP Attributes
-    unsigned short int type = 0;     // 0 <= type <= 7 : 1 int
-    char code[2];     // 8 <= code <= 15 : 2 ints
+    char type[2];     // 0 <= type <= 7 : 1 int
+    unsigned int code;     // 8 <= code <= 15 : 2 ints
     unsigned short int is_dot = 0;   // Used to tell when to switch from type to code
 
     // TCP/UDP Attributes
@@ -145,11 +145,11 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                     else if (!is_dot) {
                         dest[i] = ch; // Dest will always record, in case TCP | UDP
                         dest[i + 1] = '\0';
-                        code[i] = ch;
-                        code[++i] = '\0';
+                        type[i] = ch;
+                        type[++i] = '\0';
                     }
                     else {
-                        type = val; // We found a dot, must be ICMP | IGMP
+                        code = val; // We found a dot, must be ICMP | IGMP
                     }
                     break;
                 case 6: 
@@ -157,7 +157,8 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                     _proto[++i] = '\0';
                     break;
                 case 7:
-                    TOS = val;
+                    TOS[i] = ch;
+                    TOS[++i] = '\0';
                     break;
                 case 8:
                     TCP_flags[i] = ch;
@@ -203,7 +204,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     /* Initialize Structures */
     struct ether_header *ether;
     struct ip *ip;
-    struct icmp *icmp;
+    struct icmphdr *icmp;
     struct igmp *igmp;
     struct tcphdr *tcp;
     struct udphdr *udp;
@@ -216,7 +217,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             // Setting pointers to correct spots in grand_ret's buffer
             ether = (struct ether_header *)grand_ret.buff;
             ip = (struct ip *)(grand_ret.buff + sizeof(struct ether_header));
-            icmp = (struct icmp *)(grand_ret.buff + sizeof(struct ether_header) + \
+            icmp = (struct icmphdr *)(grand_ret.buff + sizeof(struct ether_header) + \
                                                      sizeof(struct ip));
             
             // Ether Configuration
@@ -224,19 +225,23 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             
             // IP Configuration
             if (!is_ipv6)
-                configure_IP(ip, '4', TOS, IP_source, IP_dest, 1); 
+                configure_IP(ip, '4', atoi(TOS), IP_source, IP_dest, 1); 
             else
-                configure_IP(ip, '6', TOS, IP_source, IP_dest, 1);
+                configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 1);
             
             // Set IP length to correct size (fix me when adding payloads)
-            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct icmp));
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct icmphdr));
             
             // ICMP Configuration
-            configure_ICMP(icmp, type, atoi(code));
+            configure_ICMP(icmp, atoi(type), code);
+            
+            // Check needs to be the last ICMP member evaluated
+            // (change this method when involving payloads)
+            icmp -> checksum = 0;
             
             // Adjust length of packet for correct buffer sending
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
-                    sizeof(struct icmp);
+                    sizeof(struct icmphdr);
 
             break;
 
@@ -253,15 +258,19 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             
             // IP Configuration
             if (!is_ipv6)
-                configure_IP(ip, '4', TOS, IP_source, IP_dest, 2);
+                configure_IP(ip, '4', atoi(TOS), IP_source, IP_dest, 2);
             else
-                configure_IP(ip, '6', TOS, IP_source, IP_dest, 2);
+                configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 2);
             
             // Set IP length to correct size (fix me when adding payloads)
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct igmp));
             
             // IGMP Configuration
-            configure_IGMP(igmp, type, atoi(code));
+            configure_IGMP(igmp, atoi(type), code, IP_dest);
+            
+            // Check needs to be the last IGMP member evaluated
+            // (change this method when involving payloads)
+            igmp -> igmp_cksum = 0;
 
             // Adjust length of packet for correct buffer sending
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
@@ -282,9 +291,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             
             // IP Configuration
             if (!is_ipv6)
-                configure_IP(ip, '4', TOS, IP_source, IP_dest, 6);
+                configure_IP(ip, '4', atoi(TOS), IP_source, IP_dest, 6);
             else
-                configure_IP(ip, '6', TOS, IP_source, IP_dest, 6);
+                configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 6);
             
             // Set IP length to correct size (fix me when adding payloads)
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr));
@@ -315,9 +324,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             
             // IP Configuration
             if (!is_ipv6)
-                configure_IP(ip, '4', TOS, IP_source, IP_dest, 17);
+                configure_IP(ip, '4', atoi(TOS), IP_source, IP_dest, 17);
             else
-                configure_IP(ip, '6', TOS, IP_source, IP_dest, 17);
+                configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 17);
             
             // Set IP length to correct size (fix me when adding payloads)
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr));            

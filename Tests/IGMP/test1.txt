@@ -1,0 +1,7 @@
+Raw Capture: 1526284772.014,1526284772.014,198.32.165.126,224.0.0.22,0,22,2,192,0,1,42,1420,0,0,0,
+
+Scapy Source: 
+from scapy.contrib.igmp import *
+Ether(dst="0:9:8:7:6:5",src="0:1:2:3:4:5")/IP(src="198.32.165.126",dst="224.0.0.22",ttl=255,tos=192,id=0)/IGMP(type=22,mrcode=0,chksum=0,gaddr="224.0.0.22")
+
+Testfile: ../../TimelySend/csv/igmp1.csv
