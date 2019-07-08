@@ -288,14 +288,18 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             
             // Configure me later
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr));
-//            ip -> ip_sum = htons(calcCheckSum(grand_ret.buff + sizeof(struct ip)));
-            ip -> ip_sum = 0;
             
+            // Check needs to be the last IP member evaluated
+            ip -> ip_sum = 0;
+            ip -> ip_sum = calcCheck((uint8_t *)ip, 20);
+
             // TCP Configuration
             configure_TCP(tcp, atoi(source), atoi(dest));
-//            tcp -> check = htons(calcCheckSum(&tcp));
+            
+            // Check needs to be the last TCP member evaluated
+            // (change this method when involving payloads)
             tcp -> check = 0;
-
+            
             // Adjust length of packet for correct buffer sending
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
                     sizeof(struct tcphdr);

@@ -16,6 +16,8 @@ void configure_IP(struct ip *ip, unsigned char version, unsigned \
 
     ip -> ip_v = version;
     ip -> ip_hl = 5;
+    ip -> ip_id = 0;
+    ip -> ip_off = 0;
     ip -> ip_tos = tos;
     ip -> ip_p = proto;
     ip -> ip_ttl = 255;
@@ -51,8 +53,7 @@ void configure_TCP(struct tcphdr *tcp, unsigned short int source, \
     tcp -> seq = 0;
     tcp -> ack_seq = 0;
     tcp -> res1 = 0;
-    tcp -> check = 0;
-    tcp -> window = 0;
+    tcp -> window = htons(8192);
     
     // Flags
     tcp -> fin = 0;
@@ -75,39 +76,31 @@ void configure_UDP(struct udphdr *udp, unsigned short int source, \
 
 }
 
-int calcCheckSum(void *p) {
-    int i;
-    long int sum = 0;
-    int curVal;
-    int *ptr = (int *)p;
-    printf("First byte is at %#010x\n", ptr);
-
-    // Using null pointer to add all bytes (paired in two using ints)
-    for (i = 0; i < 10; ++i) {
-        // Ignore checksum byte
-        if (i != 5) {
-            sum += *ptr;
+// Calculates IP/TCP/UDP checksums (given length in 2 byte units)
+// Credit goes to Chris Misa for the algorithm
+uint16_t calcCheck(uint8_t *data, int len) {
+    uint32_t sum = 0;
+    while (len > 1) {
+        printf("Adding %#010x\n and %#010x\n together.\n", data[0] << 8, data[1]);
+        sum += (data[0] << 8) + data[1];
+        if (sum & 0x80000000) {
+            printf("Overflow, sum: %#010x will go to %#010x\n", sum, \
+                                        (sum & 0xFFFF) + (sum >> 16));
+            sum = (sum & 0xFFFF) + (sum >> 16);
         }
-        ptr++;
+        len -= 2;
+        data += 2;
     }
 
-    // Calculating length (e.g. 0x532F3 is 5 and 0x32F3 is 4)
-    long int temp = sum;
-    int len = 0;
-    
-    while (temp & 0xFFFFF) {
-        temp >>= 4;
-        len += 1;
+    if (len) {
+        sum += (uint32_t)(data[0]);
     }
 
-    // Calculating Carry (e.g. The carry of 0x532F3 is 5)
-    long int carry = (sum & 0xF0000) >> 4 * (len - 1);
-    sum &= 0xFFFF;
-
-    // Adding Carry back to Sum
-    sum += carry;
-
-    printf("Resulting checksum is %#010x\n", sum);
+    while (sum >> 16) {
+        sum = (sum & 0xFFFF) + (sum >> 16);
+    }
     
-    return sum;
+    printf("Resulting checksum is %#010x\n", ~sum & 0xFFFF);
+
+    return htons(~sum);
 }

@@ -21,5 +21,5 @@ void configure_TCP(struct tcphdr *tcp, unsigned short int source, \
 				   unsigned short int dest);
 void configure_UDP(struct udphdr *udp, unsigned short int source, \
 				   unsigned short int dest);
-int calcCheckSum(void *);
+uint16_t calcCheck(uint8_t *data, int len);
 #endif 

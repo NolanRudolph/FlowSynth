@@ -253,8 +253,8 @@ void send_packet(struct grand_packet packet) {
         }
         printf("\n\n");
     #endif
-    
-    if (sendto(sockfd, &packet.buff, packet.length, 0, \
+        
+    if (sendto(sockfd, packet.buff, packet.length, 0, \
             (struct sockaddr *)&addr, sizeof(struct sockaddr_ll)) < 0) {
             perror("sendto() error");
             exit(EXIT_FAILURE);
