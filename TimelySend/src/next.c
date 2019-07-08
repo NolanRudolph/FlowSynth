@@ -228,7 +228,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             else
                 configure_IP(ip, '6', TOS, IP_source, IP_dest, 1);
             
-            // Configure me later
+            // Set IP length to correct size (fix me when adding payloads)
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct icmp));
             
             // ICMP Configuration
@@ -257,7 +257,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             else
                 configure_IP(ip, '6', TOS, IP_source, IP_dest, 2);
             
-            // Configure me later
+            // Set IP length to correct size (fix me when adding payloads)
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct igmp));
             
             // IGMP Configuration
@@ -286,12 +286,8 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             else
                 configure_IP(ip, '6', TOS, IP_source, IP_dest, 6);
             
-            // Configure me later
+            // Set IP length to correct size (fix me when adding payloads)
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr));
-            
-            // Check needs to be the last IP member evaluated
-            ip -> ip_sum = 0;
-            ip -> ip_sum = calcCheck((uint8_t *)ip, 20);
 
             // TCP Configuration
             configure_TCP(tcp, atoi(source), atoi(dest));
@@ -323,11 +319,15 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             else
                 configure_IP(ip, '6', TOS, IP_source, IP_dest, 17);
             
-            // Configure me later
+            // Set IP length to correct size (fix me when adding payloads)
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr));            
 
             // UDP Configuration
             configure_UDP(udp, atoi(source), atoi(dest));
+            
+            // Check needs to be the last UDP member evaluated
+            // (change this method when involving payloads)
+            udp -> check = 0;
 
             // Adjust length of packet for correct buffer sending
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
@@ -335,6 +335,10 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
 
             break;
     }
+    
+    // Check needs to be the last IP member evaluated
+    ip -> ip_sum = 0;
+    ip -> ip_sum = calcCheck((uint8_t *)ip, 20);
     
     // Setting remainder of grand_packet's attributes
     grand_ret.length = length;
