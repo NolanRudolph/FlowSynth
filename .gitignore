@@ -1,4 +1,8 @@
+# Generalized Ignores
 a.out
 *csv
-*.txt
+notes*
 backup*
+
+# Specefic Ignores
+mustChange.txt
