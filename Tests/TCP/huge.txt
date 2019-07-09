@@ -1,0 +1,10 @@
+Raw Capture: 1526310862.928,1526311163.670,0.220.127.11,67.189.47.108,22,45357,6,10,24,90,962640,1441,1419,65000,7922,
+
+Scapy Source: 
+>>> import random
+>>> bytes_per = 962640/90
+>>> load = bytearray(random.getrandbits(8) for _ in xrange(bytes_per))
+>>> p = Ether(dst="0:9:8:7:6:5",src="0:1:2:3:4:5")/IP(src="0.220.127.11",dst="67.189.47.108",ttl=255,tos=10,id=0)/TCP(sport=22,dport=45357,chksum=0,flags=0)/Raw(load)
+>>> hexdump(p)
+
+Testfile: ~/Documents/UONetflowC/TimelySend/csv/hugeTCP.csv

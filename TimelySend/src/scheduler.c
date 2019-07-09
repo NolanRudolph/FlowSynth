@@ -212,7 +212,7 @@ int add_candidates(double time) {
 }
 
 void send_packet(struct grand_packet packet) {
-    # if 0  // Packet Retrieval Testing
+    # if 0  // Evaluate packet before sending
         printf("\n\n***** SENDING THIS *****\n");
         printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
         printf("Packets left is %d\n", packet.packets_left);
@@ -253,6 +253,12 @@ void send_packet(struct grand_packet packet) {
         }
         printf("\n\n");
     #endif
+    
+    // Accommodate for remainder bytes from total_bytes/total_packets
+    if (packet.packets_left == 1) {        
+        addPayload((uint8_t *)(packet.buff + packet.length), packet.f_bytes);
+        packet.length += packet.f_bytes;
+    }
         
     if (sendto(sockfd, packet.buff, packet.length, 0, \
             (struct sockaddr *)&addr, sizeof(struct sockaddr_ll)) < 0) {

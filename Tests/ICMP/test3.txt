@@ -1,5 +1,0 @@
-Raw Capture: 1526284563.506,1526284861.493,72.5.180.81,0.220.198.238,0,11.0,1,3,0,194,10864,19,1441,3701,65000,
-
-Scapy Source: Ether(dst="0:9:8:7:6:5",src="0:1:2:3:4:5")/IP(src="72.5.180.81",dst="0.220.198.238",ttl=255,tos=3,id=0)/ICMP(type=11,code=0,chksum=0,id=0)
-
-Testfile: ../../TimelySend/csv/icmp3.csv

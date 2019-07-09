@@ -77,8 +77,17 @@ void configure_UDP(struct udphdr *udp, unsigned short int source, \
                             
     udp -> source = htons(source);
     udp -> dest = htons(dest);
-    udp -> len = htons(8); // Change me once constructing real packets
 
+}
+
+void addPayload(uint8_t *ptr, int size) {
+    
+    int i;
+    for (i = 0; i < size; ++i) {
+        *ptr = 0x01;
+        ptr++;
+    }
+    
 }
 
 // Calculates IP/TCP/UDP checksums (given length in 2 byte units)

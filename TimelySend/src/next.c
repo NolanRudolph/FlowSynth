@@ -36,23 +36,23 @@ void begin(char *fname) {
  * unsigned int packets_left  // Maintains how many packets are left to send
  * float d_time               // Delta time between sending packets
  * float cur_time             // Keeps track of current time, added to by d_time
- * unsigned short int length  // Length of all of a packet's contents
+ * unsigned int length        // Length of all of a packet's contents
+ * unsigned int f_bytes       // Final bytes to include in last packet (%)
  * struct grand_packet last   // Previous packet in grand_list for round-robin
  * struct grand_packet next   // Next packet in grand_list used for round-robin
 */
 
-
 // This function is almost identical to get_first(), except that its intentions
 // are to continuously pump out packets using the dataset.
 int get_next(struct grand_packet *placeHere, time_t cur_time) {
+    
     /* Initializing all variables for storing grand_packet attributes */
     int i = 0;
-    
     // Back_track is used for re-reading entries. If a file is read and found
     // to be not compatible with some time window, the back_track is then used
     // to adjust the current file pointer to the beginning of the flow.
     int back_track = 0;
-    int cc = 0; 	  // Comma-Count, method only viable for csv
+    int cc = 0; // Comma-Count, method only viable for csv
     char ch;
     unsigned short int val;
     unsigned short int is_ipv6 = 0;
@@ -60,28 +60,32 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     // IP Attributes
     char IP_source[30];
     char IP_dest[30];
-    char _proto[3];     // 1 <= proto <= 255 : three ints
+    char _proto[3];
     int proto;
 
-    char TOS[3];       // 0 <= TOS <= 255 : 1 int
-    char TCP_flags[2]; // 0 <= TCP_flags <= 31 : 2 ints
+    char TOS[3];
+    char TCP_flags[2];
 
     // ICMP/IGMP Attributes
-    char type[2];     // 0 <= type <= 7 : 1 int
-    unsigned int code;     // 8 <= code <= 15 : 2 ints
-    unsigned short int is_dot = 0;   // Used to tell when to switch from type to code
+    char type[2];
+    unsigned int code;
+    unsigned short int is_dot = 0;
 
     // TCP/UDP Attributes
-    char source[5];   // 0 <= src port <= 65535 : 5 ints
-    char dest[5];     // 0 <= dest port <= 65535 : 5 ints
+    char source[5];
+    char dest[5];
 
     // Packet Sending Attributes
     char start[15];
     char end[15];
-    char packets[10];
-    char bytes[15];
+    char _packets[10];
+    char _bytes[15];
     float d_time;
+    unsigned int packets;
+    unsigned int bytes;
     unsigned int length = 0;
+    unsigned int payloadSize;
+    unsigned int remainder;
 
     // Hard Code Ethernet Hosts
     unsigned char sHost[6] = 
@@ -165,23 +169,30 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                     TCP_flags[++i] = '\0';
                     break;
                 case 9:
-                    packets[i] = ch;
-                    packets[++i] = '\0';
+                    _packets[i] = ch;
+                    _packets[++i] = '\0';
                     break;
                 case 10:
-                    bytes[i] = ch;
-                    bytes[++i] = '\0';
+                    _bytes[i] = ch;
+                    _bytes[++i] = '\0';
                     break;
             }
         }
     } while ((ch = getc(fp)) != '\n');
 
-    // Get int version of proto
+    // Reduce function calls with int variables
     proto = atoi(_proto);
+    packets = atoi(_packets);
+    bytes = atoi(_bytes);
     
     // d_time configuration
     d_time = atof(end) - atof(start);  // Get net time
-    d_time /= atoi(packets);           // Divide that by number of packets
+    d_time /= packets;           // Divide that by number of packets
+    
+    payloadSize = bytes/packets;
+    remainder = bytes%packets;
+    printf("The payload size will be %d\n", payloadSize);
+    printf("With a remainder of %d\n", remainder);
     
     #if 0 // Testing for Assuring Accuracy
     printf("\n*** PACKET DETAILS ***\n\n");
@@ -192,11 +203,11 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     printf("IP_dest is %s\n", IP_dest);
     printf("Source is %d\n", atoi(source));
     printf("Dest is %d\n", atoi(dest));
-    printf("Type may be %d\n", type);
-    printf("Code may be %d\n", atoi(code));
+    printf("Type may be %d\n", atoi(type));
+    printf("Code may be %d\n", code);
     printf("TOS may be %d\n", TOS);
-    printf("Packets is %d\n", atoi(packets));
-    printf("Bytes is %d\n", atoi(bytes));
+    printf("Packets is %d\n", packets);
+    printf("Bytes is %d\n", bytes);
     printf("TCP_flags may be %d\n", atoi(TCP_flags));
     printf("D_time is %f\n\n", d_time);
     #endif
@@ -230,7 +241,8 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                 configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 1);
             
             // Set IP length to correct size (fix me when adding payloads)
-            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct icmphdr));
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct icmphdr) + \
+                                                                payloadSize);
             
             // ICMP Configuration
             configure_ICMP(icmp, atoi(type), code);
@@ -238,6 +250,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             // Check needs to be the last ICMP member evaluated
             // (change this method when involving payloads)
             icmp -> checksum = 0;
+            
+            // Add on a fake payload that mimics the flow data
+            addPayload((uint8_t *)icmp + sizeof(struct icmphdr), payloadSize);
             
             // Adjust length of packet for correct buffer sending
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
@@ -263,7 +278,8 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                 configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 2);
             
             // Set IP length to correct size (fix me when adding payloads)
-            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct igmp));
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct igmp) + \
+                                                                payloadSize);
             
             // IGMP Configuration
             configure_IGMP(igmp, atoi(type), code, IP_dest);
@@ -271,6 +287,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             // Check needs to be the last IGMP member evaluated
             // (change this method when involving payloads)
             igmp -> igmp_cksum = 0;
+            
+            // Add on a fake payload that mimics the flow data
+            addPayload((uint8_t *)igmp + sizeof(struct igmp), payloadSize);
 
             // Adjust length of packet for correct buffer sending
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
@@ -296,7 +315,8 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                 configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 6);
             
             // Set IP length to correct size (fix me when adding payloads)
-            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr));
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr) + \
+                                                                payloadSize);
 
             // TCP Configuration
             configure_TCP(tcp, atoi(source), atoi(dest));
@@ -304,6 +324,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             // Check needs to be the last TCP member evaluated
             // (change this method when involving payloads)
             tcp -> check = 0;
+            
+            // Add on a fake payload that mimics the flow data
+            addPayload((uint8_t *)tcp + sizeof(struct tcphdr), payloadSize);
             
             // Adjust length of packet for correct buffer sending
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
@@ -329,14 +352,19 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                 configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 17);
             
             // Set IP length to correct size (fix me when adding payloads)
-            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr));            
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr) + \
+                                                                payloadSize);            
 
             // UDP Configuration
             configure_UDP(udp, atoi(source), atoi(dest));
+            udp -> len = htons(8 + payloadSize);
             
             // Check needs to be the last UDP member evaluated
             // (change this method when involving payloads)
             udp -> check = 0;
+            
+            // Add on a fake payload that mimics the flow data
+            addPayload((uint8_t *)udp + sizeof(struct udphdr), payloadSize);
 
             // Adjust length of packet for correct buffer sending
             length = sizeof(struct ether_header) + sizeof(struct ip) + \
@@ -349,12 +377,19 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     ip -> ip_sum = 0;
     ip -> ip_sum = calcCheck((uint8_t *)ip, 20);
     
+    // Adjust length to accommodate for payload size
+    length += payloadSize;
+    
     // Setting remainder of grand_packet's attributes
-    grand_ret.length = length;
+    grand_ret.packets_left = packets;
     grand_ret.d_time = d_time;
     grand_ret.cur_time = atof(start) - first_time;
-    grand_ret.packets_left = atoi(packets);
+    grand_ret.length = length;
+    grand_ret.f_bytes = remainder;
+
+    // Lastly, copy over the memory of the grand_packet to position in grand_list
     memcpy(placeHere, &grand_ret, sizeof(struct grand_packet));
     
+    // Return 1 to notify that there are more entries in the dataset
     return 1;
 }

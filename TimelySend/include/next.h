@@ -1,6 +1,6 @@
 #ifndef NEXT_H
 #define NEXT_H
-#define MAXBUF 1024
+#define MAXBUF 2048
 #include <string.h>
 #include <math.h>
 #include "conf.h"
@@ -11,7 +11,8 @@ struct grand_packet
 	unsigned int packets_left;
 	float d_time;
 	double cur_time;
-	unsigned short length;
+	unsigned int length;
+	unsigned int f_bytes;
 	struct grand_packet *last;
 	struct grand_packet *next;
 };

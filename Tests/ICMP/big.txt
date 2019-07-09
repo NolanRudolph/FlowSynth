@@ -1,0 +1,10 @@
+Raw Capture: 1526284564.273,1526284834.344,0.220.226.39,60.247.141.22,0,0.0,1,3,0,90,10412,1441,635,65000,65163,
+
+Scapy Source: 
+>>> import random
+>>> bytes_per = 10412/90
+>>> load = bytearray(random.getrandbits(8) for _ in xrange(bytes_per))
+>>> p = Ether(dst="0:9:8:7:6:5",src="0:1:2:3:4:5")/IP(src="0.220.226.39",dst="60.247.141.22",ttl=255,tos=3,id=0)/ICMP(type=0,code=0,chksum=0,id=0)/Raw(load)
+>>> hexdump(p) 
+
+Testfile: ~/Documents/UONetflowC/TimelySend/csv/bigICMP.csv 

@@ -1,0 +1,10 @@
+Raw Capture: 1526284802.096,1526284802.096,0.220.204.244,224.0.0.22,0,34,2,194,0,1,101,1441,0,0,0,
+
+Scapy Source: 
+>>> import random
+>>> bytes_per = 101
+>>> load = bytearray(random.getrandbits(8) for _ in xrange(bytes_per))
+>>> p = Ether(dst="0:9:8:7:6:5",src="0:1:2:3:4:5")/IP(src="0.220.204.244",dst="224.0.0.22",ttl=255,tos=194,id=0)/IGMP(type=34,mrcode=0,chksum=0,gaddr="224.0.0.22")/Raw(load)
+>>> hexdump(p) 
+
+Testfile: ~/Documents/UONetflowC/TimelySend/csv/medIGMP.csv 

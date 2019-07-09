@@ -1,0 +1,4 @@
+Huge: ~10,000 bytes per packet
+Big: ~1,000 bytes per packet
+Med: ~100 bytes per packet
+Small: ~10 bytes per packet
