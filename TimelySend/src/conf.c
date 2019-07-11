@@ -54,8 +54,8 @@ void configure_TCP(struct tcphdr *tcp, unsigned short int source, \
     
     tcp -> source = htons(source);
     tcp -> dest = htons(dest);
-    tcp -> doff = 5;
     tcp -> seq = 0;
+    tcp -> doff = 5;
     tcp -> ack_seq = 0;
     tcp -> res1 = 0;
     tcp -> window = htons(8192);

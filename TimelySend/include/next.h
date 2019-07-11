@@ -1,6 +1,6 @@
 #ifndef NEXT_H
 #define NEXT_H
-#define MAXBUF 2048
+#define MAXBUF 1600
 #include <string.h>
 #include <math.h>
 #include "conf.h"
