@@ -81,9 +81,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     char _packets[10];
     char _bytes[15];
     float d_time;
-    unsigned int packets;
-    unsigned int bytes;
-    unsigned int length = 0;
+    int packets;
+    int bytes;
+    int length = 0;
     unsigned int payloadSize;
     unsigned int remainder;
 
@@ -189,11 +189,6 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     d_time = atof(end) - atof(start);  // Get net time
     d_time /= packets;           // Divide that by number of packets
     
-    payloadSize = bytes/packets;
-    remainder = bytes%packets;
-    printf("The payload size will be %d\n", payloadSize);
-    printf("With a remainder of %d\n", remainder);
-    
     #if 0 // Testing for Assuring Accuracy
     printf("\n*** PACKET DETAILS ***\n\n");
     printf("Protocol is %d\n", proto);
@@ -240,10 +235,6 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             else
                 configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 1);
             
-            // Set IP length to correct size (fix me when adding payloads)
-            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct icmphdr) + \
-                                                                payloadSize);
-            
             // ICMP Configuration
             configure_ICMP(icmp, atoi(type), code);
             
@@ -251,12 +242,29 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             // (change this method when involving payloads)
             icmp -> checksum = 0;
             
+            // Adjust length of packet for correct buffer sending
+            length = sizeof(struct ip) + sizeof(struct icmphdr);
+            
+            if (bytes/packets - length < 0) {
+                printf("Received bad entry. Payload is negative bytes long.");
+                exit(EXIT_FAILURE);
+            }
+            
+            payloadSize = bytes/packets - length;
+            
+            remainder = bytes % packets;
+            
+            // Set IP length to correct size
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct icmphdr) + \
+                                                                payloadSize);
+            
+            // IMPORTANT: Prior to recording, the Ethernet header had been
+            // stripped. Thus all calculations with length should not have
+            // the Ethernet header involved.
+            length += sizeof(struct ether_header);
+            
             // Add on a fake payload that mimics the flow data
             addPayload((uint8_t *)icmp + sizeof(struct icmphdr), payloadSize);
-            
-            // Adjust length of packet for correct buffer sending
-            length = sizeof(struct ether_header) + sizeof(struct ip) + \
-                    sizeof(struct icmphdr);
 
             break;
 
@@ -277,10 +285,6 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             else
                 configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 2);
             
-            // Set IP length to correct size (fix me when adding payloads)
-            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct igmp) + \
-                                                                payloadSize);
-            
             // IGMP Configuration
             configure_IGMP(igmp, atoi(type), code, IP_dest);
             
@@ -288,12 +292,29 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             // (change this method when involving payloads)
             igmp -> igmp_cksum = 0;
             
+            // Adjust length of packet for correct buffer sending
+            length = sizeof(struct ip) + sizeof(struct igmp);
+            
+            if (bytes/packets - length < 0) {
+                printf("Received bad entry. Payload is negative bytes long.");
+                exit(EXIT_FAILURE);
+            }
+            
+            payloadSize = bytes/packets - length;
+            
+            remainder = bytes % packets;
+            
+            // Set IP length to correct size
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct igmp) + \
+                                                                payloadSize);
+            
+            // IMPORTANT: Prior to recording, the Ethernet header had been
+            // stripped. Thus all calculations with length should not have
+            // the Ethernet header involved.
+            length += sizeof(struct ether_header);
+            
             // Add on a fake payload that mimics the flow data
             addPayload((uint8_t *)igmp + sizeof(struct igmp), payloadSize);
-
-            // Adjust length of packet for correct buffer sending
-            length = sizeof(struct ether_header) + sizeof(struct ip) + \
-                    sizeof(struct igmp);
 
             break;
 
@@ -313,10 +334,6 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                 configure_IP(ip, '4', atoi(TOS), IP_source, IP_dest, 6);
             else
                 configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 6);
-            
-            // Set IP length to correct size (fix me when adding payloads)
-            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr) + \
-                                                                payloadSize);
 
             // TCP Configuration
             configure_TCP(tcp, atoi(source), atoi(dest));
@@ -325,12 +342,29 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             // (change this method when involving payloads)
             tcp -> check = 0;
             
+            // Adjust length of packet for correct buffer sending
+            length = sizeof(struct ip) + sizeof(struct tcphdr);
+            
+            if (bytes/packets - length < 0) {
+                printf("Received bad entry. Payload is negative bytes long.\n");
+                exit(EXIT_FAILURE);
+            }
+            
+            payloadSize = bytes/packets - length;
+            
+            remainder = bytes % packets;
+            
+            // Set IP length to correct size
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr) + \
+                                                                payloadSize);
+            
+            // IMPORTANT: Prior to recording, the Ethernet header had been
+            // stripped. Thus all calculations with length should not have
+            // the Ethernet header involved.
+            length += sizeof(struct ether_header);
+            
             // Add on a fake payload that mimics the flow data
             addPayload((uint8_t *)tcp + sizeof(struct tcphdr), payloadSize);
-            
-            // Adjust length of packet for correct buffer sending
-            length = sizeof(struct ether_header) + sizeof(struct ip) + \
-                    sizeof(struct tcphdr);
             
             break;
 
@@ -349,26 +383,42 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             if (!is_ipv6)
                 configure_IP(ip, '4', atoi(TOS), IP_source, IP_dest, 17);
             else
-                configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 17);
-            
-            // Set IP length to correct size (fix me when adding payloads)
-            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr) + \
-                                                                payloadSize);            
+                configure_IP(ip, '6', atoi(TOS), IP_source, IP_dest, 17);           
 
             // UDP Configuration
             configure_UDP(udp, atoi(source), atoi(dest));
-            udp -> len = htons(8 + payloadSize);
             
             // Check needs to be the last UDP member evaluated
             // (change this method when involving payloads)
             udp -> check = 0;
             
+            // Adjust length of packet for correct buffer sending
+            length = sizeof(struct ip) + sizeof(struct udphdr);
+            
+            // Check to make sure the entry's bytes per packet is viable
+            if (bytes/packets - length < 0) {
+                printf("Received bad entry. Payload is negative bytes long.");
+                exit(EXIT_FAILURE);
+            }
+            
+            payloadSize = bytes/packets - length;
+            
+            remainder = bytes % packets;
+            
+            // Set IP length to correct size
+            ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct udphdr) + \
+                                                                payloadSize); 
+            
+            // Set UDP length to correct size
+            udp -> len = htons(8 + payloadSize);
+            
+            // IMPORTANT: Prior to recording, the Ethernet header had been
+            // stripped. Thus all calculations with length should not have
+            // the Ethernet header involved.
+            length += sizeof(struct ether_header);
+            
             // Add on a fake payload that mimics the flow data
             addPayload((uint8_t *)udp + sizeof(struct udphdr), payloadSize);
-
-            // Adjust length of packet for correct buffer sending
-            length = sizeof(struct ether_header) + sizeof(struct ip) + \
-                    sizeof(struct udphdr);
 
             break;
     }

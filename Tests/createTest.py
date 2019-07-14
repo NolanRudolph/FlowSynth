@@ -10,53 +10,54 @@ from sys import argv
 
 
 def main():
-    print("")
+	if len(argv) != 10:
+		print("Use as: $ python " + argv[0] + " [Duration(s)] [Src IP] [Dst IP] [Src Port] [Dst Port] [Proto] "
+																	+ "[Packet Rate] [Bit Rate] [Output File]\n")
+		exit()
 
-    if len(argv) != 9:
-        print("Use as: $ python " + argv[0] + " [Duration(s)] [Src IP] [Dst IP] [Src Port] [Dst Port] [Proto] "
-                                                                                + "[Packet Rate] [Bit Rate]\n")
-        exit()
+	"""
+	argv[1]: Duration
+	argv[2]: Source IP
+	argv[3]: Destination IP
+	argv[4]: Source Port
+	argv[5]: Destination Port
+	argv[6]: IP Protocol
+	argv[7]: Packet Rate
+	argv[8]: Bit Rate
+	argv[9]: File to write to
+	"""
+	MAX_MTU = 1500
 
-    """
-    argv[1]: Duration
-    argv[2]: Source IP
-    argv[3]: Destination IP
-    argv[4]: Source Port
-    argv[5]: Destination Port
-    argv[6]: IP Protocol
-    argv[7]: Packet Rate
-    argv[8]: Bit Rate
-    argv[9]: Maximum Transmission Unit
-    """
-    MAX_MTU = 1500
+	duration = int(argv[1])
+	src_ip = argv[2]
+	dst_ip = argv[3]
+	src_port = int(argv[4])
+	dst_port = int(argv[5])
+	proto = int(argv[6])
+	p_rate = int(argv[7])
+	b_rate = int(argv[8])
 
-    duration = int(argv[1])
-    src_ip = argv[2]
-    dst_ip = argv[3]
-    src_port = int(argv[4])
-    dst_port = int(argv[5])
-    proto = int(argv[6])
-    p_rate = int(argv[7])
-    b_rate = int(argv[8])
+	total_bytes = calc_bytes(duration, b_rate, p_rate)
+	total_packets = p_rate * duration
 
-    bytes = calc_bytes(b_rate * duration)
-    total_packets = p_rate * duration
+	mtu_test(total_bytes, total_packets, MAX_MTU)
 
-    mtu_test(bytes, total_packets, MAX_MTU)
+	f = open(argv[9], "w+")
+	f.write("0.0,{},{},{},{},{},{},0,0,{},{},0,0,0,0,\n".format(float(duration), src_ip, dst_ip, src_port, dst_port, proto, total_packets, total_bytes))
+	f.close()
 
-    print("Your test CSV line is:")
-    print("0.0,{},{},{},{},{},{},0,0,{},{},0,0,0,0,".format(float(duration), src_ip, dst_ip, src_port, dst_port, proto, total_packets, bytes))
-
-    print("")
-
-    return 0
+	return 0
 
 
-def calc_bytes(bit_rate):
-    if bit_rate % 8 != 0:
-        print("Warning: You'll be losing " + str(bit_rate % 8) + " bits with this [Bit Rate].   (bit_rate % 8 != 0)\n")
+def calc_bytes(duration, bit_rate, pack_per_s):
+	if bit_rate % 8 != 0:
+		print("Warning: You'll be losing " + str(bit_rate % 8) + " bits with this [Bit Rate].   (bit_rate % 8 != 0)\n")
 
-    return int(bit_rate / 8)
+	# Packetizer implictely includes ethernet headers (size 14 bytes)
+	total_ether = pack_per_s * duration * 14
+	net_bytes = (bit_rate / 8) * duration
+
+	return net_bytes - total_ether
 
 
 def mtu_test(total_bytes, total_packets, max_mtu):
