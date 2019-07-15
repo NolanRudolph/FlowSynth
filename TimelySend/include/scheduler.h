@@ -8,7 +8,7 @@
 
 #include "next.h"
 
-void round_robin_init(void);
+void round_robin_init(int interface);
 
 // Main Round Robin Scheduler
 void round_robin(void);

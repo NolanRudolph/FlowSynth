@@ -2,11 +2,53 @@
 
 // Global File Pointer
 FILE *fp;
+unsigned char sHost[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+unsigned char dHost[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 double first_time = -1.0;
 
-void begin(char *fname) {
+void begin(char *fname, unsigned char *src, unsigned char *dst) {
     fp = fopen(fname, "r");
+    
+    int srcLength = 0;
+    int dstLength = 0;
+    int i, j;
+    // Getting size of Ether sHost input and testing for validity
+    for (i = 0; src[i] != '\0' || i == 6; ++i) {
+        ++srcLength;
+    }
+    if (srcLength != 14) {
+        printf("Invalid Ethernet Source\n");
+        exit(EXIT_FAILURE);
+    }
+    // Getting size of Ether dHost input and testing for validity
+    for (i = 0; dst[i] != '\0' || i == 6; ++i) {
+        ++dstLength;
+    }
+    if (dstLength != 14) {
+        printf("Invalid Ethernet Destination\n");
+        exit(EXIT_FAILURE);
+    }
+
+    char twoBuffSrc[2];
+    char twoBuffDst[2];
+    int buffSec;
+    int num;
+    for (i = 0, j = 1; i < 15; ++i) {
+        if ((i + 1) % 3 == 0 && i != 0) {
+            num = 10 * (twoBuffSrc[0] - '0') + (twoBuffSrc[1] - '0');
+            sHost[j] = (char)num;
+            num = 10 * (twoBuffDst[0] - '0') + (twoBuffDst[1] - '0');
+            dHost[j] = (char)num;
+            ++j;
+            buffSec = 0;
+        }
+        else {
+            twoBuffSrc[buffSec] = src[i];
+            twoBuffDst[buffSec] = dst[i];
+            ++buffSec;
+        }
+    }
 }
 
 /*
@@ -87,15 +129,15 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     unsigned int payloadSize;
     unsigned int remainder;
 
-    // Hard Code Ethernet Hosts
-    unsigned char sHost[6] = 
-    {
-            0x00, 0x01, 0x02, 0x03, 0x04, 0x05
-    };
-    unsigned char dHost[6] =
-    {
-            0x00, 0x09, 0x08, 0x07, 0x06, 0x05
-    };    
+//    // Hard Code Ethernet Hosts
+//    unsigned char sHost[6] = 
+//    {
+//            0x00, 0x01, 0x02, 0x03, 0x04, 0x05
+//    };
+//    unsigned char dHost[6] =
+//    {
+//            0x00, 0x09, 0x08, 0x07, 0x06, 0x05
+//    };    
     
     /* Reading from File */
     // Error Handling (No more file left to read)

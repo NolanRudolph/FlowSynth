@@ -17,7 +17,7 @@ struct grand_packet
 	struct grand_packet *next;
 };
 
-void begin(char *fname);
+void begin(char *fname, unsigned char *src, unsigned char *dst);
 
 void stop(void);
 

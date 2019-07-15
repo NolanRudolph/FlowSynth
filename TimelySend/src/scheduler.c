@@ -20,9 +20,10 @@ const char address[] = "127.0.0.1";
 // Address for Socket
 struct sockaddr_ll addr;
 
-void round_robin_init() {
+void round_robin_init(int interface) {
     // Adding socket address attributes
-    addr.sll_ifindex = 1;
+    printf("Interface is %d\n", interface);
+    addr.sll_ifindex = interface;
     addr.sll_halen = ETH_ALEN;
   
     // Creating socket with error handling

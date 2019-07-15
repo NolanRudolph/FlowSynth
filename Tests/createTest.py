@@ -8,11 +8,10 @@ Potential future implementations:
 
 from sys import argv
 
-
 def main():
 	if len(argv) != 10:
 		print("Use as: $ python " + argv[0] + " [Duration(s)] [Src IP] [Dst IP] [Src Port] [Dst Port] [Proto] "
-																	+ "[Packet Rate] [Bit Rate] [Output File]\n")
+																	+ "[Packet Rate] [Bit Rate] [Output File]")
 		exit()
 
 	"""
@@ -51,23 +50,31 @@ def main():
 
 def calc_bytes(duration, bit_rate, pack_per_s):
 	if bit_rate % 8 != 0:
-		print("Warning: You'll be losing " + str(bit_rate % 8) + " bits with this [Bit Rate].   (bit_rate % 8 != 0)\n")
+		print("\033[93mWarning\033[00m: [Bit Rate] is not divisible by 8. Skewered results may occur.")
+
+	if (bit_rate / 8) % pack_per_s != 0:
+		# Remainder finds the fractional part of bytes per second (total_bytes / total_packets)
+		remainder = ((bit_rate / 8.0) / float(pack_per_s)) - int((bit_rate / 8.0) / float(pack_per_s))
+
+		# The missing bits per second will then be this fraction * the packets per second * bit multiplier
+		missing_bytes = int(remainder * pack_per_s * 8)
+		print("\033[93mWarning\033[00m: " + str(missing_bytes) + " bits will be missing per second.   ([Bit Rate] / 8) % [Packet Rate] != 0")
 
 	# Packetizer implictely includes ethernet headers (size 14 bytes)
-	total_ether = pack_per_s * duration * 14
 	net_bytes = (bit_rate / 8) * duration
 
-	return net_bytes - total_ether
 
+
+	return net_bytes
 
 def mtu_test(total_bytes, total_packets, max_mtu):
-    # MTU Check
+	# MTU Check
     if total_bytes / total_packets > max_mtu:
-        print("Bytes per packet exceeds the standard MTU of 1500.")
-        print("Your Bytes/Packet: {}".format(total_bytes / total_packets))
-        print("Try reducing the [Bit Rate], increasing the [Packet Rate], or increasing the [MTU].\n")
-        exit()
+		print("\033[91mError\033[00m: Bytes per packet exceeds the standard MTU of 1500.")
+		print("Your Bytes/Packet: {}".format(total_bytes / total_packets))
+		print("Try reducing the [Bit Rate], increasing the [Packet Rate], or increasing the [MTU].")
+		exit()
 
 
 if __name__ == "__main__":
-    main()
+	main()

@@ -12,19 +12,19 @@
 int main(int argc, char* argv[]) {
 
     // Usage Error Handling
-    if (argc != 2) {
-            printf("Usage: $ ./a.out [FILE]\n");
+    if (argc != 5) {
+            printf("Usage: $ ./a.out [FILE] [Ether sHost] [Ether dHost] [Interface]\n");
             exit(EXIT_FAILURE);
     }	
     
     /* Coordinating with next.c to generate packets based off argv[1] */
     
     // Essentially starting up the module, initializing global variables, etc.
-    begin(argv[1]);  // Relay file to "next.c"
+    begin(argv[1], argv[2], argv[3]);  // Relay file to "next.c"
     
     /* Round Robin Testing */
     // Initialize sockets
-    round_robin_init();
+    round_robin_init(*argv[4] - '0');
     
     // Actual reading of static dataset and outputting packets
     round_robin();
