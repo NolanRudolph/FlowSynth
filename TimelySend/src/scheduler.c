@@ -20,10 +20,29 @@ const char address[] = "127.0.0.1";
 // Address for Socket
 struct sockaddr_ll addr;
 
-void round_robin_init(int interface) {
+void round_robin_init(char *interface) {
+    // Resolving correct interface number given interface name
+    int num_interface = -1;
+    struct ifaddrs *addrs;
+    getifaddrs(&addrs);
+    int i = 0;
+    do {
+        if (strcmp(addrs -> ifa_name, interface)) {
+            num_interface = i;
+            break;
+        }
+        addrs = addrs -> ifa_next;
+        ++i;
+    } while (addrs -> ifa_next != NULL);
+    
+    if (num_interface == -1) {
+        printf("Could not locate a network interface under this name.\n");
+        exit(EXIT_FAILURE);
+    }
+    
     // Adding socket address attributes
-    printf("Interface is %d\n", interface);
-    addr.sll_ifindex = interface;
+    printf("Setting interface to %d\n", num_interface);
+    addr.sll_ifindex = num_interface;
     addr.sll_halen = ETH_ALEN;
   
     // Creating socket with error handling
@@ -90,9 +109,6 @@ int add_candidates(double time) {
         
         size = 1;
         
-        printf("We added first packet with packets_left %d // size is now %d\n", \
-                grand_list[size - 1].packets_left, size);
-        
         # if 1  // Packet Retrieval Testing
             printf("\n\n***** TESTING *****\n");
             printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
@@ -148,9 +164,6 @@ int add_candidates(double time) {
         grand_list[size].last = &grand_list[size - 1];
         
         ++size;
-        
-        printf("We added new packet with packets_left %d // size is now %d\n", \
-                grand_list[size - 1].packets_left, size);
         
         # if 1  // Packet Retrieval Testing
             printf("\n\n***** TESTING *****\n");

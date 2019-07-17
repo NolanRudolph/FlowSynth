@@ -17,7 +17,7 @@ void begin(char *fname, unsigned char *src, unsigned char *dst) {
     for (i = 0; src[i] != '\0' || i == 6; ++i) {
         ++srcLength;
     }
-    if (srcLength != 14) {
+    if (srcLength != 17) {
         printf("Invalid Ethernet Source\n");
         exit(EXIT_FAILURE);
     }
@@ -25,7 +25,7 @@ void begin(char *fname, unsigned char *src, unsigned char *dst) {
     for (i = 0; dst[i] != '\0' || i == 6; ++i) {
         ++dstLength;
     }
-    if (dstLength != 14) {
+    if (dstLength != 17) {
         printf("Invalid Ethernet Destination\n");
         exit(EXIT_FAILURE);
     }
@@ -34,7 +34,7 @@ void begin(char *fname, unsigned char *src, unsigned char *dst) {
     char twoBuffDst[2];
     int buffSec;
     int num;
-    for (i = 0, j = 1; i < 15; ++i) {
+    for (i = 0, j = 0; i < 18; ++i) {
         if ((i + 1) % 3 == 0 && i != 0) {
             num = 10 * (twoBuffSrc[0] - '0') + (twoBuffSrc[1] - '0');
             sHost[j] = (char)num;
