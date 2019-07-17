@@ -4,11 +4,13 @@
 #include <stdlib.h>
 #include <netinet/ether.h>
 #include <netinet/ip.h>
+#include <netinet/in.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/igmp.h>
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 
 void configure_ETHER(struct ether_header *ether, unsigned char *dst, unsigned char *src);
 void configure_IP(struct ip *ip, unsigned char version, unsigned \
