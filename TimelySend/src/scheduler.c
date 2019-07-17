@@ -27,7 +27,7 @@ void round_robin_init(char *interface) {
     getifaddrs(&addrs);
     int i = 0;
     do {
-        if (strcmp(addrs -> ifa_name, interface)) {
+        if (strcmp(addrs -> ifa_name, interface) == 0) {
             num_interface = i;
             break;
         }

@@ -47,8 +47,7 @@ python createTest.py 10 $INFO 10000000 10000000000 $CSV_DIR/test8.csv;
 
 echo "Preparing Node 2..."
 ssh -t $NODE2 "
-cd $TEST_DIR;
-cd get_net_usage;
+cd $TEST_DIR/get_net_usage;
 make &> /dev/null;
 " 2> /dev/null
 
@@ -60,7 +59,7 @@ sudo ./packetize ./csv/test1.csv 00:01:02:03:04:05 00:06:07:08:09:10 eno1d1;
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 1 1000;
+python evalMace.py 10 1 1000 eno1d1;
 " 
 
 

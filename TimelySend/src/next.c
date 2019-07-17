@@ -32,7 +32,7 @@ void begin(char *fname, unsigned char *src, unsigned char *dst) {
 
     char twoBuffSrc[2];
     char twoBuffDst[2];
-    int buffSec;
+    int buffSec = 0;
     int num;
     for (i = 0, j = 0; i < 18; ++i) {
         if ((i + 1) % 3 == 0 && i != 0) {
