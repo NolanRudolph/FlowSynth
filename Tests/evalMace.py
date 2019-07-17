@@ -3,15 +3,16 @@ import subprocess
 from sys import argv
 
 def main():
-	if len(argv) != 4:
-		print("Please use as $ " + argv[0] + " [Duration] [Packet Rate] [Bit Rate]")
+	if len(argv) != 5:
+		print("Please use as $ " + argv[0] + " [Duration] [Packet Rate] [Bit Rate] [Interface]")
 		exit()
 
 	duration = float(argv[1]) # -3 because we neglect first and last two recordings
 	packet_rate = int(argv[2])
 	bit_rate = int(argv[3])
+	interface = argv[4]
 
-	lines = subprocess.check_output(["./get_net_usage/get_net_usage", "lo", \
+	lines = subprocess.check_output(["./get_net_usage/get_net_usage", interface, \
 									 "-t", "1", "-X", "2"])
 	lines = lines.strip().split("\n")
 	
