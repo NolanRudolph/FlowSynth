@@ -31,14 +31,19 @@ CSV_DIR="~/UONetflowC/TimelySend/csv"
 
 ssh -t $NODE1 "
 cd $MAKE_DIR;
-make;
+echo "Node 1: Using Makefile."
+make &> /dev/null;
+mkdir csv;
 cd $TEST_DIR;
+echo "Node 1: Generating Test Cases."
 python createTest.py 20 $INFO 1 1000 $CSV_DIR/test1.csv;
 python createTest.py 20 $INFO 10 10000 $CSV_DIR/test2.csv;
 python createTest.py 20 $INFO 100 100000 $CSV_DIR/test3.csv;
 python createTest.py 20 $INFO 1000 1000000 $CSV_DIR/test4.csv;
+python createTest.py 20 $INFO 10000 10000000 $CSV_DIR/test5.csv;
+python createTest.py 20 $INFO 100000 100000000 $CSV_DIR/test6.csv;
+python createTest.py 20 $INFO 1000000 1000000000 $CSV_DIR/test7.csv;
+python createTest.py 20 $INFO 10000000 10000000000 $CSV_DIR/test8.csv;
 " 2> /dev/null
-
-echo $(ssh $NODE1 cat ./UONetflowC/TimelySend/csv/test3.csv)
 
 
