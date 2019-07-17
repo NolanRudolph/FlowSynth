@@ -25,7 +25,7 @@ void round_robin_init(char *interface) {
     int num_interface = -1;
     struct ifaddrs *addrs;
     getifaddrs(&addrs);
-    int i = 0;
+    int i = 1;
     do {
         if (strcmp(addrs -> ifa_name, interface) == 0) {
             num_interface = i;
