@@ -104,7 +104,6 @@ D_ETHER=${ETHERS[$I_D_ETHER]:0:17}
 
 echo "Evaluating Test 1 ~ Packet Rate: 1 | Bit Rate: 1000"
 
-
 ssh $NODE1 "
 cd $MAKE_DIR;
 sudo ./packetize ./csv/test1.csv $S_ETHER $D_ETHER eno1d1;
@@ -114,4 +113,81 @@ ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 1 1000 eno1d1;
 "
- 
+
+
+echo "Evaluating Test 2 ~ Packet Rate: 10 | Bit Rate: 10,000"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test2.csv $S_ETHER $D_ETHER eno1d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 10 10000 eno1d1;
+"
+
+
+echo "Evaluating Test 3 ~ Packet Rate: 100 | Bit Rate: 100,000"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test3.csv $S_ETHER $D_ETHER eno1d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 100 100000 eno1d1;
+"
+
+
+echo "Evaluating Test 4 ~ Packet Rate: 1000 | Bit Rate: 1,000,000"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test4.csv $S_ETHER $D_ETHER eno1d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 10000 10000000 eno1d1;
+"
+
+
+echo "Evaluating Test 5 ~ Packet Rate: 100,000 | Bit Rate: 100,000,000"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test5.csv $S_ETHER $D_ETHER eno1d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 100000 100000000 eno1d1;
+"
+
+
+echo "Evaluating Test 6 ~ Packet Rate: 1,000,000 | Bit Rate: 1,000,000,000"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test6.csv $S_ETHER $D_ETHER eno1d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 1000000 1000000000 eno1d1;
+"
+
+
+echo "Evaluating Test 7 ~ Packet Rate: 10,000,000 | Bit Rate: 10,000,000,000"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test7.csv $S_ETHER $D_ETHER eno1d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 100000000 1 10000000000 eno1d1;
+" 

@@ -41,7 +41,6 @@ void round_robin_init(char *interface) {
     }
     
     // Adding socket address attributes
-    printf("Setting interface to %d\n", num_interface);
     addr.sll_ifindex = num_interface;
     addr.sll_halen = ETH_ALEN;
   
@@ -90,7 +89,6 @@ void round_robin() {
     }
 
     close(sockfd);
-    printf("Done\n");
 }
 
 int add_candidates(double time) {
@@ -217,7 +215,6 @@ int add_candidates(double time) {
     
     // If we have reached EOF, this function shouldn't be called anymore
     if (res == -1) {
-        printf("Reached EOF at size %d\n", size);
         return 0;
     }
     else
