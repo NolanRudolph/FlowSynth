@@ -108,8 +108,8 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     char _packets[10];
     char _bytes[15];
     float d_time;
-    int packets;
-    int bytes;
+    uint32_t packets;
+    uint32_t bytes;
     int length = 0;
     unsigned int payloadSize;
     unsigned int remainder;
