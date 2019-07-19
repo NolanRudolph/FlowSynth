@@ -52,13 +52,9 @@ def calc_bytes(duration, bit_rate, pack_per_s):
 	if bit_rate % 8 != 0:
 		print("\033[93mWarning\033[00m: [Bit Rate] is not divisible by 8. Skewered results may occur.")
 
-	# Total Bits of Ethernet Headers
-	ether = pack_per_s * 14 * 8
-
-	if ((bit_rate - ether) / 8) % pack_per_s != 0:
+	if (bit_rate / 8) % pack_per_s != 0:
 		# Remainder finds the fractional part of bytes per second (total_bytes / total_packets)
-		remainder = (((bit_rate - ether) / 8.0) / float(pack_per_s)) - \
-					   int(((bit_rate - ether) / 8.0) / float(pack_per_s))
+		remainder = ((bit_rate / 8.0) / float(pack_per_s)) - int((bit_rate / 8.0) / float(pack_per_s))
 
 		# The missing bits per second will then be this fraction * the packets per second * bit multiplier
 		missing_bytes = int(remainder * pack_per_s * 8)

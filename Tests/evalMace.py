@@ -24,7 +24,7 @@ def main():
 	- lines[-2] is sometimes inaccurate being the last entry
 	- lines[-3] & lines[-4] are used to track zero traffic to stop the program
 	"""
-	lines = lines[2:-4]
+	lines = lines[2:9]
 
 	pack_rate_av = 0.0
 	bit_rate_av = 0.0
