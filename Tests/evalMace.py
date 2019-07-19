@@ -30,8 +30,6 @@ def main():
 	bit_rate_av = 0.0
 	for line in lines:
 		line = line.split(" ")
-		print("Packet rate is " + line[4])
-		print("Bit rate is " + line[2])
 		pack_rate_av += float(line[4])
 		bit_rate_av += float(line[2])
 

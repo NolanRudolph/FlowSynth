@@ -108,7 +108,7 @@ int add_candidates(double time) {
         
         size = 1;
         
-        # if 1  // Packet Retrieval Testing
+        # if 0  // Packet Retrieval Testing
             printf("\n\n***** TESTING *****\n");
             printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
             printf("Packets left is %d\n", grand_list[0].packets_left);
@@ -164,7 +164,7 @@ int add_candidates(double time) {
         
         ++size;
         
-        # if 1  // Packet Retrieval Testing
+        # if 0  // Packet Retrieval Testing
             printf("\n\n***** TESTING *****\n");
             printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
             printf("Packets left is %d\n", grand_list[size - 1].packets_left);

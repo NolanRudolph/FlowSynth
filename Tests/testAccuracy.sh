@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 ARGC=$#
 
 # Argument Validation
@@ -7,6 +8,7 @@ if [ $ARGC -ne 2 ]; then
 	echo "Please use as $ ./$0 [Node 1 Addr] [Node 2 Addr]"
 	exit 1;
 fi
+
 
 NODE1=$1
 NODE2=$2
@@ -19,10 +21,12 @@ else
 	exit 1;
 fi
 
+
 # Node1 will be the issuer, Node 2 will be the listener
 # Node Setups
 printf "Node 1: "; ssh $NODE1 git clone https://github.com/NolanRudolph/UONetflowC
 printf "Node 2: "; ssh $NODE2 git clone https://github.com/NolanRudolph/UONetflowC
+
 
 INFO="127.0.0.1 127.0.0.2 443 57192 6"
 TEST_DIR="~/UONetflowC/Tests"
@@ -45,6 +49,7 @@ python createTest.py 10 $INFO 1000000 1000000000 $CSV_DIR/test7.csv;
 python createTest.py 10 $INFO 10000000 10000000000 $CSV_DIR/test8.csv;
 " 2> /dev/null
 
+
 echo "Preparing Node 2..."
 ssh -t $NODE2 "
 cd $TEST_DIR/get_net_usage;
@@ -52,15 +57,63 @@ make &> /dev/null;
 " 2> /dev/null
 
 
+echo "Resolving MAC Addresses."
+IF="eno1d1"
+
+P="[0-9a-fA-F]{2}"
+# Source Ethernet
+ETHERS=($(ssh $NODE1 ip a | egrep -o "$P:$P:$P:$P:$P:$P"))
+
+i=0
+I_S_ETHER=-1
+for iface in $(ssh $NODE1 ip a | cut -d ' ' -f2 | tr -d ':'); do
+        echo "iface is $iface"
+		if [ $IF == $iface ]; then
+            I_S_ETHER=$[$i * 2]
+			break
+        fi
+        ((++i))
+done
+
+if [ $I_S_ETHER -eq -1 ]; then
+	echo "Could not resolve Ethernet for interface $IF on Node 1."
+	exit 1;
+fi
+
+S_ETHER=${ETHERS[$I_S_ETHER]:0:17}
+
+# Destination Ethernet
+ETHERS=($(ssh $NODE2 ip a | egrep -o "$P:$P:$P:$P:$P:$P"))
+
+i=0
+I_D_ETHER=-1
+for iface in $(ssh $NODE2 ip a | cut -d ' ' -f2 | tr -d ':'); do
+        echo "iface is $iface"
+        if [ $IF == $iface ]; then
+            I_D_ETHER=$[$i * 2]
+            break
+        fi
+        ((++i))
+done
+
+if [ $I_D_ETHER -eq -1 ]; then
+    echo "Could not resolve Ethernet for interface $IF on Node 2."
+    exit 1;
+fi
+
+D_ETHER=${ETHERS[$I_D_ETHER]:0:17}
+
+
 echo "Evaluating Test 1 ~ Packet Rate: 1 | Bit Rate: 1000"
+
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test1.csv $S_ETHER $D_ETHER eno1d1;
+" & 
 
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 1 1000 eno1d1;
-" &
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test1.csv 00:01:02:03:04:05 00:06:07:08:09:10 eno1d1;
-" 
-
+"
+ 
