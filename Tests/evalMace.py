@@ -24,24 +24,29 @@ def main():
 	- lines[-2] is sometimes inaccurate being the last entry
 	- lines[-3] & lines[-4] are used to track zero traffic to stop the program
 	"""
-	lines = lines[2:9]
+	lines = lines[3:8]
 
 	pack_rate_av = 0.0
 	bit_rate_av = 0.0
 	for line in lines:
 		line = line.split(" ")
+		print("Got packet rate of %s" % str(line[4]))
+		print("Got bit rate of %s" % str(line[2]))
 		pack_rate_av += float(line[4])
 		bit_rate_av += float(line[2])
 
 	# Adjust Duration
+	print("subtracting %s from duration" % str(duration - len(lines)))
 	duration -= (duration - len(lines))
+	print("Duration is now %s" % str(duration))
 
 	# Removing Ethernet
 	total_ether = packet_rate * duration * 14 * 8
 	bit_rate_av -= total_ether
 
 	# Post recording calculations
-	duration -= (duration - len(lines))  # Compensates for lines[2:-4]
+	print("Bit rate total is %s", str(bit_rate_av))
+	print("Pack rate total is %s", str(pack_rate_av))
 	pack_rate_av /= duration
 	bit_rate_av /= duration
 	
