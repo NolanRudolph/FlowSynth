@@ -40,12 +40,12 @@ def main():
 	
 	print("Expected Packet Rate: {} | Actual Packet Rate: {}"\
 		  .format(packet_rate, str(pack_rate_av)))
-	print("Difference: {} | Accuracy: {0:.2f}%"\
-		  .format(packet_rate - pack_rate_av, (pack_rate_av / packet_rate) * 100))
+	print("Difference: {} | Accuracy: {}%".format\
+		(round(packet_rate - pack_rate_av, 2), round((pack_rate_av / packet_rate) * 100,2))
 	print("Expected Bit Rate: {} | Actual Bit Rate: {}"\
 		  .format(bit_rate, bit_rate_av))
-	print("Difference: {} | Accuracy: {0:.2f}%"\
-		  .format(bit_rate - bit_rate_av, (bit_rate_av / bit_rate) * 100))
+	print("Difference: {} | Accuracy: {0:.2f}%".format\
+		(round(bit_rate - bit_rate_av, 2), round((bit_rate_av / bit_rate) * 100, 2))
 
 if __name__ == "__main__":
 	main()
