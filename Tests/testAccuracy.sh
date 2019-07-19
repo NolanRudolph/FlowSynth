@@ -51,16 +51,16 @@ cd $TEST_DIR/get_net_usage;
 make &> /dev/null;
 " 2> /dev/null
 
+
 echo "Evaluating Test 1 ~ Packet Rate: 1 | Bit Rate: 1000"
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test1.csv 00:01:02:03:04:05 00:06:07:08:09:10 eno1d1;
-" &
 
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 1 1000 eno1d1;
+" &
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test1.csv 00:01:02:03:04:05 00:06:07:08:09:10 eno1d1;
 " 
-
-
 

@@ -29,26 +29,11 @@ void begin(char *fname, unsigned char *src, unsigned char *dst) {
         printf("Invalid Ethernet Destination\n");
         exit(EXIT_FAILURE);
     }
-
-    char twoBuffSrc[2];
-    char twoBuffDst[2];
-    int buffSec = 0;
-    int num;
-    for (i = 0, j = 0; i < 18; ++i) {
-        if ((i + 1) % 3 == 0 && i != 0) {
-            num = 10 * (twoBuffSrc[0] - '0') + (twoBuffSrc[1] - '0');
-            sHost[j] = (char)num;
-            num = 10 * (twoBuffDst[0] - '0') + (twoBuffDst[1] - '0');
-            dHost[j] = (char)num;
-            ++j;
-            buffSec = 0;
-        }
-        else {
-            twoBuffSrc[buffSec] = src[i];
-            twoBuffDst[buffSec] = dst[i];
-            ++buffSec;
-        }
-    }
+	
+	sscanf(src, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &sHost[0], &sHost[1], &sHost[2], &sHost[3],
+                                                 &sHost[4], &sHost[5]);
+    sscanf(dst, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &dHost[0], &dHost[1], &dHost[2], &dHost[3],
+                                                 &dHost[4], &dHost[5]);
 }
 
 /*

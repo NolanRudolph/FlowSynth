@@ -64,7 +64,6 @@ void round_robin() {
         for (i = 0; size != 0 && i < size; ++i) {
             if (temp -> cur_time <= now) {
                 // Sending packet & Adjusting packet attributes
-                printf("Sending packet %d\n", i);
                 send_packet(*temp);
                 temp -> packets_left -= 1;
                 temp -> cur_time += temp -> d_time;
