@@ -30,23 +30,17 @@ def main():
 	bit_rate_av = 0.0
 	for line in lines:
 		line = line.split(" ")
-		print("Got packet rate of %s" % str(line[4]))
-		print("Got bit rate of %s" % str(line[2]))
 		pack_rate_av += float(line[4])
 		bit_rate_av += float(line[2])
 
 	# Adjust Duration
-	print("subtracting %s from duration" % str(duration - len(lines)))
 	duration -= (duration - len(lines))
-	print("Duration is now %s" % str(duration))
 
 	# Removing Ethernet
 	total_ether = packet_rate * duration * 14 * 8
 	bit_rate_av -= total_ether
 
 	# Post recording calculations
-	print("Bit rate total is %s", str(bit_rate_av))
-	print("Pack rate total is %s", str(pack_rate_av))
 	pack_rate_av /= duration
 	bit_rate_av /= duration
 	
