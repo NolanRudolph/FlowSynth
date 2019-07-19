@@ -38,7 +38,7 @@ def main():
 
 	# Removing Ethernet
 	total_ether = packet_rate * duration * 14 * 8
-	pack_rate_av -= total_ether
+	bit_rate_av -= total_ether
 
 	# Post recording calculations
 	duration -= (duration - len(lines))  # Compensates for lines[2:-4]
