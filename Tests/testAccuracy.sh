@@ -67,7 +67,6 @@ ETHERS=($(ssh $NODE1 ip a | egrep -o "$P:$P:$P:$P:$P:$P"))
 i=0
 I_S_ETHER=-1
 for iface in $(ssh $NODE1 ip a | cut -d ' ' -f2 | tr -d ':'); do
-        echo "iface is $iface"
 		if [ $IF == $iface ]; then
             I_S_ETHER=$[$i * 2]
 			break
@@ -88,7 +87,6 @@ ETHERS=($(ssh $NODE2 ip a | egrep -o "$P:$P:$P:$P:$P:$P"))
 i=0
 I_D_ETHER=-1
 for iface in $(ssh $NODE2 ip a | cut -d ' ' -f2 | tr -d ':'); do
-        echo "iface is $iface"
         if [ $IF == $iface ]; then
             I_D_ETHER=$[$i * 2]
             break
