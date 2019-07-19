@@ -12,8 +12,6 @@ def main():
 	bit_rate = int(argv[3])
 	interface = argv[4]
 
-	total_ether = packet_rate * duration * 14 * 8
-
 	lines = subprocess.check_output(["./get_net_usage/get_net_usage", interface, \
 									 "-t", "1", "-X", "2"])
 	lines = lines.strip().split("\n")
@@ -35,7 +33,11 @@ def main():
 		pack_rate_av += float(line[4])
 		bit_rate_av += float(line[2])
 
+	# Adjust Duration
+	duration -= (duration - len(lines))
+
 	# Removing Ethernet
+	total_ether = packet_rate * duration * 14 * 8
 	pack_rate_av -= total_ether
 
 	# Post recording calculations
