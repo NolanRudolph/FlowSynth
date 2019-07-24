@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -I./include
+CFLAGS=-g -O2 -I./include
 
 all: packetize
 
