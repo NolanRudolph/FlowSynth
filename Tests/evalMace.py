@@ -12,8 +12,7 @@ def main():
 	bit_rate = int(argv[3])
 	interface = argv[4]
 
-	lines = subprocess.check_output(["./get_net_usage/get_net_usage", interface, \
-									 "-t", "1", "-X", "2"])
+	lines = subprocess.check_output(["./get_net_usage/get_net_usage", interface, "-t", "1", "-X", "2"])
 	lines = lines.strip().split("\n")
 	
 	"""

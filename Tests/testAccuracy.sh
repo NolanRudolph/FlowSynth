@@ -21,7 +21,6 @@ else
 	exit 1;
 fi
 
-
 # Node1 will be the issuer, Node 2 will be the listener
 # Node Setups
 printf "Node 1: "; ssh $NODE1 git clone https://github.com/NolanRudolph/UONetflowC
@@ -61,7 +60,7 @@ make &> /dev/null;
 
 
 echo "Resolving MAC Addresses."
-IF="eno1d1"
+IF="enp1s0d1"
 
 P="[0-9a-fA-F]{2}"
 # Source Ethernet
@@ -109,12 +108,12 @@ printf "\nEvaluating Test 1 ~ Packet Rate: 5 | Bit Rate: 6,000\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test1.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test1.csv $S_ETHER $D_ETHER enp1s0d1;
 " & 
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 5 6000 eno1d1;
+python evalMace.py 10 5 6000 enp1s0d1;
 "
 
 
@@ -122,12 +121,12 @@ printf "\nEvaluating Test 2 ~ Packet Rate: 50 | Bit Rate: 18,400\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test2.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test2.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 50 18400 eno1d1;
+python evalMace.py 10 50 18400 enp1s0d1;
 "
 
 
@@ -135,12 +134,12 @@ printf "\nEvaluating Test 3 ~ Packet Rate: 250 | Bit Rate: 140,000\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test3.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test3.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 250 140000 eno1d1;
+python evalMace.py 10 250 140000 enp1s0d1;
 "
 
 
@@ -148,12 +147,12 @@ printf "\nEvaluating Test 4 ~ Packet Rate: 500 | Bit Rate: 736,000\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test4.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test4.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 500 736000 eno1d1;
+python evalMace.py 10 500 736000 enp1s0d1;
 "
 
 
@@ -161,24 +160,24 @@ printf "\nEvaluating Test 5 ~ Packet Rate: 2,500 | Bit Rate: 1,400,000\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test5.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test5.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 2500 1400000 eno1d1;
+python evalMace.py 10 2500 1400000 enp1s0d1;
 "
 
 printf "\nEvaluating Test 6 ~ Packet Rate: 5,000 | Bit Rate: 7,360,000\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test6.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test6.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 5000 7360000 eno1d1;
+python evalMace.py 10 5000 7360000 enp1s0d1;
 "
 
 
@@ -186,12 +185,12 @@ printf "\nEvaluating Test 7 ~ Packet Rate: 25,000 | Bit Rate: 14,000,000\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test7.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test7.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 25000 14000000 eno1d1;
+python evalMace.py 10 25000 14000000 enp1s0d1;
 "
 
 
@@ -199,12 +198,12 @@ printf "\nEvaluating Test 8 ~ Packet Rate: 50,000 | Bit Rate: 73,600,000\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test8.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test8.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 50000 73600000 eno1d1;
+python evalMace.py 10 50000 73600000 enp1s0d1;
 "
 
 
@@ -212,12 +211,12 @@ printf "\nEvaluating Test 9 ~ Packet Rate: 12,500 | Bit Rate: 100,000,000\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test9.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test9.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 12500 100000000 eno1d1;
+python evalMace.py 10 12500 100000000 enp1s0d1;
 "
 
 printf "\n\nThis is where it gets interesting. Bit Rate cannot exceed 100,000,000?\n\n"
@@ -226,12 +225,12 @@ printf "\nEvaluating Test 10 ~ Packet Rate: 12,500 | Bit Rate: 120,000,000\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test10.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test10.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 12500 120000000 eno1d1;
+python evalMace.py 10 12500 120000000 enp1s0d1;
 "
 
 
@@ -239,10 +238,10 @@ printf "\nEvaluating Test 11 ~ Packet Rate: 25,000 | Bit Rate: 140,000,000\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test11.csv $S_ETHER $D_ETHER eno1d1;
+sudo ./packetize ./csv/test11.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
-python evalMace.py 10 25000 140000000 eno1d1;
+python evalMace.py 10 25000 140000000 enp1s0d1;
 "
