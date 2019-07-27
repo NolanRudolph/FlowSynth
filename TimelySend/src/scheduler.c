@@ -61,17 +61,19 @@ void round_robin() {
     int i;    
     while (size != 0 || response) {
         for (i = 0; size != 0 && i < size; ++i) {
-            if (temp -> cur_time <= now) {
+            while (temp -> cur_time < now) {
                 // Sending Packet
-				if (sendto(sockfd, temp -> buff, temp -> length, 0, \
-				   (struct sockaddr *)&addr, sizeof(struct sockaddr_ll)) < 0) {
-					perror("sendto() error");
-					exit(EXIT_FAILURE);
-				}
+                printf("Sending packet.\n");
+                if (sendto(sockfd, temp -> buff, temp -> length, 0, \
+                   (struct sockaddr *)&addr, sizeof(struct sockaddr_ll)) < 0) {
+                        perror("sendto() error");
+                        exit(EXIT_FAILURE);
+                }
 
-				// Adjusting Packet Attributes
-				temp -> packets_left -= 1;
+                // Adjusting Packet Attributes
+                temp -> packets_left -= 1;
                 temp -> cur_time += temp -> d_time;
+                printf("My new time is %f\n", temp -> cur_time);
             
                 // If the packet has no packets left, delete it
                 if (temp -> packets_left == 0) {
@@ -80,11 +82,8 @@ void round_robin() {
                     temp = temp -> next;
                     size -= 1;
                 }
-                else
-                    temp = temp -> next;
             }
-            else
-                temp = temp -> next;
+            temp = temp -> next;
         }
         
         now = time(NULL) - start;
@@ -111,45 +110,6 @@ int add_candidates(double time) {
         grand_list[0].last = &grand_list[0];
         
         size = 1;
-        
-        # if 0  // Packet Retrieval Testing
-            printf("\n\n***** TESTING *****\n");
-            printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
-            printf("Packets left is %d\n", grand_list[0].packets_left);
-            printf("Current time is %lf\n", grand_list[0].cur_time);
-            
-            printf("\n*** ETHERNET ATTRIBUTES ***\n");
-            struct ether_header *ether = (struct ether_header *)(grand_list[0].buff);
-            printf("Ether dest is ");
-            int i;
-            for (i = 0; i < 6; ++i) {
-                printf("%u", ether -> ether_shost[i]);
-            }
-            printf("\n");
-            printf("Ether host is ");
-            for (i = 0; i < 6; ++i) {
-                printf("%u", ether -> ether_dhost[i]);
-            }
-            printf("\n");
-            
-            printf("\n*** IP ATTRIBUTES ***\n");
-            struct ip *ip = (struct ip *)(grand_list[0].buff + sizeof(struct ether_header));
-            printf("IP protocol is %hu\n", ip -> ip_p);
-            printf("IP TTL is %hu\n", ip -> ip_ttl);
-            printf("IP's Header Length is %hu\n", ip -> ip_hl);
-            printf("IP's Total Length is %hu\n", ntohs(ip -> ip_len));
-            printf("IP's Checksum is %hu\n", ntohs(ip -> ip_sum));
-
-            printf("\n*** TCP ATTRIBUTES ***\n");
-            struct tcphdr *tcp = (struct tcphdr *)(grand_list[0].buff + \
-                                   sizeof(struct ether_header) + sizeof(struct ip));
-            printf("TCP source is %d\n", ntohs(tcp -> source));
-            printf("TCP dest is %d\n", ntohs(tcp -> dest));
-            printf("TCP offset is %d\n", tcp -> doff);
-            printf("TCP checksum is %d\n", tcp -> check);
-
-            printf("\n\n");
-        #endif
     }
     
     // While loop because many packets will come in at each second
@@ -159,65 +119,17 @@ int add_candidates(double time) {
         if (res == -1)
             break;
         
-        // For completing circles
-        change = 1;
-        
         // Link packets together for round-robin scheduler
         grand_list[size - 1].next = &grand_list[size];
         grand_list[size].last = &grand_list[size - 1];
         
         ++size;
-        
-        # if 0  // Packet Retrieval Testing
-            printf("\n\n***** TESTING *****\n");
-            printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
-            printf("Packets left is %d\n", grand_list[size - 1].packets_left);
-            printf("Current time is %lf\n", grand_list[size - 1].cur_time);
-            
-            printf("\n*** ETHERNET ATTRIBUTES ***\n");
-            struct ether_header *ether = (struct ether_header *)\
-                                        (grand_list[size - 1].buff);
-            printf("Ether dest is ");
-            int i;
-            for (i = 0; i < 6; ++i) {
-                printf("%u", ether -> ether_shost[i]);
-            }
-            printf("\n");
-            printf("Ether host is ");
-            for (i = 0; i < 6; ++i) {
-                printf("%u", ether -> ether_dhost[i]);
-            }
-            printf("\n");
-            
-            printf("\n*** IP ATTRIBUTES ***\n");
-            struct ip *ip = (struct ip *)(grand_list[size - 1].buff + \
-                            sizeof(struct ether_header));
-            printf("IP protocol is %hu\n", ip -> ip_p);
-            printf("IP TTL is %hu\n", ip -> ip_ttl);
-            printf("IP's Header Length is %hu\n", ip -> ip_hl);
-            printf("IP's Total Length is %hu\n", ntohs(ip -> ip_len));
-            printf("IP's Checksum is %hu\n", ntohs(ip -> ip_sum));
-
-
-            if (ip -> ip_p == 6) {
-                printf("\n*** TCP ATTRIBUTES ***\n");
-                struct tcphdr *tcp = (struct tcphdr *)(grand_list[size - 1].buff + \
-                                       sizeof(struct ether_header) + sizeof(struct ip));
-                printf("TCP source is %d\n", ntohs(tcp -> source));
-                printf("TCP dest is %d\n", ntohs(tcp -> dest));
-                printf("TCP offset is %d\n", tcp -> doff);
-                printf("TCP checksum is %d\n", tcp -> check);
-            }
-            printf("\n\n");
-        #endif
     }
-    
-    if (change) {
-        // Complete the circle for round-robin scheduler
-        grand_list[size - 1].next = &grand_list[0];
-        grand_list[0].last = &grand_list[size - 1];
-        
-    }
+
+    // Complete round robin circle
+    grand_list[size - 1].next = &grand_list[0];
+    grand_list[0].last = &grand_list[size - 1];
+
     
     // If we have reached EOF, this function shouldn't be called anymore
     if (res == -1) {

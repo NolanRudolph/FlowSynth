@@ -4,6 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include "conf.h"
+#include <unistd.h>
 
 struct grand_packet
 {

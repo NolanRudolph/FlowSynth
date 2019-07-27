@@ -8,6 +8,11 @@ unsigned char dHost[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 double first_time = -1.0;
 
 void begin(char *fname, unsigned char *src, unsigned char *dst) {
+    // Error Checking -- Does file exist?
+    if (access(fname, F_OK) == -1) {
+        printf("File %s does not exist.\n", fname);
+        exit(EXIT_FAILURE);
+    }
     fp = fopen(fname, "r");
     
     int srcLength = 0;
