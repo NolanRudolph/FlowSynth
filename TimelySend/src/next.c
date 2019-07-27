@@ -30,7 +30,7 @@ void begin(char *fname, unsigned char *src, unsigned char *dst) {
         exit(EXIT_FAILURE);
     }
 	
-	sscanf(src, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &sHost[0], &sHost[1], &sHost[2], &sHost[3],
+    sscanf(src, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &sHost[0], &sHost[1], &sHost[2], &sHost[3],
                                                  &sHost[4], &sHost[5]);
     sscanf(dst, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &dHost[0], &dHost[1], &dHost[2], &dHost[3],
                                                  &dHost[4], &dHost[5]);
@@ -126,7 +126,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     
     /* Reading from File */
     // Error Handling (No more file left to read)
-    while ((ch = getc(fp)) != '\n' && ch != EOF) {
+    while ((ch = getc(fp)) != '\n' && ch != EOF && (int)ch != 255) {
         if (ch == ',') {
             i = 0;
             ++cc;               // Found comma, moving onto next section
@@ -465,7 +465,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     memcpy(placeHere, &grand_ret, sizeof(struct grand_packet));
     
     // Return 1 to notify that there are more entries in the dataset
-    if (ch == EOF)
+    if (ch == EOF || (int)ch == 255)
 		return -1;
 	else
 		return 1;
