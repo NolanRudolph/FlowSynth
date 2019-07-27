@@ -126,10 +126,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     
     /* Reading from File */
     // Error Handling (No more file left to read)
-    if ((ch = getc(fp)) == EOF) {
-        return -1;
-    }
-    do {
+    while ((ch = getc(fp)) != '\n' && ch != EOF) {
         if (ch == ',') {
             i = 0;
             ++cc;               // Found comma, moving onto next section
@@ -205,7 +202,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
                     break;
             }
         }
-    } while ((ch = getc(fp)) != '\n');
+    }
 
     // Reduce function calls with int variables
     proto = atoi(_proto);
@@ -468,5 +465,8 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     memcpy(placeHere, &grand_ret, sizeof(struct grand_packet));
     
     // Return 1 to notify that there are more entries in the dataset
-    return 1;
+    if (ch == EOF)
+		return -1;
+	else
+		return 1;
 }

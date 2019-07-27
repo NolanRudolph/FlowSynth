@@ -42,7 +42,7 @@ def main():
 	mtu_test(total_bytes, total_packets, MAX_MTU)
 
 	f = open(argv[9], "w+")
-	f.write("0.0,{},{},{},{},{},{},0,0,{},{},0,0,0,0,\n".format(float(duration), src_ip, dst_ip, src_port, dst_port, proto, total_packets, total_bytes))
+	f.write("0.0,{},{},{},{},{},{},0,0,{},{},0,0,0,0,".format(float(duration), src_ip, dst_ip, src_port, dst_port, proto, total_packets, total_bytes))
 	f.close()
 
 	return 0
