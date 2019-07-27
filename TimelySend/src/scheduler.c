@@ -49,41 +49,47 @@ void round_robin_init(char *interface) {
             perror("socket() error");
             exit(EXIT_FAILURE);
     }
+    
+    if (sendto(sockfd, dummy_packet.buff, dummy_packet.length, 0, \
+       (struct sockaddr *)&addr, sizeof(struct sockaddr_ll)) < 0) {
+            perror("sendto() error");
+            exit(EXIT_FAILURE);
+    }
 }
 
 void round_robin() {
     const time_t start = time(NULL);
     double now = 0.0;
     
-    struct grand_packet *temp;
-    temp = &grand_list[0];
+    struct grand_packet *pCurFlow;
+    pCurFlow = &grand_list[0];
+    struct grand_packet curFlow;
     
     int i;    
     while (size != 0 || response) {
         for (i = 0; size != 0 && i < size; ++i) {
-            while (temp -> cur_time < now) {
+            curFlow = *pCurFlow;
+            while (curFlow.cur_time < now) {
                 // Sending Packet
-                printf("Sending packet.\n");
-                if (sendto(sockfd, temp -> buff, temp -> length, 0, \
-                   (struct sockaddr *)&addr, sizeof(struct sockaddr_ll)) < 0) {
-                        perror("sendto() error");
-                        exit(EXIT_FAILURE);
-                }
+                sendto(sockfd, curFlow.buff, curFlow.length, 0, \
+                      (struct sockaddr *)&addr, sizeof(struct sockaddr_ll));
 
                 // Adjusting Packet Attributes
-                temp -> packets_left -= 1;
-                temp -> cur_time += temp -> d_time;
-                printf("My new time is %f\n", temp -> cur_time);
+                curFlow.packets_left -= 1;
+                curFlow.cur_time += curFlow.d_time;
             
                 // If the packet has no packets left, delete it
-                if (temp -> packets_left == 0) {
-                    temp -> last -> next = temp -> next;
-                    temp -> next -> last = temp -> last;
-                    temp = temp -> next;
+                if (!curFlow.packets_left) {
+                    pCurFlow -> last -> next = pCurFlow -> next;
+                    pCurFlow -> next -> last = pCurFlow -> last;
+                    pCurFlow = pCurFlow -> next;
                     size -= 1;
                 }
             }
-            temp = temp -> next;
+            if (curFlow.packets_left) {
+                *pCurFlow = curFlow;
+            }
+            pCurFlow = pCurFlow -> next;
         }
         
         now = time(NULL) - start;
