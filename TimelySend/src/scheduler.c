@@ -103,7 +103,7 @@ void round_robin() {
         // Setting new time
         clock_gettime(CLOCK_MONOTONIC_RAW, &end);
         now = (float)(end.tv_sec - start.tv_sec) +   // Seconds +
-               (float)(end.tv_nsec - start.tv_nsec) / 1000000000;  // Nanoseconds
+              (float)(end.tv_nsec - start.tv_nsec) / 1000000000;  // Nanoseconds
         
         // If a new entry falls within the time frame, append to our grand_list
         if (response)
