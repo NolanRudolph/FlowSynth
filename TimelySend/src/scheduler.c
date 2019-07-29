@@ -58,8 +58,10 @@ void round_robin_init(char *interface) {
 }
 
 void round_robin() {
-    const time_t start = time(NULL);
-    double now = 0.0;
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
+    float now = 0.0;
+    float decimal;
     
     struct grand_packet *pCurFlow;
     pCurFlow = &grand_list[0];
@@ -70,6 +72,12 @@ void round_robin() {
         for (i = 0; size != 0 && i < size; ++i) {
             curFlow = *pCurFlow;
             while (curFlow.cur_time < now) {
+//                printf("Packet's time is %f\n", curFlow.cur_time);
+//                printf("Now is %f\n", now);
+//                printf("Nano is %f\n", (float)(end.tv_nsec > start.tv_nsec ? 
+//                    end.tv_nsec - start.tv_nsec : 
+//                    start.tv_nsec - end.tv_nsec)
+//                    / 1000000000);
                 // Sending Packet
                 sendto(sockfd, curFlow.buff, curFlow.length, 0, \
                       (struct sockaddr *)&addr, sizeof(struct sockaddr_ll));
@@ -84,6 +92,7 @@ void round_robin() {
                     pCurFlow -> next -> last = pCurFlow -> last;
                     pCurFlow = pCurFlow -> next;
                     size -= 1;
+                    break;
                 }
             }
             if (curFlow.packets_left) {
@@ -91,8 +100,10 @@ void round_robin() {
             }
             pCurFlow = pCurFlow -> next;
         }
-        
-        now = time(NULL) - start;
+        // Setting new time
+        clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+        now = (float)(end.tv_sec - start.tv_sec) +   // Seconds +
+               (float)(end.tv_nsec - start.tv_nsec) / 1000000000;  // Nanoseconds
         
         // If a new entry falls within the time frame, append to our grand_list
         if (response)
