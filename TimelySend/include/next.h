@@ -3,8 +3,10 @@
 #define MAXBUF 1500
 #include <string.h>
 #include <math.h>
-#include "conf.h"
 #include <unistd.h>
+#include <stdint.h>
+
+#include "conf.h"
 
 struct grand_packet
 {

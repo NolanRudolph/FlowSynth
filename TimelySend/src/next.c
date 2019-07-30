@@ -113,8 +113,9 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     char _packets[10];
     char _bytes[15];
     float d_time;
-    uint32_t packets;
-    uint32_t bytes;
+    uint64_t packets;
+    uint64_t bytes;
+    char *randPtr;
     int length = 0;
     unsigned int payloadSize;
     unsigned int remainder;
@@ -211,8 +212,8 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
 
     // Reduce function calls with int variables
     proto = atoi(_proto);
-    packets = atoi(_packets);
-    bytes = atoi(_bytes);
+    packets = strtoull(_packets, &randPtr, 10);
+    bytes = strtoull(_bytes, &randPtr, 10);
     
     // d_time configuration
     d_time = atof(end) - atof(start);  // Get net time
@@ -386,7 +387,6 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             // Set IP length to correct size
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr) + \
                                                                 payloadSize);
-            
             // IMPORTANT: Prior to recording, the Ethernet header had been
             // stripped. Thus all calculations with length should not have
             // the Ethernet header involved.
