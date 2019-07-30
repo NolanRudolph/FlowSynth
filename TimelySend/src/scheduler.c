@@ -66,7 +66,10 @@ void round_robin() {
     struct grand_packet *pCurFlow;
     pCurFlow = &grand_list[0];
     struct grand_packet curFlow;
-    
+   
+    int sAddrSize = sizeof(struct sockaddr_ll);
+    struct sockaddr *memAddr = (struct sockaddr *)&addr;
+
     int i;    
     while (size != 0 || response) {
         for (i = 0; size != 0 && i < size; ++i) {
@@ -80,45 +83,7 @@ void round_robin() {
 //                    / 1000000000);
                 // Sending Packet
                 sendto(sockfd, curFlow.buff, curFlow.length, 0, \
-                      (struct sockaddr *)&addr, sizeof(struct sockaddr_ll));
-		# if 0  // Packet Retrieval Testing
-            		printf("\n\n***** TESTING *****\n");
-            		printf("\n*** GRAND PACKET ATTRIBUTES ***\n");
-            		printf("Packets left is %d\n", grand_list[0].packets_left);
-            		printf("Current time is %lf\n", grand_list[0].cur_time);
-
-            		printf("\n*** ETHERNET ATTRIBUTES ***\n");
-            		struct ether_header *ether = (struct ether_header *)(grand_list[0].buff);
-            		printf("Ether dest is ");
-            		int i;
-            		for (i = 0; i < 6; ++i) {
-                		printf("%u", ether -> ether_shost[i]);
-            		}
-            		printf("\n");
-            		printf("Ether host is ");
-            		for (i = 0; i < 6; ++i) {
-                		printf("%u", ether -> ether_dhost[i]);
-            		}
-            		printf("\n");
-
-            		printf("\n*** IP ATTRIBUTES ***\n");
-            		struct ip *ip = (struct ip *)(grand_list[0].buff + sizeof(struct ether_header));
-            		printf("IP protocol is %hu\n", ip -> ip_p);
-            		printf("IP TTL is %hu\n", ip -> ip_ttl);
-            		printf("IP's Header Length is %hu\n", ip -> ip_hl);
-            		printf("IP's Total Length is %hu\n", ntohs(ip -> ip_len));
-            		printf("IP's Checksum is %hu\n", ntohs(ip -> ip_sum));
-
-            		printf("\n*** TCP ATTRIBUTES ***\n");
-            		struct tcphdr *tcp = (struct tcphdr *)(grand_list[0].buff + \
-                                   sizeof(struct ether_header) + sizeof(struct ip));
-            		printf("TCP source is %d\n", ntohs(tcp -> source));
-            		printf("TCP dest is %d\n", ntohs(tcp -> dest));
-                	printf("TCP offset is %d\n", tcp -> doff);
-                	printf("TCP checksum is %d\n", tcp -> check);
-
-                	printf("\n\n");
-                #endif
+                      memAddr, sAddrSize);
 
                 // Adjusting Packet Attributes
                 curFlow.packets_left -= 1;
