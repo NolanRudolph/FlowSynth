@@ -75,12 +75,6 @@ void round_robin() {
         for (i = 0; size != 0 && i < size; ++i) {
             curFlow = *pCurFlow;
             while (curFlow.cur_time < now) {
-//                printf("Packet's time is %f\n", curFlow.cur_time);
-//                printf("Now is %f\n", now);
-//                printf("Nano is %f\n", (float)(end.tv_nsec > start.tv_nsec ? 
-//                    end.tv_nsec - start.tv_nsec : 
-//                    start.tv_nsec - end.tv_nsec)
-//                    / 1000000000);
                 // Sending Packet
                 sendto(sockfd, curFlow.buff, curFlow.length, 0, \
                       memAddr, sAddrSize);
@@ -93,14 +87,11 @@ void round_robin() {
                 if (!curFlow.packets_left) {
                     pCurFlow -> last -> next = pCurFlow -> next;
                     pCurFlow -> next -> last = pCurFlow -> last;
-                    pCurFlow = pCurFlow -> next;
                     size -= 1;
                     break;
                 }
             }
-            if (curFlow.packets_left) {
-                *pCurFlow = curFlow;
-            }
+            *pCurFlow = curFlow;
             pCurFlow = pCurFlow -> next;
         }
         // Setting new time
