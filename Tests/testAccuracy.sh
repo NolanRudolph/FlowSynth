@@ -43,7 +43,7 @@ pr7=100000
 pr8=200000
 pr9=300000
 pr10=350000
-pr11=375000
+pr11=350000
 pr12=375000
 pr13=416666
 
@@ -145,7 +145,7 @@ sudo ./packetize ./csv/test1.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr1 $br1 enp1s0d1;
-"
+" | tee testResults.txt
 
 
 printf "\nEvaluating Test 2 ~ Packet Rate: $pr2 | Bit Rate: $br2\n"
@@ -158,7 +158,7 @@ sudo ./packetize ./csv/test2.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr2 $br2 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 
 printf "\nEvaluating Test 3 ~ Packet Rate: $pr3 | Bit Rate: $br3\n"
@@ -171,7 +171,7 @@ sudo ./packetize ./csv/test3.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr3 $br3 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 
 printf "\nEvaluating Test 4 ~ Packet Rate: $pr4 | Bit Rate: $br4\n"
@@ -184,7 +184,7 @@ sudo ./packetize ./csv/test4.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr4 $br4 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 
 printf "\nEvaluating Test 5 ~ Packet Rate: $pr5 | Bit Rate: $br5\n"
@@ -197,7 +197,7 @@ sudo ./packetize ./csv/test5.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr5 $br5 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 printf "\nEvaluating Test 6 ~ Packet Rate: $pr6 | Bit Rate: $br6\n"
 
@@ -209,7 +209,7 @@ sudo ./packetize ./csv/test6.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr6 $br6 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 
 printf "\nEvaluating Test 7 ~ Packet Rate: $pr7 | Bit Rate: $br7\n"
@@ -222,7 +222,7 @@ sudo ./packetize ./csv/test7.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr7 $br7 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 
 printf "\nEvaluating Test 8 ~ Packet Rate: $pr8 | Bit Rate: $br8\n"
@@ -235,7 +235,7 @@ sudo ./packetize ./csv/test8.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr8 $br8 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 
 printf "\nEvaluating Test 9 ~ Packet Rate: $pr9 | Bit Rate: $br9\n"
@@ -248,7 +248,7 @@ sudo ./packetize ./csv/test9.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr9 $br9 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 
 printf "\nEvaluating Test 10 ~ Packet Rate: $pr10 | Bit Rate: $br10\n"
@@ -261,7 +261,7 @@ sudo ./packetize ./csv/test10.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr10 $br10 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 
 printf "\nEvaluating Test 11 ~ Packet Rate: $pr11 | Bit Rate: $br11\n"
@@ -274,30 +274,47 @@ sudo ./packetize ./csv/test11.csv $S_ETHER $D_ETHER enp1s0d1;
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr11 $br11 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 
-printf "\nEvaluating Test 11 ~ Packet Rate: $pr12 | Bit Rate: $br12\n"
+printf "\nEvaluating Test 12 ~ Packet Rate: $pr12 | Bit Rate: $br12\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test11.csv $S_ETHER $D_ETHER enp1s0d1;
+sudo ./packetize ./csv/test12.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr12 $br12 enp1s0d1;
-"
+" | tee -a testResults.txt
 
 
-printf "\nEvaluating Test 11 ~ Packet Rate: $pr13 | Bit Rate: $br13\n"
+printf "\nEvaluating Test 13 ~ Packet Rate: $pr13 | Bit Rate: $br13\n"
 
 ssh $NODE1 "
 cd $MAKE_DIR;
-sudo ./packetize ./csv/test11.csv $S_ETHER $D_ETHER enp1s0d1;
+sudo ./packetize ./csv/test13.csv $S_ETHER $D_ETHER enp1s0d1;
 " &
 
 ssh $NODE2 "
 cd $TEST_DIR;
 python evalMace.py 10 $pr13 $br13 enp1s0d1;
-"
+" | tee -a testResults.txt
+
+
+# Truncating results for easier reading
+cat testResults.txt | egrep -o "[0-9]+.[0-9]+%" > results.txt
+
+# Creating Text files for graphing
+touch packetResults.txt
+touch bitResults.txt
+lineN=0
+while read p; do
+    if [ $[$lineN % 2] -eq 0 ]; then
+        echo "${p//%}" >> packetResults.txt
+    else
+        echo "${p//%}" >> bitResults.txt
+    fi
+    ((++lineN))
+done < results.txt
