@@ -45,7 +45,22 @@ pr9=300000
 pr10=350000
 pr11=350000
 pr12=375000
-pr13=416666
+pr13=416667
+pr14=458334
+pr15=500000
+pr16=541667
+pr17=583334
+pr18=625000
+pr19=666667
+pr20=708334
+pr21=750000
+pr22=791667
+pr23=833334
+
+# Modify me when removing/adding new packet rates
+printf "$pr1\n$pr2\n$pr3\n$pr4\n$pr5\n$pr6\n$pr7\n$pr8\n" > pRates.txt
+printf "$pr9\n$pr10\n$pr11\n$pr12\n$pr13\n$pr14\n$pr15\n$pr16\n" >> pRates.txt
+printf "$pr17\n$pr18\n$pr19\n$pr20\n$pr21\n$pr22\n$pr23" >> pRates.txt
 
 br1=1000
 br2=10000
@@ -60,6 +75,21 @@ br10=3500000000
 br11=4000000000
 br12=4500000000
 br13=5000000000
+br14=5500000000
+br15=6000000000
+br16=6500000000
+br17=7000000000
+br18=7500000000
+br19=8000000000
+br20=8500000000
+br21=9000000000
+br22=9500000000
+br23=10000000000
+# Modify me when removing/adding new packet rates
+printf "$br1\n$br2\n$br3\n$br4\n$br5\n$br6\n$br7\n$br8\n" > bRates.txt
+printf "$br9\n$br10\n$br11\n$br12\n$br13\n$br14\n$br15\n$br16\n" >> bRates.txt
+printf "$br17\n$br18\n$br19\n$br20\n$br21\n$br22\n$br23" >> bRates.txt
+
 
 echo "Preparing Node 1..."
 ssh -t $NODE1 "
@@ -80,6 +110,16 @@ python createTest.py 10 $INFO $pr10 $br10 $CSV_DIR/test10.csv;
 python createTest.py 10 $INFO $pr11 $br11 $CSV_DIR/test11.csv;
 python createTest.py 10 $INFO $pr12 $br12 $CSV_DIR/test12.csv;
 python createTest.py 10 $INFO $pr13 $br13 $CSV_DIR/test13.csv;
+python createTest.py 10 $INFO $pr14 $br14 $CSV_DIR/test14.csv;
+python createTest.py 10 $INFO $pr15 $br15 $CSV_DIR/test15.csv;
+python createTest.py 10 $INFO $pr16 $br16 $CSV_DIR/test16.csv;
+python createTest.py 10 $INFO $pr17 $br17 $CSV_DIR/test17.csv;
+python createTest.py 10 $INFO $pr18 $br18 $CSV_DIR/test18.csv;
+python createTest.py 10 $INFO $pr19 $br19 $CSV_DIR/test19.csv;
+python createTest.py 10 $INFO $pr20 $br20 $CSV_DIR/test20.csv;
+python createTest.py 10 $INFO $pr21 $br21 $CSV_DIR/test21.csv;
+python createTest.py 10 $INFO $pr22 $br22 $CSV_DIR/test22.csv;
+python createTest.py 10 $INFO $pr23 $br23 $CSV_DIR/test23.csv;
 " 2> /dev/null
 
 
@@ -303,6 +343,136 @@ python evalMace.py 10 $pr13 $br13 enp1s0d1;
 " | tee -a testResults.txt
 
 
+printf "\nEvaluating Test 14 ~ Packet Rate: $pr14 | Bit Rate: $br14\n"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test14.csv $S_ETHER $D_ETHER enp1s0d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 $pr14 $br14 enp1s0d1;
+" | tee -a testResults.txt
+
+
+printf "\nEvaluating Test 15 ~ Packet Rate: $pr15 | Bit Rate: $br15\n"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test15.csv $S_ETHER $D_ETHER enp1s0d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 $pr15 $br15 enp1s0d1;
+" | tee -a testResults.txt
+
+
+printf "\nEvaluating Test 16 ~ Packet Rate: $pr16 | Bit Rate: $br16\n"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test16.csv $S_ETHER $D_ETHER enp1s0d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 $pr16 $br16 enp1s0d1;
+" | tee -a testResults.txt
+
+
+printf "\nEvaluating Test 17 ~ Packet Rate: $pr17 | Bit Rate: $br17\n"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test17.csv $S_ETHER $D_ETHER enp1s0d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 $pr18 $br18 enp1s0d1;
+" | tee -a testResults.txt
+
+
+printf "\nEvaluating Test 18 ~ Packet Rate: $pr18 | Bit Rate: $br18\n"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test18.csv $S_ETHER $D_ETHER enp1s0d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 $pr18 $br18 enp1s0d1;
+" | tee -a testResults.txt
+
+
+printf "\nEvaluating Test 19 ~ Packet Rate: $pr19 | Bit Rate: $br19\n"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test19.csv $S_ETHER $D_ETHER enp1s0d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 $pr19 $br19 enp1s0d1;
+" | tee -a testResults.txt
+
+
+printf "\nEvaluating Test 20 ~ Packet Rate: $pr20 | Bit Rate: $br20\n"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test20.csv $S_ETHER $D_ETHER enp1s0d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 $pr20 $br20 enp1s0d1;
+" | tee -a testResults.txt
+
+
+printf "\nEvaluating Test 21 ~ Packet Rate: $pr21 | Bit Rate: $br21\n"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test21.csv $S_ETHER $D_ETHER enp1s0d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 $pr21 $br21 enp1s0d1;
+" | tee -a testResults.txt
+
+
+printf "\nEvaluating Test 22 ~ Packet Rate: $pr22 | Bit Rate: $br22\n"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test22.csv $S_ETHER $D_ETHER enp1s0d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 $pr22 $br22 enp1s0d1;
+" | tee -a testResults.txt
+
+
+printf "\nEvaluating Test 23 ~ Packet Rate: $pr23 | Bit Rate: $br23\n"
+
+ssh $NODE1 "
+cd $MAKE_DIR;
+sudo ./packetize ./csv/test23.csv $S_ETHER $D_ETHER enp1s0d1;
+" &
+
+ssh $NODE2 "
+cd $TEST_DIR;
+python evalMace.py 10 $pr23 $br23 enp1s0d1;
+" | tee -a testResults.txt
+
+
 # Truncating results for easier reading
 cat testResults.txt | egrep -o "[0-9]+.[0-9]+%" > results.txt
 
@@ -318,3 +488,18 @@ while read p; do
     fi
     ((++lineN))
 done < results.txt
+
+
+# Graph Generation
+printf "Generating Performance Graph\n"
+python graph.py pRates.txt packetResults.txt bRates.txt bitResults.txt
+
+
+# Remove unneeded text files
+printf "Cleaning workspace.\n"
+rm pRates.txt
+rm packetResults.txt
+rm bRates.txt
+rm bitResults.txt
+rm results.txt
+rm testResults.txt

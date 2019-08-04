@@ -2,6 +2,7 @@
 *.csv
 notes*
 backup*
+*.jpeg
 
 # Specefic Ignores
 mustChange.txt
