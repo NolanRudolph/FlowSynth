@@ -3,6 +3,7 @@
 notes*
 backup*
 *.jpeg
+*.txt
 
 # Specefic Ignores
 mustChange.txt

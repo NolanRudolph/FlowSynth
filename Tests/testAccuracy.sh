@@ -489,7 +489,7 @@ while read p; do
     ((++lineN))
 done < results.txt
 
-
+<<testing
 # Graph Generation
 printf "Generating Performance Graph\n"
 python graph.py pRates.txt packetResults.txt bRates.txt bitResults.txt
@@ -503,3 +503,4 @@ rm bRates.txt
 rm bitResults.txt
 rm results.txt
 rm testResults.txt
+testing
