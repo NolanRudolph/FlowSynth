@@ -12,13 +12,13 @@ int response = 1;
 
 /* Packet Sending Variables */
 // Socket ID
-static int sockfd;
+int sockfd;
 
 // Permanent Address
-static const char address[] = "127.0.0.1";
+const char address[] = "127.0.0.1";
 
 // Address for Socket
-static struct sockaddr_ll addr;
+struct sockaddr_ll addr;
 
 void round_robin_init(char *interface) {
     // Resolving correct interface number given interface name
