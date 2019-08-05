@@ -2,7 +2,7 @@
 
 /* Grand_list Variables */
 // Grand_list will hold all of currently assessed entries, capped at a million
-static struct grand_packet grand_list[1000000];
+struct grand_packet grand_list[1000000];
 // Size will hold the current size of our grand_list (i.e. how many packets it holds)
 int size = 0;
 
