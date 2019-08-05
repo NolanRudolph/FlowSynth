@@ -1,4 +1,5 @@
 import plotly.graph_objects as go
+import plotly
 import numpy as np
 from sys import argv
 
@@ -42,7 +43,7 @@ def main():
 
 	else:
 		print("Branch '" + argv[1] + "' is not known.")
-        print("Potential branches: 'bits' // 'packets' // 'flows'")
+		print("Potential branches: 'bits' // 'packets' // 'flows'")
 
 def graph_bit_rate(bit_rates_f, actual_rates_f):
 	b_list = []

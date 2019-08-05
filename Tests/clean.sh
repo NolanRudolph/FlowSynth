@@ -26,4 +26,11 @@ ssh $NODE1 sudo rm -rf UONetflowC
 echo "Node 2: Removing Repository."
 ssh $NODE2 sudo rm -rf UONetflowC
 
-
+# Remove unneeded text files
+echo "Cleaning workspace."
+rm pRates.txt
+rm packetResults.txt
+rm bRates.txt
+rm bitResults.txt
+rm results.txt
+rm testResults.txt

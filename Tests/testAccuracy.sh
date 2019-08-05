@@ -174,303 +174,59 @@ fi
 
 D_ETHER=${ETHERS[$I_D_ETHER]:0:17}
 
-
-printf "\nEvaluating Test 1 ~ Packet Rate: $pr1 | Bit Rate: $br1\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test1.csv $S_ETHER $D_ETHER enp1s0d1;
-" & 
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr1 $br1 enp1s0d1;
-" | tee testResults.txt
-
-
-printf "\nEvaluating Test 2 ~ Packet Rate: $pr2 | Bit Rate: $br2\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test2.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr2 $br2 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 3 ~ Packet Rate: $pr3 | Bit Rate: $br3\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test3.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr3 $br3 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 4 ~ Packet Rate: $pr4 | Bit Rate: $br4\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test4.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr4 $br4 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 5 ~ Packet Rate: $pr5 | Bit Rate: $br5\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test5.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr5 $br5 enp1s0d1;
-" | tee -a testResults.txt
-
-printf "\nEvaluating Test 6 ~ Packet Rate: $pr6 | Bit Rate: $br6\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test6.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr6 $br6 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 7 ~ Packet Rate: $pr7 | Bit Rate: $br7\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test7.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr7 $br7 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 8 ~ Packet Rate: $pr8 | Bit Rate: $br8\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test8.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr8 $br8 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 9 ~ Packet Rate: $pr9 | Bit Rate: $br9\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test9.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr9 $br9 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 10 ~ Packet Rate: $pr10 | Bit Rate: $br10\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test10.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr10 $br10 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 11 ~ Packet Rate: $pr11 | Bit Rate: $br11\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test11.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr11 $br11 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 12 ~ Packet Rate: $pr12 | Bit Rate: $br12\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test12.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr12 $br12 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 13 ~ Packet Rate: $pr13 | Bit Rate: $br13\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test13.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr13 $br13 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 14 ~ Packet Rate: $pr14 | Bit Rate: $br14\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test14.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr14 $br14 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 15 ~ Packet Rate: $pr15 | Bit Rate: $br15\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test15.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr15 $br15 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 16 ~ Packet Rate: $pr16 | Bit Rate: $br16\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test16.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr16 $br16 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 17 ~ Packet Rate: $pr17 | Bit Rate: $br17\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test17.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr18 $br18 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 18 ~ Packet Rate: $pr18 | Bit Rate: $br18\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test18.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr18 $br18 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 19 ~ Packet Rate: $pr19 | Bit Rate: $br19\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test19.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr19 $br19 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 20 ~ Packet Rate: $pr20 | Bit Rate: $br20\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test20.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr20 $br20 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 21 ~ Packet Rate: $pr21 | Bit Rate: $br21\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test21.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr21 $br21 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 22 ~ Packet Rate: $pr22 | Bit Rate: $br22\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test22.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr22 $br22 enp1s0d1;
-" | tee -a testResults.txt
-
-
-printf "\nEvaluating Test 23 ~ Packet Rate: $pr23 | Bit Rate: $br23\n"
-
-ssh $NODE1 "
-cd $MAKE_DIR;
-sudo ./packetize ./csv/test23.csv $S_ETHER $D_ETHER enp1s0d1;
-" &
-
-ssh $NODE2 "
-cd $TEST_DIR;
-python evalMace.py 10 $pr23 $br23 enp1s0d1;
-" | tee -a testResults.txt
+function testCase {
+	# Arg 1: Test Number
+	# Arg 2: Packet Rate
+	# Arg 3: Bit Rate
+	# Arg 4: CSV File
+	if [ $# -ne 4 ]; then
+		echo "Invalid call to testCase()."
+		exit 1
+	fi
+
+	printf "\nEvaluating Test $1 ~ Packet Rate: $2 | Bit Rate: $3\n"
+
+	ssh $NODE1 "
+		cd $MAKE_DIR;
+		sudo ./packetize $4 $S_ETHER $D_ETHER enp1s0d1;
+	" &
+
+	if [ $1 -eq 1 ]; then
+		ssh $NODE2 "
+			cd $TEST_DIR;
+			python evalMace.py 10 $2 $3 enp1s0d1;
+		" | tee testResults.txt
+	else
+		ssh $NODE2 "
+			cd $TEST_DIR;
+			python evalMace.py 10 $2 $3 enp1s0d1;
+		" | tee -a testResults.txt 
+	fi
+}
+
+testCase 1 $pr1 $br1 ./csv/test1.csv
+testCase 2 $pr2 $br2 ./csv/test2.csv
+testCase 3 $pr3 $br3 ./csv/test3.csv
+testCase 4 $pr4 $br4 ./csv/test4.csv
+testCase 5 $pr5 $br5 ./csv/test5.csv
+testCase 6 $pr6 $br6 ./csv/test6.csv
+testCase 7 $pr7 $br7 ./csv/test7.csv
+testCase 8 $pr8 $br8 ./csv/test8.csv
+testCase 9 $pr9 $br9 ./csv/test9.csv
+testCase 10 $pr10 $br10 ./csv/test10.csv
+testCase 11 $pr11 $br11 ./csv/test11.csv
+testCase 12 $pr12 $br12 ./csv/test12.csv
+testCase 13 $pr13 $br13 ./csv/test13.csv
+testCase 14 $pr14 $br14 ./csv/test14.csv
+testCase 15 $pr15 $br15 ./csv/test15.csv
+testCase 16 $pr16 $br16 ./csv/test16.csv
+testCase 17 $pr17 $br17 ./csv/test17.csv
+testCase 18 $pr18 $br18 ./csv/test18.csv
+testCase 19 $pr19 $br19 ./csv/test19.csv
+testCase 20 $pr20 $br20 ./csv/test20.csv
+testCase 21 $pr21 $br21 ./csv/test21.csv
+testCase 22 $pr22 $br22 ./csv/test22.csv
+testCase 23 $pr23 $br23 ./csv/test23.csv
 
 
 # Truncating results for easier reading
@@ -493,14 +249,4 @@ done < results.txt
 # Graph Generation
 printf "Generating Performance Graph\n"
 python graph.py pRates.txt packetResults.txt bRates.txt bitResults.txt
-
-
-# Remove unneeded text files
-printf "Cleaning workspace.\n"
-rm pRates.txt
-rm packetResults.txt
-rm bRates.txt
-rm bitResults.txt
-rm results.txt
-rm testResults.txt
 testing
