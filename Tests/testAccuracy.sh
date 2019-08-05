@@ -92,6 +92,7 @@ printf "$br17\n$br18\n$br19\n$br20\n$br21\n$br22\n$br23" >> bRates.txt
 
 
 echo "Preparing Node 1..."
+#<<sFlows
 ssh -t $NODE1 "
 cd $MAKE_DIR;
 make &> /dev/null;
@@ -120,7 +121,72 @@ python createTest.py 10 $INFO $pr20 $br20 $CSV_DIR/test20.csv;
 python createTest.py 10 $INFO $pr21 $br21 $CSV_DIR/test21.csv;
 python createTest.py 10 $INFO $pr22 $br22 $CSV_DIR/test22.csv;
 python createTest.py 10 $INFO $pr23 $br23 $CSV_DIR/test23.csv;
-" 2> /dev/null
+" > /dev/null 2> /dev/null
+#sFlows
+
+
+<<multiFlows
+packrate=416667
+bitrate=5000000000
+
+# Testing Multiple Flows
+ssh -t $NODE1 "
+cd $MAKE_DIR;
+make &> /dev/null;
+mkdir csv;
+cd $TEST_DIR;
+python createNTest.py 1 10 $INFO $packrate $bitrate $CSV_DIR/test1.csv;
+python createNTest.py 2 10 $INFO $packrate $bitrate $CSV_DIR/test2.csv;
+python createNTest.py 3 10 $INFO $packrate $bitrate $CSV_DIR/test3.csv;
+python createNTest.py 4 10 $INFO $packrate $bitrate $CSV_DIR/test4.csv;
+python createNTest.py 5 10 $INFO $packrate $bitrate $CSV_DIR/test5.csv;
+python createNTest.py 6 10 $INFO $packrate $bitrate $CSV_DIR/test6.csv;
+python createNTest.py 7 10 $INFO $packrate $bitrate $CSV_DIR/test7.csv;
+python createNTest.py 8 10 $INFO $packrate $bitrate $CSV_DIR/test8.csv;
+python createNTest.py 9 10 $INFO $packrate $bitrate $CSV_DIR/test9.csv;
+python createNTest.py 10 10 $INFO $packrate $bitrate $CSV_DIR/test10.csv;
+python createNTest.py 11 10 $INFO $packrate $bitrate $CSV_DIR/test11.csv;
+python createNTest.py 12 10 $INFO $packrate $bitrate $CSV_DIR/test12.csv;
+python createNTest.py 13 10 $INFO $packrate $bitrate $CSV_DIR/test13.csv;
+python createNTest.py 14 10 $INFO $packrate $bitrate $CSV_DIR/test14.csv;
+python createNTest.py 15 10 $INFO $packrate $bitrate $CSV_DIR/test15.csv;
+python createNTest.py 16 10 $INFO $packrate $bitrate $CSV_DIR/test16.csv;
+python createNTest.py 17 10 $INFO $packrate $bitrate $CSV_DIR/test17.csv;
+python createNTest.py 18 10 $INFO $packrate $bitrate $CSV_DIR/test18.csv;
+python createNTest.py 19 10 $INFO $packrate $bitrate $CSV_DIR/test19.csv;
+python createNTest.py 20 10 $INFO $packrate $bitrate $CSV_DIR/test20.csv;
+python createNTest.py 21 10 $INFO $packrate $bitrate $CSV_DIR/test21.csv;
+python createNTest.py 22 10 $INFO $packrate $bitrate $CSV_DIR/test22.csv;
+python createNTest.py 23 10 $INFO $packrate $bitrate $CSV_DIR/test23.csv;
+python createNTest.py 24 10 $INFO $packrate $bitrate $CSV_DIR/test24.csv;
+python createNTest.py 25 10 $INFO $packrate $bitrate $CSV_DIR/test25.csv;
+python createNTest.py 26 10 $INFO $packrate $bitrate $CSV_DIR/test26.csv;
+python createNTest.py 27 10 $INFO $packrate $bitrate $CSV_DIR/test27.csv;
+python createNTest.py 28 10 $INFO $packrate $bitrate $CSV_DIR/test28.csv;
+python createNTest.py 29 10 $INFO $packrate $bitrate $CSV_DIR/test29.csv;
+python createNTest.py 30 10 $INFO $packrate $bitrate $CSV_DIR/test30.csv;
+python createNTest.py 31 10 $INFO $packrate $bitrate $CSV_DIR/test31.csv;
+python createNTest.py 32 10 $INFO $packrate $bitrate $CSV_DIR/test32.csv;
+python createNTest.py 33 10 $INFO $packrate $bitrate $CSV_DIR/test33.csv;
+python createNTest.py 34 10 $INFO $packrate $bitrate $CSV_DIR/test34.csv;
+python createNTest.py 35 10 $INFO $packrate $bitrate $CSV_DIR/test35.csv;
+python createNTest.py 36 10 $INFO $packrate $bitrate $CSV_DIR/test36.csv;
+python createNTest.py 37 10 $INFO $packrate $bitrate $CSV_DIR/test37.csv;
+python createNTest.py 38 10 $INFO $packrate $bitrate $CSV_DIR/test38.csv;
+python createNTest.py 39 10 $INFO $packrate $bitrate $CSV_DIR/test39.csv;
+python createNTest.py 40 10 $INFO $packrate $bitrate $CSV_DIR/test40.csv;
+python createNTest.py 41 10 $INFO $packrate $bitrate $CSV_DIR/test41.csv;
+python createNTest.py 42 10 $INFO $packrate $bitrate $CSV_DIR/test42.csv;
+python createNTest.py 43 10 $INFO $packrate $bitrate $CSV_DIR/test43.csv;
+python createNTest.py 44 10 $INFO $packrate $bitrate $CSV_DIR/test44.csv;
+python createNTest.py 45 10 $INFO $packrate $bitrate $CSV_DIR/test45.csv;
+python createNTest.py 46 10 $INFO $packrate $bitrate $CSV_DIR/test46.csv;
+python createNTest.py 47 10 $INFO $packrate $bitrate $CSV_DIR/test47.csv;
+python createNTest.py 48 10 $INFO $packrate $bitrate $CSV_DIR/test48.csv;
+python createNTest.py 49 10 $INFO $packrate $bitrate $CSV_DIR/test49.csv;
+python createNTest.py 50 10 $INFO $packrate $bitrate $CSV_DIR/test50.csv;
+" >> /dev/null
+multiFlows
 
 
 echo "Preparing Node 2..."
@@ -204,6 +270,60 @@ function testCase {
 	fi
 }
 
+<<mFlows
+testCase 1 $packrate $bitrate ./csv/test1.csv
+testCase 2 $packrate $bitrate ./csv/test2.csv
+testCase 3 $packrate $bitrate ./csv/test3.csv
+testCase 4 $packrate $bitrate ./csv/test4.csv
+testCase 5 $packrate $bitrate ./csv/test5.csv
+testCase 6 $packrate $bitrate ./csv/test6.csv
+testCase 7 $packrate $bitrate ./csv/test7.csv
+testCase 8 $packrate $bitrate ./csv/test8.csv
+testCase 9 $packrate $bitrate ./csv/test9.csv
+testCase 10 $packrate $bitrate ./csv/test10.csv
+testCase 11 $packrate $bitrate ./csv/test11.csv
+testCase 12 $packrate $bitrate ./csv/test12.csv
+testCase 13 $packrate $bitrate ./csv/test13.csv
+testCase 14 $packrate $bitrate ./csv/test14.csv
+testCase 15 $packrate $bitrate ./csv/test15.csv
+testCase 16 $packrate $bitrate ./csv/test16.csv
+testCase 17 $packrate $bitrate ./csv/test17.csv
+testCase 18 $packrate $bitrate ./csv/test18.csv
+testCase 19 $packrate $bitrate ./csv/test19.csv
+testCase 20 $packrate $bitrate ./csv/test20.csv
+testCase 21 $packrate $bitrate ./csv/test21.csv
+testCase 22 $packrate $bitrate ./csv/test22.csv
+testCase 23 $packrate $bitrate ./csv/test23.csv
+testCase 24 $packrate $bitrate ./csv/test24.csv
+testCase 25 $packrate $bitrate ./csv/test25.csv
+testCase 26 $packrate $bitrate ./csv/test26.csv
+testCase 27 $packrate $bitrate ./csv/test27.csv
+testCase 28 $packrate $bitrate ./csv/test28.csv
+testCase 29 $packrate $bitrate ./csv/test29.csv
+testCase 30 $packrate $bitrate ./csv/test30.csv
+testCase 31 $packrate $bitrate ./csv/test31.csv
+testCase 32 $packrate $bitrate ./csv/test32.csv
+testCase 33 $packrate $bitrate ./csv/test33.csv
+testCase 34 $packrate $bitrate ./csv/test34.csv
+testCase 35 $packrate $bitrate ./csv/test35.csv
+testCase 36 $packrate $bitrate ./csv/test36.csv
+testCase 37 $packrate $bitrate ./csv/test37.csv
+testCase 38 $packrate $bitrate ./csv/test38.csv
+testCase 39 $packrate $bitrate ./csv/test39.csv
+testCase 40 $packrate $bitrate ./csv/test40.csv
+testCase 41 $packrate $bitrate ./csv/test41.csv
+testCase 42 $packrate $bitrate ./csv/test42.csv
+testCase 43 $packrate $bitrate ./csv/test43.csv
+testCase 44 $packrate $bitrate ./csv/test44.csv
+testCase 45 $packrate $bitrate ./csv/test45.csv
+testCase 46 $packrate $bitrate ./csv/test46.csv
+testCase 47 $packrate $bitrate ./csv/test47.csv
+testCase 48 $packrate $bitrate ./csv/test48.csv
+testCase 49 $packrate $bitrate ./csv/test49.csv
+testCase 50 $packrate $bitrate ./csv/test50.csv
+mFlows
+
+#<<singleFlows
 testCase 1 $pr1 $br1 ./csv/test1.csv
 testCase 2 $pr2 $br2 ./csv/test2.csv
 testCase 3 $pr3 $br3 ./csv/test3.csv
@@ -227,7 +347,7 @@ testCase 20 $pr20 $br20 ./csv/test20.csv
 testCase 21 $pr21 $br21 ./csv/test21.csv
 testCase 22 $pr22 $br22 ./csv/test22.csv
 testCase 23 $pr23 $br23 ./csv/test23.csv
-
+#singleFlows
 
 # Truncating results for easier reading
 cat testResults.txt | egrep -o "[0-9]+.[0-9]+%" > results.txt
@@ -245,8 +365,9 @@ while read p; do
     ((++lineN))
 done < results.txt
 
-<<testing
 # Graph Generation
-printf "Generating Performance Graph\n"
-python graph.py pRates.txt packetResults.txt bRates.txt bitResults.txt
-testing
+printf "Generating Performance Graph by Bit Rate\n"
+python graph.py bits bRates.txt bitResults.txt > /dev/null 2> /dev/null
+
+printf "Generating Performance Graph by Packet Rate\n"
+python graph.py packets pRates.txt packetResults.txt > /dev/null 2> /dev/null

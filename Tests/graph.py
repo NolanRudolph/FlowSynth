@@ -40,6 +40,7 @@ def main():
 			print("[# Flows] ~ File containing the number of flows (e.g. 1\\n2\\n3\\n => 1, 2, and 3 flows tried to reach a bit rate")
 			print("[Rate Accuracy] ~ File containing the accuracy of the alternate # of flows to reach the bit rate.")
 			print("Note: All files containing entries must be seperated by new lines.")
+		graph_flows(argv[2], argv[3], argv[4])
 
 	else:
 		print("Branch '" + argv[1] + "' is not known.")
@@ -74,7 +75,9 @@ def graph_bit_rate(bit_rates_f, actual_rates_f):
 			title = "Single Flow",
 		),
 		yaxis = go.layout.YAxis(
-			title = "% Accuracy"
+			title = "% Accuracy",
+            autorange = False,
+            range = [0, 101]
 		),
 		showlegend=True
 	)
@@ -112,7 +115,9 @@ def graph_packet_rate(packet_rates_f, actual_rates_f):
 			title = "Packet Rate",
 		),
 		yaxis = go.layout.YAxis(
-			title = "% Accuracy"
+			title = "% Accuracy",
+            autorange = False,
+            range = [0, 101]
 		),
 		showlegend=True
 	)
@@ -123,7 +128,7 @@ def graph_packet_rate(packet_rates_f, actual_rates_f):
 
 def graph_flows(bit_rate, flows_f, accuarcy_f):
 	flows_list = []
-	accuracy_list = []
+	acc_list = []
 
 	with open(flows_f) as f:
 		for line in f:
@@ -131,26 +136,28 @@ def graph_flows(bit_rate, flows_f, accuarcy_f):
 
 	with open(accuarcy_f) as f:
 		for line in f:
-			accuarcy_list.append(float(line))
+			acc_list.append(float(line))
 
 	fig = go.Figure()
 
 	fig.add_trace(go.Scatter(
 		x = flows_list,
-		y = accuracy_list,
+		y = acc_list,
 		mode = "lines+markers",
 		name = "Varying Flow Accuracy"
 	))
 
 	fig.update_layout(
 		title = go.layout.Title(
-			text = bit_rate + " Reached by " + bit_rate + "/#Flows"
+			text = str(float(float(bit_rate)/1000000000.0)) + "Gb/s Reached by " + str(float(float(bit_rate)/1000000000.0)) + "Gb/#Flows"
 		),
 		xaxis = go.layout.XAxis(
 			title = "Number of Flows",
 		),
 		yaxis = go.layout.YAxis(
-			title = "% Accuracy"
+			title = "% Accuracy",
+			autorange = False,
+			range = [0, 101]
 		),
 		showlegend=True
 	)
