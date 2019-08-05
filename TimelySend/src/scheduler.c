@@ -2,7 +2,7 @@
 
 /* Grand_list Variables */
 // Grand_list will hold all of currently assessed entries, capped at a million
-struct grand_packet grand_list[1000000];
+static struct grand_packet grand_list[1000000];
 // Size will hold the current size of our grand_list (i.e. how many packets it holds)
 int size = 0;
 
@@ -22,8 +22,8 @@ static struct sockaddr_ll addr;
 
 void round_robin_init(char *interface) {
     // Resolving correct interface number given interface name
-    static int num_interface = -1;
-    static struct ifaddrs *addrs;
+    int num_interface = -1;
+    struct ifaddrs *addrs;
     getifaddrs(&addrs);
     int i = 1;
     do {
@@ -63,12 +63,12 @@ void round_robin() {
     float now = 0.0;
     float decimal;
     
-    static struct grand_packet *pCurFlow;
+    struct grand_packet *pCurFlow;
     pCurFlow = &grand_list[0];
-    static struct grand_packet curFlow;
+    struct grand_packet curFlow;
    
-    static int sAddrSize = sizeof(struct sockaddr_ll);
-    static struct sockaddr *memAddr = (struct sockaddr *)&addr;
+    int sAddrSize = sizeof(struct sockaddr_ll);
+    struct sockaddr *memAddr = (struct sockaddr *)&addr;
 
     int i;    
     while (size != 0 || response) {
