@@ -72,7 +72,7 @@ def graph_bit_rate(bit_rates_f, actual_rates_f):
 			text = "Accuracy of Increasing Bit Transfer Rates"
 		),
 		xaxis = go.layout.XAxis(
-			title = "Single Flow",
+			title = "Bit Rate",
 		),
 		yaxis = go.layout.YAxis(
 			title = "% Accuracy to Expected Bit Rate",

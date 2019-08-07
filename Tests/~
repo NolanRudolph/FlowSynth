@@ -92,7 +92,7 @@ printf "$br17\n$br18\n$br19\n$br20\n$br21\n$br22\n$br23" >> bRates.txt
 
 
 echo "Preparing Node 1..."
-#<<sFlows
+<<sFlows
 ssh -t $NODE1 "
 cd $MAKE_DIR;
 make &> /dev/null;
@@ -122,12 +122,12 @@ python createTest.py 10 $INFO $pr21 $br21 $CSV_DIR/test21.csv;
 python createTest.py 10 $INFO $pr22 $br22 $CSV_DIR/test22.csv;
 python createTest.py 10 $INFO $pr23 $br23 $CSV_DIR/test23.csv;
 " > /dev/null 2> /dev/null
-#sFlows
+sFlows
 
 
-<<multiFlows
-packrate=833334
-bitrate=1000000000
+#<<multiFlows
+packrate=583334
+bitrate=8000000000
 
 # Testing Multiple Flows
 ssh -t $NODE1 "
@@ -186,7 +186,7 @@ python createNTest.py 48 10 $INFO $packrate $bitrate $CSV_DIR/test48.csv;
 python createNTest.py 49 10 $INFO $packrate $bitrate $CSV_DIR/test49.csv;
 python createNTest.py 50 10 $INFO $packrate $bitrate $CSV_DIR/test50.csv;
 " >> /dev/null
-multiFlows
+#multiFlows
 
 
 echo "Preparing Node 2..."
@@ -270,7 +270,7 @@ function testCase {
 	fi
 }
 
-<<mFlows
+#<<mFlows
 testCase 1 $packrate $bitrate ./csv/test1.csv
 testCase 2 $packrate $bitrate ./csv/test2.csv
 testCase 3 $packrate $bitrate ./csv/test3.csv
@@ -321,9 +321,9 @@ testCase 47 $packrate $bitrate ./csv/test47.csv
 testCase 48 $packrate $bitrate ./csv/test48.csv
 testCase 49 $packrate $bitrate ./csv/test49.csv
 testCase 50 $packrate $bitrate ./csv/test50.csv
-mFlows
+#mFlows
 
-#<<singleFlows
+<<singleFlows
 testCase 1 $pr1 $br1 ./csv/test1.csv
 testCase 2 $pr2 $br2 ./csv/test2.csv
 testCase 3 $pr3 $br3 ./csv/test3.csv
@@ -347,7 +347,7 @@ testCase 20 $pr20 $br20 ./csv/test20.csv
 testCase 21 $pr21 $br21 ./csv/test21.csv
 testCase 22 $pr22 $br22 ./csv/test22.csv
 testCase 23 $pr23 $br23 ./csv/test23.csv
-#singleFlows
+singleFlows
 
 # Truncating results for easier reading
 cat testResults.txt | egrep -o "[0-9]+.[0-9]+%" > results.txt
