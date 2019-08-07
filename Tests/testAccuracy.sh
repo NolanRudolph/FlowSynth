@@ -197,7 +197,7 @@ make &> /dev/null;
 
 
 echo "Resolving MAC Addresses."
-IF="enp1s0d1"
+IF="eno1d1"
 
 P="[0-9a-fA-F]{2}"
 # Source Ethernet
@@ -254,18 +254,18 @@ function testCase {
 
 	ssh $NODE1 "
 		cd $MAKE_DIR;
-		sudo ./packetize $4 $S_ETHER $D_ETHER enp1s0d1;
+		sudo ./packetize $4 $S_ETHER $D_ETHER eno1d1;
 	" &
 
 	if [ $1 -eq 1 ]; then
 		ssh $NODE2 "
 			cd $TEST_DIR;
-			python evalMace.py 10 $2 $3 enp1s0d1;
+			python evalMace.py 10 $2 $3 eno1d1;
 		" | tee testResults.txt
 	else
 		ssh $NODE2 "
 			cd $TEST_DIR;
-			python evalMace.py 10 $2 $3 enp1s0d1;
+			python evalMace.py 10 $2 $3 eno1d1;
 		" | tee -a testResults.txt 
 	fi
 }

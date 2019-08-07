@@ -75,9 +75,9 @@ def graph_bit_rate(bit_rates_f, actual_rates_f):
 			title = "Single Flow",
 		),
 		yaxis = go.layout.YAxis(
-			title = "% Accuracy",
+			title = "% Accuracy to Expected Bit Rate",
             autorange = False,
-            range = [0, 101]
+            range = [0, 105]
 		),
 		showlegend=True
 	)
@@ -115,9 +115,9 @@ def graph_packet_rate(packet_rates_f, actual_rates_f):
 			title = "Packet Rate",
 		),
 		yaxis = go.layout.YAxis(
-			title = "% Accuracy",
+			title = "% Accuracy to Expected Packet Rate",
             autorange = False,
-            range = [0, 101]
+            range = [0, 105]
 		),
 		showlegend=True
 	)
@@ -155,9 +155,9 @@ def graph_flows(bit_rate, flows_f, accuarcy_f):
 			title = "Number of Flows",
 		),
 		yaxis = go.layout.YAxis(
-			title = "% Accuracy",
+			title = "% Accuracy to Expected Bit Rate",
 			autorange = False,
-			range = [0, 101]
+			range = [0, 105]
 		),
 		showlegend=True
 	)
