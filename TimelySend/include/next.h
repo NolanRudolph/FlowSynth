@@ -22,10 +22,6 @@ struct grand_packet
 
 void begin(char *fname, unsigned char *src, unsigned char *dst);
 
-void stop(void);
-
-void get_first(void);
-
 int get_next(struct grand_packet *, time_t);
 
 #endif

@@ -6,6 +6,4 @@ backup*
 *.txt
 
 # Specefic Ignores
-mustChange.txt
-future.txt
 a.out
