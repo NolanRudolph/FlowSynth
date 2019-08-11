@@ -70,13 +70,13 @@ void begin(char *fname, unsigned char *src, unsigned char *dst) {
  * float cur_time             // Keeps track of current time, added to by d_time
  * unsigned int length        // Length of all of a packet's contents
  * unsigned int f_bytes       // Final bytes to include in last packet (%)
- * struct grand_packet last   // Previous packet in grand_list for round-robin
- * struct grand_packet next   // Next packet in grand_list used for round-robin
+ * grand_packet_t last   // Previous packet in grand_list for round-robin
+ * grand_packet_t next   // Next packet in grand_list used for round-robin
 */
 
 // This function is almost identical to get_first(), except that its intentions
 // are to continuously pump out packets using the dataset.
-int get_next(struct grand_packet *placeHere, time_t cur_time) {
+int get_next(grand_packet_t *placeHere, time_t cur_time) {
     
     /* Initializing all variables for storing grand_packet attributes */
     int i = 0;
@@ -244,7 +244,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     struct igmp *igmp;
     struct tcphdr *tcp;
     struct udphdr *udp;
-    struct grand_packet grand_ret;
+    grand_packet_t grand_ret;
     
     // Configuration of Grand Packets
     switch (proto) {
@@ -467,7 +467,7 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
     grand_ret.f_bytes = remainder;
 
     // Lastly, copy over the memory of the grand_packet to position in grand_list
-    memcpy(placeHere, &grand_ret, sizeof(struct grand_packet));
+    memcpy(placeHere, &grand_ret, sizeof(grand_packet_t));
     
     // Return 1 to notify that there are more entries in the dataset
     if (ch == EOF || (int)ch == 255)

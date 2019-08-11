@@ -58,7 +58,7 @@ static int create_worker(thread_pool_t pool) {
 	
 	pthread_sigmask(SIG_SETMASK, &full_set, NULL);
 	thread_t *next_loc = &pool.thread_list[pool.n_active];
-	err = pthread_create(&pool.thread_list[pool.n_active].active_tid, &pool.pool_attr, sleepTwo, (void *)next_loc);
+	err = pthread_create(&next_loc -> active_tid, &pool.pool_attr, sleepTwo, (void *)next_loc);
 		
 	return (err);
 }

@@ -2,13 +2,13 @@
 
 /* Grand_list Variables */
 // Grand_list will hold all of currently assessed entries, capped at a million
-struct grand_packet grand_list[1000000];
+grand_packet_t grand_list[1000000];
+flow_pool_t main_fpool;
 // Size will hold the current size of our grand_list (i.e. how many packets it holds)
 int size = 0;
 
 // Response is used to track if add_candidates should be called any further
 int response = 1;
-
 
 /* Packet Sending Variables */
 // Socket ID
@@ -55,6 +55,9 @@ void round_robin_init(char *interface) {
             perror("sendto() error");
             exit(EXIT_FAILURE);
     }
+
+    thread_pool_init();
+    printf("Got mainpool n_idle as %d\n", main_pool.n_idle);
 }
 
 void round_robin() {
@@ -63,9 +66,9 @@ void round_robin() {
     float now = 0.0;
     float decimal;
     
-    struct grand_packet *pCurFlow;
+    grand_packet_t *pCurFlow;
     pCurFlow = &grand_list[0];
-    struct grand_packet curFlow;
+    grand_packet_t curFlow;
    
     int sAddrSize = sizeof(struct sockaddr_ll);
     struct sockaddr *memAddr = (struct sockaddr *)&addr;
@@ -108,7 +111,7 @@ void round_robin() {
 }
 
 int add_candidates(double time) {
-    struct grand_packet *next;
+    grand_packet_t *next;
     
     // Change assesses if anything other than the first entry was implemented
     int res;

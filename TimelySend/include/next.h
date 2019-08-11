@@ -8,6 +8,7 @@
 
 #include "conf.h"
 
+typedef struct grand_packet grand_packet_t;
 struct grand_packet
 {
 	char buff[MAXBUF];

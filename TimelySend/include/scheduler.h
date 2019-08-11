@@ -10,7 +10,10 @@
 #include <linux/if_packet.h>
 
 #include "next.h"
+#include "threads.h"
 
+#define MAX_FLOWS 10000
+#define MAX_POOL 100
 
 struct grand_packet dummy_packet = 
 {
@@ -30,7 +33,19 @@ struct grand_packet dummy_packet =
 	0,
 	54, // Length
 };
-		
+
+typedef struct flow_list flow_list_t;
+struct flow_list {
+	// 10000 (below) * 100 (flow_pool_t) => 1000000000 Concurrent Flows
+	grand_packet_t flows[MAX_FLOWS];
+	int flow_n;
+} flow_default = {{}, 0};
+
+typedef struct flow_pool flow_pool_t;
+struct flow_pool {
+	flow_list_t pool_flows[MAX_POOL];
+};
+
 
 // Initializer for Round Robin Scheduler
 // Used for defining sockets, testing socket, etc.

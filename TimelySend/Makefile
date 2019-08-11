@@ -15,10 +15,13 @@ lib:
 ./obj/conf.o: ./src/conf.c obj
 	$(CC) $(CFLAGS) -c -fPIC -o $@ $<
 
-./obj/scheduler.o: ./src/scheduler.c obj lib
+./obj/scheduler.o: ./src/scheduler.c obj
 	$(CC) $(CFLAGS) -c -fPIC -o $@ $<
 
-./lib/daLib.so: ./obj/next.o ./obj/conf.o ./obj/scheduler.o
+./obj/threads.o: ./src/threads.c obj lib
+	$(CC) $(CFLAGS) -c -fPIC -o $@ $<
+
+./lib/daLib.so: ./obj/next.o ./obj/conf.o ./obj/scheduler.o ./obj/threads.o
 	$(CC) -shared -o $@ $^
 
 packetize: ./src/main.c ./lib/daLib.so
