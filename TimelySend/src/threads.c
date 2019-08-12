@@ -7,47 +7,35 @@ thread_pool_t main_pool;
 // External Variable Flow Pool Definition
 flow_list_t main_fpool[MAX_POOL];
 
-void testing() {
-	printf("Beginning Testing...\n");
-        pthread_t flow_thread;
-	pthread_t scheduler_thread;
-        pthread_attr_t attr;
-        pthread_attr_init(&attr);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-        int ret1 = pthread_create(&flow_thread, &attr, __thread_fill_fpool, NULL);
-	int ret2 = pthread_create(&scheduler_thread, &attr, __thread_rr_check, NULL);
-        printf("test value 0: %d\n", main_fpool[0].nflows);
-	sleep(60);
-        printf("Ending.\n");
-}
-
-void thread_pool_init(void) {
+void thread_start(void) {
+	// Initialize Main Pool Attributes
         pthread_attr_init(&main_pool.pool_attr);
         pthread_attr_setdetachstate(&main_pool.pool_attr, PTHREAD_CREATE_DETACHED);
         main_pool.n_idle = MAX_THREADS;
         main_pool.n_active = 0;
 
-	// Init all threads to INACTIVE
-	printf("Setting all threads to inactive.\n");
+        // Initialize Threads to INACTIVE
         int i;
-	for (i = 0; i < MAX_THREADS; ++i) {
+        for (i = 0; i < MAX_THREADS; ++i) {
                 main_pool.thread_list[i].status = INACTIVE;
         }
 
-	printf("Setting nflows to 0 and ID's to i\n");
-    	for (i = 0; i < MAX_POOL; ++i) {
-        	main_fpool[i].nflows = 0;
-		main_fpool[i].id = i;
-		printf("main_fpool[%d].id : %d\n", i, main_fpool[i].id);
-		printf("main_fpool[%d].nflows : %d\n", i, main_fpool[i].nflows);
-		printf("Location: %#010x\n", &main_fpool[i].nflows);
-    	}
+	// Initialize All Flow Lists to Size 0 and iterative ID
+        for (i = 0; i < MAX_POOL; ++i) {
+                main_fpool[i].nflows = 0;
+                main_fpool[i].id = i;
+        }
 
+	// Our Two Main Threads -- One for Flow Management and One for Scheduling
+        pthread_t flow_thread;
+        pthread_t scheduler_thread;
+        int ret1 = pthread_create(&flow_thread, &main_pool.pool_attr, __thread_fill_fpool, NULL);
+        int ret2 = pthread_create(&scheduler_thread, &main_pool.pool_attr, __thread_rr_check, NULL);
+	sleep(60);
 }
 
 void * __thread_fill_fpool(void *args) {
         printf("Filling Pool...\n");
-	printf("(1) %d\n", main_fpool[0].nflows);
         int response = 1;
         struct timespec start, end;
         clock_gettime(CLOCK_MONOTONIC_RAW, &start);
@@ -71,12 +59,12 @@ void * __thread_fill_fpool(void *args) {
                 clock_gettime(CLOCK_MONOTONIC_RAW, &end);
                 now = (float)(end.tv_sec - start.tv_sec) +   // Seconds +
                       (float)(end.tv_nsec - start.tv_nsec) / 1000000000;  // Nanoseconds
+		printf("ID before: %d\n", main_fpool[next_i].id);
                 response = __thread_add_candidates(now, &main_fpool[next_i]);
         }
 }
 
 int __thread_add_candidates(double time, flow_list_t *curList) {
-    grand_packet_t *next;
     grand_packet_t *listPtr = curList -> flows;
     int size = curList -> nflows;
 
@@ -85,9 +73,10 @@ int __thread_add_candidates(double time, flow_list_t *curList) {
     int change = 0;
 
     if (size == 0 && (res = get_next(&listPtr[size], time))) {
-        // Setting first to itself for round_robin scheduler
+	// Setting first to itself for round_robin scheduler
         listPtr[0].next = &listPtr[0];
         listPtr[0].last = &listPtr[0];
+	printf("Added... andddd: %d\n", curList -> id);
         size = 1;
     }
 
@@ -109,7 +98,6 @@ int __thread_add_candidates(double time, flow_list_t *curList) {
 
     // Store stize value back into curList
     curList -> nflows = size;
-    printf("SETTING NEW SIZE TO %d\n", size);
     // If we have reached EOF, this function shouldn't be called anymore
     if (res == -1) {
             printf("We're done here!\n");
@@ -121,19 +109,17 @@ int __thread_add_candidates(double time, flow_list_t *curList) {
 }
 
 void * __thread_rr_check(void *args) {
-	printf("We're in RR Checking...\n");
+	printf("RR Checking.\n");
 	int i;
-	printf("(2) %d\n", main_fpool[0].nflows);
 	while (1) {
 		for (i = 0; i < MAX_THREADS; ++i) {
-			printf("i is %d\n", i);
-			printf("(3) %d\n", main_fpool[0].nflows);
-			if (main_fpool[0].nflows > 100)
+			main_fpool[0].nflows = 0;
+			if (main_fpool[0].nflows > 100 || main_fpool[0].nflows < 0) {
+				printf("Nope, flow num is %d\n", main_fpool[0].nflows);
 				exit(EXIT_FAILURE);
+			}
 			if (main_pool.thread_list[i].status == INACTIVE &&
 		    	main_fpool[i].nflows != 0) {
-				printf("(4) %d\n", main_fpool[0].nflows);
-				printf("Flow id: %d\n", main_fpool[i].id);
 				pthread_create(&main_pool.thread_list[i].active_tid,&main_pool.pool_attr,round_robin, &main_fpool[i]);
 				printf("(Thread) nflow: %#010x // val: %d\n", &main_fpool[i].nflows, main_fpool[i].nflows);
 				main_pool.thread_list[i].status = ACTIVE;

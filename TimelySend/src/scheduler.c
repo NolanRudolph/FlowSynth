@@ -76,7 +76,7 @@ void round_robin_init(char *interface) {
             exit(EXIT_FAILURE);
     }
 
-    thread_pool_init();
+    thread_start();
 }
 
 void * round_robin(void *arg) {

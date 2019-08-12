@@ -33,8 +33,8 @@ typedef struct thread_pool thread_pool_t;
 struct thread_pool {
         thread_t thread_list[MAX_THREADS];
         pthread_attr_t pool_attr;
-        uint8_t n_idle;
-        uint8_t n_active;
+        int n_idle;
+        int n_active;
 };
 
 // Struct Type for Flow Pool

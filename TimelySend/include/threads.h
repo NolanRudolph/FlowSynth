@@ -15,14 +15,12 @@
 
 // Declare Main Thread Pool Variable
 extern thread_pool_t main_pool;
+extern flow_list_t main_fpool[MAX_POOL];
 
 /* Functions */
 
-// Temp Testing Function
-void testing(void);
-
 // Initializes a Global Thread Pool
-void thread_pool_init(void);
+void thread_start(void);
 
 // Thread Utilized Function for Filling main_fpool
 void * __thread_fill_fpool(void *);
