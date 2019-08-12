@@ -76,7 +76,7 @@ void begin(char *fname, unsigned char *src, unsigned char *dst) {
 
 // This function is almost identical to get_first(), except that its intentions
 // are to continuously pump out packets using the dataset.
-int get_next(grand_packet_t *placeHere, time_t cur_time) {
+int get_next(grand_packet_t *placeHere, float cur_time) {
     
     /* Initializing all variables for storing grand_packet attributes */
     int i = 0;
@@ -150,6 +150,8 @@ int get_next(grand_packet_t *placeHere, time_t cur_time) {
                         first_time = atof(start);
                     }
                     if (atof(start) - first_time > cur_time) {
+			// printf("atof(start): %f // first_time: %f // cur_time: %f\n",
+			//		atof(start), first_time, cur_time);
                         // Flow should not be read yet, back track file pointer
                         fseek(fp, -back_track - 2, SEEK_CUR);
                         return 0;
@@ -470,8 +472,10 @@ int get_next(grand_packet_t *placeHere, time_t cur_time) {
     memcpy(placeHere, &grand_ret, sizeof(grand_packet_t));
     
     // Return 1 to notify that there are more entries in the dataset
-    if (ch == EOF || (int)ch == 255)
-		return -1;
-	else
-		return 1;
+    if (ch == EOF || (int)ch == 255) {
+	printf("ch is %d\n", (int)ch);
+	return -1;
+    }
+    else
+	return 1;
 }

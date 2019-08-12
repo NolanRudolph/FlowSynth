@@ -36,20 +36,22 @@ struct grand_packet dummy_packet =
 
 typedef struct flow_list flow_list_t;
 struct flow_list {
-	// 10000 (below) * 100 (flow_pool_t) => 1000000000 Concurrent Flows
+	// 10000 (MAX_FLOWS) * 100 (flow_pool_t) => 1000000000 Concurrent Flows
 	grand_packet_t flows[MAX_FLOWS];
 	int flow_n;
 } flow_default = {{}, 0};
 
-typedef struct flow_pool flow_pool_t;
-struct flow_pool {
-	flow_list_t pool_flows[MAX_POOL];
-};
-
+extern flow_list_t main_fpool[100];
 
 // Initializer for Round Robin Scheduler
 // Used for defining sockets, testing socket, etc.
 void round_robin_init(char *interface);
+
+// Thread Utilized Function for Filling main_fpool
+void * __thread_fill_fpool(void *);
+
+// Temp Testing
+int __thread_add_candidates(double time, flow_list_t *curList);
 
 // Main Round Robin Scheduler
 void round_robin(void);

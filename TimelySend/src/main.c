@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
     round_robin_init(argv[4]);
     
     // Actual reading of static dataset and outputting packets
-    round_robin();
+    //round_robin();
 
     return 0;
 

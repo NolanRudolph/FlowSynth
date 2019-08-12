@@ -23,6 +23,6 @@ struct grand_packet
 
 void begin(char *fname, unsigned char *src, unsigned char *dst);
 
-int get_next(struct grand_packet *, time_t);
+int get_next(struct grand_packet *, float);
 
 #endif

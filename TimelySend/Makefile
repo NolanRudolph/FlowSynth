@@ -25,7 +25,7 @@ lib:
 	$(CC) -shared -o $@ $^
 
 packetize: ./src/main.c ./lib/daLib.so
-	$(CC) $(CFLAGS) -o $@ $< ./lib/daLib.so
+	$(CC) $(CFLAGS) -o $@ $< ./lib/daLib.so -lpthread
 
 LD_LIBRARY_PATH=$(pwd)/lib/daLib.so
 
