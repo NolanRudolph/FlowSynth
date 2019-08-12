@@ -9,6 +9,7 @@
 #include <signal.h>
 #include "next.h"
 #include "structs.h"
+#include "scheduler.h"
 #define ACTIVE 0x01
 #define INACTIVE 0x00
 
@@ -29,4 +30,6 @@ void * __thread_fill_fpool(void *);
 // Thread Utilized Function for Adding Flows
 int __thread_add_candidates(double time, flow_list_t *curList);
 
+// Thread Utilized Function for Round Robin Thread Scheduling
+void *  __thread_rr_check(void *);
 #endif

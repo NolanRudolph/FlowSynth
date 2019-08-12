@@ -79,27 +79,44 @@ void round_robin_init(char *interface) {
     thread_pool_init();
 }
 
-void round_robin() {
+void * round_robin(void *arg) {
+    // Flow List Pointer Cast for Easier Accessibility
+    flow_list_t *curList = (flow_list_t *)arg;
+    grand_packet_t *listPtr = curList -> flows;
+    //printf("Round Robin: Thread %d\n", curList -> id);
+    // Local size variable, manipulated & stored into memory in while loop
+    int size = curList -> nflows;
+    printf("(RR) nflow: %#010x // val: %d\n", &curList -> nflows, curList -> nflows);
+
+    // Time variables for round_robin scheduling
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC_RAW, &start);
     float now = 0.0;
-    float decimal;
 
+    // Current Flow Pointer
     grand_packet_t *pCurFlow;
-    pCurFlow = &grand_list[0];
+    pCurFlow = &listPtr[0];
+
+    // Current Flow
     grand_packet_t curFlow;
 
     int sAddrSize = sizeof(struct sockaddr_ll);
     struct sockaddr *memAddr = (struct sockaddr *)&addr;
 
     int i;
-    while (size != 0 || response) {
+    while (size != 0) {
         for (i = 0; size != 0 && i < size; ++i) {
-            curFlow = *pCurFlow;
+            // Dereference Flow Pointer and use Local Variable
+	    curFlow = *pCurFlow;
             while (curFlow.cur_time < now) {
+
+		printf("Sending....\n");
                 // Sending Packet
-                sendto(sockfd, curFlow.buff, curFlow.length, 0, \
-                      memAddr, sAddrSize);
+                if(sendto(sockfd, curFlow.buff, curFlow.length, 0, \
+                      memAddr, sAddrSize) < 0) {
+			perror("sendto() error");
+			exit(EXIT_FAILURE);
+		}
 
                 // Adjusting Packet Attributes
                 curFlow.packets_left -= 1;
@@ -110,64 +127,18 @@ void round_robin() {
                     pCurFlow -> last -> next = pCurFlow -> next;
                     pCurFlow -> next -> last = pCurFlow -> last;
                     size -= 1;
+		    // Store into memory
+		    curList -> nflows = size;
                     break;
                 }
             }
             *pCurFlow = curFlow;
             pCurFlow = pCurFlow -> next;
         }
-        // Setting new time
+	// Setting time for next loop through
         clock_gettime(CLOCK_MONOTONIC_RAW, &end);
         now = (float)(end.tv_sec - start.tv_sec) +   // Seconds +
               (float)(end.tv_nsec - start.tv_nsec) / 1000000000;  // Nanoseconds
-
-        // If a new entry falls within the time frame, append to our grand_list
-        if (response)
-            response = add_candidates(now);
     }
-
-    close(sockfd);
-}
-
-int add_candidates(double time) {
-    struct grand_packet *next;
-
-    // Change assesses if anything other than the first entry was implemented
-    int res;
-    int change = 0;
-
-    if (size == 0 && (res = get_next(&grand_list[size], time))) {
-
-        // Setting first to itself for round_robin scheduler
-        grand_list[0].next = &grand_list[0];
-        grand_list[0].last = &grand_list[0];
-
-        size = 1;
-    }
-
-    // While loop because many packets will come in at each second
-    while (res = get_next(&grand_list[size], time)) {
-
-        // Reached EOF
-        if (res == -1)
-            break;
-
-        // Link packets together for round-robin scheduler
-        grand_list[size - 1].next = &grand_list[size];
-        grand_list[size].last = &grand_list[size - 1];
-
-        ++size;
-    }
-
-    // Complete round robin circle
-    grand_list[size - 1].next = &grand_list[0];
-    grand_list[0].last = &grand_list[size - 1];
-
-
-    // If we have reached EOF, this function shouldn't be called anymore
-    if (res == -1) {
-        return 0;
-    }
-    else
-        return 1;
+    main_pool.thread_list[curList -> id].status = INACTIVE;
 }

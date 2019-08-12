@@ -1,6 +1,7 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
+#include <stdint.h>
 #define MAX_POOL 100
 #define MAX_THREADS 100
 #define MAX_FLOWS 10000
@@ -42,6 +43,7 @@ struct flow_list {
         // 10000 (MAX_FLOWS) * 100 (flow_pool_t) => 1000000000 Concurrent Flows
         grand_packet_t flows[MAX_FLOWS];
         int nflows;
+	int id;
 };
 
 #endif
