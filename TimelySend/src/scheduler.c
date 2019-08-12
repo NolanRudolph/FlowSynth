@@ -40,9 +40,6 @@ const char address[] = "127.0.0.1";
 // Address for Socket
 struct sockaddr_ll addr;
 
-// Temp Testing
-void testing(void);
-
 void round_robin_init(char *interface) {
     // Resolving correct interface number given interface name
     int num_interface = -1;
@@ -80,20 +77,6 @@ void round_robin_init(char *interface) {
     }
 
     thread_pool_init();
-
-    testing();
-}
-
-void testing() {
-	printf("Beginning Testing...\n");
-	pthread_t thread;
-	pthread_attr_t attr;
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-	int ret = pthread_create(&thread, &attr, __thread_fill_fpool, NULL);
-
-	sleep(20);
-	printf("Received Thread. Ending.\n");
 }
 
 void round_robin() {

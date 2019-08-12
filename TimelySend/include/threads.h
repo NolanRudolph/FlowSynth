@@ -9,9 +9,6 @@
 #include <signal.h>
 #include "next.h"
 #include "structs.h"
-#define MAX_THREADS 100
-#define MAX_FLOWS 10000
-#define MAX_POOL 100
 #define ACTIVE 0x01
 #define INACTIVE 0x00
 
@@ -19,6 +16,9 @@
 extern thread_pool_t main_pool;
 
 /* Functions */
+
+// Temp Testing Function
+void testing(void);
 
 // Initializes a Global Thread Pool
 void thread_pool_init(void);

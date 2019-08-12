@@ -1,6 +1,7 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
+#define MAX_POOL 100
 #define MAX_THREADS 100
 #define MAX_FLOWS 10000
 #define MTU 1500

@@ -1,9 +1,23 @@
 #include "threads.h"
 #include "structs.h"
 
+// External Variable Thread Pool Definition
 thread_pool_t main_pool;
 
-flow_list_t main_fpool[100];
+// External Variable Flow Pool Definition
+flow_list_t main_fpool[MAX_POOL];
+
+void testing() {
+	printf("Beginning Testing...\n");
+        pthread_t thread;
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+        int ret = pthread_create(&thread, &attr, __thread_fill_fpool, NULL);
+
+        sleep(20);
+        printf("Received Thread. Ending.\n");
+}
 
 void thread_pool_init(void) {
         pthread_attr_init(&main_pool.pool_attr);

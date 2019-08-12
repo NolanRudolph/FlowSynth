@@ -4,6 +4,7 @@
 #include "conf.h"
 #include "next.h"
 #include "scheduler.h"
+#include "threads.h"
 
 #define _BSD_SOURCE 1
 #define __FAVOR_BSD 1
@@ -25,7 +26,8 @@ int main(int argc, char* argv[]) {
     /* Round Robin Testing */
     // Initialize sockets
     round_robin_init(argv[4]);
-    
+
+    testing();    
     // Actual reading of static dataset and outputting packets
     //round_robin();
 
