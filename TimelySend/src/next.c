@@ -473,7 +473,6 @@ int get_next(grand_packet_t *placeHere, float cur_time) {
     
     // Return 1 to notify that there are more entries in the dataset
     if (ch == EOF || (int)ch == 255) {
-	printf("ch is %d\n", (int)ch);
 	return -1;
     }
     else

@@ -1,9 +1,29 @@
 #include "scheduler.h"
 
+// Dummy Packet for Socket Testing
+grand_packet_t dummy_packet =
+{
+        {
+                // Ethernet
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x08, 0x00,
+                // IP Header
+                0x45, 0x01, 0x00, 0x27, 0x00, 0x00, 0x00, 0x00, 0xff, 0x06,
+                0xbf, 0x99, 0x9d, 0xf0, 0x0b, 0x23, 0x29, 0x4b, 0x29, 0xc8,
+                // TCP Header
+                0x01, 0xbb, 0xda, 0x6b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x50, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00
+        },
+        0,
+        0,
+        0,
+        54, // Length
+};
+
 /* Grand_list Variables */
 // Grand_list will hold all of currently assessed entries, capped at a million
 grand_packet_t grand_list[1000000];
-flow_list_t main_fpool[100];
+
 // Size will hold the current size of our grand_list (i.e. how many packets it holds)
 int size = 0;
 
@@ -20,6 +40,7 @@ const char address[] = "127.0.0.1";
 // Address for Socket
 struct sockaddr_ll addr;
 
+// Temp Testing
 void testing(void);
 
 void round_robin_init(char *interface) {
@@ -73,81 +94,6 @@ void testing() {
 
 	sleep(20);
 	printf("Received Thread. Ending.\n");
-}
-
-void * __thread_fill_fpool(void *args) {
-	printf("Filling Pool...\n");
-	int response = 1;
-	struct timespec start, end;
-	clock_gettime(CLOCK_MONOTONIC_RAW, &start);
-	float now = 0.0;
-
-	int min, i, next_i;
-	while (response) {
-		min = MAX_FLOWS;
-		// Deciding on what flow list to append to
-		for (i = 0; i < MAX_POOL; ++i) {
-			if (main_fpool[i].flow_n == 0) {
-				next_i = i;
-				break;
-			}
-			else if (main_fpool[i].flow_n < min) {
-				min = main_fpool[i].flow_n;
-				next_i = i;
-			}
-		}
-        	// Setting new time
-        	clock_gettime(CLOCK_MONOTONIC_RAW, &end);
-        	now = (float)(end.tv_sec - start.tv_sec) +   // Seconds +
-              	      (float)(end.tv_nsec - start.tv_nsec) / 1000000000;  // Nanoseconds
-		response = __thread_add_candidates(now, &main_fpool[next_i]);
-	}
-}
-
-int __thread_add_candidates(double time, flow_list_t *curList) {
-    grand_packet_t *next;
-    grand_packet_t *listPtr = curList -> flows;
-    int size = curList -> flow_n;
-    
-    // Change assesses if anything other than the first entry was implemented
-    int res;
-    int change = 0;
-    
-    if (size == 0 && (res = get_next(&listPtr[size], time))) {
-        // Setting first to itself for round_robin scheduler
-        listPtr[0].next = &listPtr[0];
-        listPtr[0].last = &listPtr[0];
-        size = 1;
-    }
-    
-    // While loop because many packets will come in at each second
-    while (res = get_next(&listPtr[size], time)) {
-        printf("Got a flow at time %f\n", time);
-	// Reached EOF
-        if (res == -1)
-            break;
-       
-        // Link packets together for round-robin scheduler
-	listPtr[size - 1].next = &listPtr[size];
-        listPtr[size].last = &listPtr[size - 1];
-	++size;
-    }
-
-    // Complete round robin circle
-    listPtr[size - 1].next = &listPtr[0];
-    listPtr[0].last = &listPtr[size - 1];
-
-    // Store stize value back into curList
-    curList -> flow_n = size;
-    
-    // If we have reached EOF, this function shouldn't be called anymore
-    if (res == -1) {
-	    printf("We're done here!\n");
-	    sleep(3);
-        return 0;
-    }
-    else
-        return 1;
 }
 
 void round_robin() {
