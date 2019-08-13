@@ -373,7 +373,10 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             tcp -> check = 0;
             
             // Adjust length of packet for correct buffer sending
-            length = sizeof(struct ip) + sizeof(struct tcphdr);
+            // IMPORTANT: Prior to recording, the Ethernet header had been
+            // stripped. Thus all calculations with length should not have
+            // the Ethernet header involved.
+            length = sizeof(struct ip) + sizeof(struct tcphdr) + sizeof(struct ether_header);
             
             if (bytes/packets - length < 0) {
                 printf("Received bad entry. Payload is negative bytes long.\n");
@@ -387,11 +390,6 @@ int get_next(struct grand_packet *placeHere, time_t cur_time) {
             // Set IP length to correct size
             ip -> ip_len = htons(sizeof(struct ip) + sizeof(struct tcphdr) + \
                                                                 payloadSize);
-            // IMPORTANT: Prior to recording, the Ethernet header had been
-            // stripped. Thus all calculations with length should not have
-            // the Ethernet header involved.
-            length += sizeof(struct ether_header);
-            
             // Add on a fake payload that mimics the flow data
             addPayload((uint8_t *)tcp + sizeof(struct tcphdr), payloadSize);
             

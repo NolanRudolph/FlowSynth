@@ -1,6 +1,5 @@
 import plotly.graph_objects as go
 import plotly
-import numpy as np
 from sys import argv
 
 def main():

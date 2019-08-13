@@ -27,11 +27,10 @@ printf "Node 1: "; ssh $NODE1 git clone https://github.com/NolanRudolph/UONetflo
 printf "Node 2: "; ssh $NODE2 git clone https://github.com/NolanRudolph/UONetflowC
 
 
-INFO="127.0.0.1 127.0.0.2 443 57192 6"
+INFO="192.168.1.2 192.168.1.1 443 57192 6"
 TEST_DIR="~/UONetflowC/Tests"
 MAKE_DIR="~/UONetflowC/TimelySend"
 CSV_DIR="~/UONetflowC/TimelySend/csv"
-
 
 pr1=1
 pr2=10
@@ -44,18 +43,18 @@ pr8=200000
 pr9=300000
 pr10=350000
 pr11=350000
-pr12=375000
-pr13=416667
-pr14=458334
-pr15=500000
-pr16=541667
-pr17=583334
+pr12=380000
+pr13=420000
+pr14=460000
+pr15=510000
+pr16=550000
+pr17=590000
 pr18=625000
-pr19=666667
-pr20=708334
-pr21=750000
-pr22=791667
-pr23=833334
+pr19=675000
+pr20=725000
+pr21=775000
+pr22=800000
+pr23=850000
 
 # Modify me when removing/adding new packet rates
 printf "$pr1\n$pr2\n$pr3\n$pr4\n$pr5\n$pr6\n$pr7\n$pr8\n" > pRates.txt
@@ -91,6 +90,7 @@ printf "$br9\n$br10\n$br11\n$br12\n$br13\n$br14\n$br15\n$br16\n" >> bRates.txt
 printf "$br17\n$br18\n$br19\n$br20\n$br21\n$br22\n$br23" >> bRates.txt
 
 
+<<tempLock
 echo "Preparing Node 1..."
 #<<sFlows
 ssh -t $NODE1 "
@@ -123,7 +123,7 @@ python createTest.py 10 $INFO $pr22 $br22 $CSV_DIR/test22.csv;
 python createTest.py 10 $INFO $pr23 $br23 $CSV_DIR/test23.csv;
 " > /dev/null 2> /dev/null
 #sFlows
-
+tempLock
 
 <<multiFlows
 packrate=833334
@@ -197,7 +197,7 @@ make &> /dev/null;
 
 
 echo "Resolving MAC Addresses."
-IF="eno1d1"
+IF="eno2"
 
 P="[0-9a-fA-F]{2}"
 # Source Ethernet
@@ -254,18 +254,18 @@ function testCase {
 
 	ssh $NODE1 "
 		cd $MAKE_DIR;
-		sudo ./packetize $4 $S_ETHER $D_ETHER eno1d1;
+		sudo ./packetize $4 $S_ETHER $D_ETHER eno2;
 	" &
 
 	if [ $1 -eq 1 ]; then
 		ssh $NODE2 "
 			cd $TEST_DIR;
-			python evalMace.py 10 $2 $3 eno1d1;
+			python evalMace.py 10 $2 $3 eno2;
 		" | tee testResults.txt
 	else
 		ssh $NODE2 "
 			cd $TEST_DIR;
-			python evalMace.py 10 $2 $3 eno1d1;
+			python evalMace.py 10 $2 $3 eno2;
 		" | tee -a testResults.txt 
 	fi
 }
