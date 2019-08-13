@@ -23,9 +23,16 @@ fi
 
 # Node1 will be the issuer, Node 2 will be the listener
 # Node Setups
-printf "Node 1: "; ssh $NODE1 git clone https://github.com/NolanRudolph/UONetflowC
-printf "Node 2: "; ssh $NODE2 git clone https://github.com/NolanRudolph/UONetflowC
-
+printf "Node 1: "; ssh $NODE1 git clone https://github.com/NolanRudolph/UONetflowC; 
+ssh $NODE1 "
+cd UONetflowC;
+git checkout singleThread;
+"
+printf "Node 2: "; ssh $NODE2 git clone https://github.com/NolanRudolph/UONetflowC;
+ssh $NODE2 "
+cd UONetflowC;
+git checkout singleThread;
+"
 
 INFO="192.168.1.2 192.168.1.1 443 57192 6"
 TEST_DIR="~/UONetflowC/Tests"
@@ -90,7 +97,6 @@ printf "$br9\n$br10\n$br11\n$br12\n$br13\n$br14\n$br15\n$br16\n" >> bRates.txt
 printf "$br17\n$br18\n$br19\n$br20\n$br21\n$br22\n$br23" >> bRates.txt
 
 
-<<tempLock
 echo "Preparing Node 1..."
 #<<sFlows
 ssh -t $NODE1 "
@@ -123,7 +129,6 @@ python createTest.py 10 $INFO $pr22 $br22 $CSV_DIR/test22.csv;
 python createTest.py 10 $INFO $pr23 $br23 $CSV_DIR/test23.csv;
 " > /dev/null 2> /dev/null
 #sFlows
-tempLock
 
 <<multiFlows
 packrate=833334
