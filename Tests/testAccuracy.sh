@@ -45,18 +45,18 @@ pr8=200000
 pr9=300000
 pr10=350000
 pr11=350000
-pr12=375000
-pr13=416667
-pr14=458334
-pr15=500000
-pr16=541667
-pr17=583334
+pr12=380000
+pr13=420000
+pr14=460000
+pr15=510000
+pr16=550000
+pr17=590000
 pr18=625000
-pr19=666667
-pr20=708334
-pr21=750000
-pr22=791667
-pr23=833334
+pr19=675000
+pr20=725000
+pr21=775000
+pr22=800000
+pr23=850000
 
 # Modify me when removing/adding new packet rates
 printf "$pr1\n$pr2\n$pr3\n$pr4\n$pr5\n$pr6\n$pr7\n$pr8\n" > pRates.txt
@@ -252,7 +252,6 @@ function testCase {
 
 	ssh $NODE1 "
 		cd $MAKE_DIR;
-		ls;
 		sudo ./packetize $4 $S_ETHER $D_ETHER $IF;
 	" &
 
