@@ -75,8 +75,6 @@ void round_robin_init(char *interface) {
             perror("sendto() error");
             exit(EXIT_FAILURE);
     }
-
-    thread_pool_init();
 }
 
 void round_robin() {

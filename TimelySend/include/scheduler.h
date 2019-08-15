@@ -11,9 +11,6 @@
 
 #include "next.h"
 #include "threads.h"
-#include "structs.h"
-
-extern flow_list_t main_fpool[100];
 
 // Initializer for Round Robin Scheduler
 // Used for defining sockets, testing socket, etc.
