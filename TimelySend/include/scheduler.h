@@ -10,7 +10,6 @@
 #include <linux/if_packet.h>
 
 #include "next.h"
-#include "threads.h"
 
 // Initializer for Round Robin Scheduler
 // Used for defining sockets, testing socket, etc.

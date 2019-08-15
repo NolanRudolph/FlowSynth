@@ -4,14 +4,15 @@
 ARGC=$#
 
 # Argument Validation
-if [ $ARGC -ne 2 ]; then
-	echo "Please use as $ ./$0 [Node 1 Addr] [Node 2 Addr]"
+if [ $ARGC -ne 3 ]; then
+	echo "Please use as $ ./$0 [Node 1 Addr] [Node 2 Addr] [Interface]"
 	exit 1;
 fi
 
 
 NODE1=$1
 NODE2=$2
+IF=$3
 
 # Node Validation
 if [ $(ssh $NODE1 echo Hello) ] && [ $(ssh $NODE2 echo Hello) ]; then
@@ -92,7 +93,6 @@ printf "$br17\n$br18\n$br19\n$br20\n$br21\n$br22\n$br23" >> bRates.txt
 
 
 echo "Preparing Node 1..."
-#<<sFlows
 ssh -t $NODE1 "
 cd $MAKE_DIR;
 make &> /dev/null;
@@ -122,7 +122,6 @@ python createTest.py 10 $INFO $pr21 $br21 $CSV_DIR/test21.csv;
 python createTest.py 10 $INFO $pr22 $br22 $CSV_DIR/test22.csv;
 python createTest.py 10 $INFO $pr23 $br23 $CSV_DIR/test23.csv;
 " > /dev/null 2> /dev/null
-#sFlows
 
 
 <<multiFlows
@@ -197,7 +196,6 @@ make &> /dev/null;
 
 
 echo "Resolving MAC Addresses."
-IF="eno1d1"
 
 P="[0-9a-fA-F]{2}"
 # Source Ethernet
@@ -254,18 +252,19 @@ function testCase {
 
 	ssh $NODE1 "
 		cd $MAKE_DIR;
-		sudo ./packetize $4 $S_ETHER $D_ETHER eno1d1;
+		ls;
+		sudo ./packetize $4 $S_ETHER $D_ETHER $IF;
 	" &
 
 	if [ $1 -eq 1 ]; then
 		ssh $NODE2 "
 			cd $TEST_DIR;
-			python evalMace.py 10 $2 $3 eno1d1;
+			python evalMace.py 10 $2 $3 $IF;
 		" | tee testResults.txt
 	else
 		ssh $NODE2 "
 			cd $TEST_DIR;
-			python evalMace.py 10 $2 $3 eno1d1;
+			python evalMace.py 10 $2 $3 $IF;
 		" | tee -a testResults.txt 
 	fi
 }
