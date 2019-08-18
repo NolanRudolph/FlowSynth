@@ -461,12 +461,24 @@ int get_next(grand_packet_t *placeHere, float cur_time) {
     // Adjust length to accommodate for payload size
     length += payloadSize;
     
-    // Setting remainder of grand_packet's attributes
+    // Setting remainder of grand_packet's members
     grand_ret.packets_left = packets;
     grand_ret.d_time = d_time;
     grand_ret.cur_time = atof(start) - first_time;
     grand_ret.length = length;
     grand_ret.f_bytes = remainder;
+
+    // Set iovec members
+    grand_ret.iov.iov_base = &grand_ret.buff;
+    grand_ret.iov.iov_len = length;
+
+    // Set msghdr members
+    grand_ret.msg.msg_name = &addr;
+    grand_ret.msg.msg_namelen = sizeof(struct sockaddr_ll); 
+    grand_ret.msg.msg_iov = &grand_ret.iov;
+    grand_ret.msg.msg_iovlen = 1;
+    // To be set:
+    // grand_ret.msg_control && grand_ret.msg_controllen
 
     // Lastly, copy over the memory of the grand_packet to position in grand_list
     memcpy(placeHere, &grand_ret, sizeof(grand_packet_t));

@@ -1,25 +1,5 @@
 #include "scheduler.h"
 
-// Dummy Packet for Socket Testing
-grand_packet_t dummy_packet =
-{
-        {
-                // Ethernet
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x08, 0x00,
-                // IP Header
-                0x45, 0x01, 0x00, 0x27, 0x00, 0x00, 0x00, 0x00, 0xff, 0x06,
-                0xbf, 0x99, 0x9d, 0xf0, 0x0b, 0x23, 0x29, 0x4b, 0x29, 0xc8,
-                // TCP Header
-                0x01, 0xbb, 0xda, 0x6b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                0x00, 0x00, 0x50, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00
-        },
-        0,
-        0,
-        0,
-        54, // Length
-};
-
 /* Grand_list Variables */
 // Grand_list will hold all of currently assessed entries, capped at a million
 grand_packet_t grand_list[1000000];
@@ -69,12 +49,6 @@ void round_robin_init(char *interface) {
             perror("socket() error");
             exit(EXIT_FAILURE);
     }
-    
-    if (sendto(sockfd, dummy_packet.buff, dummy_packet.length, 0, \
-       (struct sockaddr *)&addr, sizeof(struct sockaddr_ll)) < 0) {
-            perror("sendto() error");
-            exit(EXIT_FAILURE);
-    }
 }
 
 void round_robin() {
@@ -96,9 +70,10 @@ void round_robin() {
             curFlow = *pCurFlow;
             while (curFlow.cur_time < now) {
                 // Sending Packet
-                sendto(sockfd, curFlow.buff, curFlow.length, 0, \
-                      memAddr, sAddrSize);
-
+    		if (sendmsg(sockfd, &curFlow.msg, 0) < 0) {
+            		perror("sendto() error");
+			exit(EXIT_FAILURE);
+		}
                 // Adjusting Packet Attributes
                 curFlow.packets_left -= 1;
                 curFlow.cur_time += curFlow.d_time;
