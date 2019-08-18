@@ -24,9 +24,19 @@ fi
 
 # Node1 will be the issuer, Node 2 will be the listener
 # Node Setups
-printf "Node 1: "; ssh $NODE1 git clone https://github.com/NolanRudolph/UONetflowC
-printf "Node 2: "; ssh $NODE2 git clone https://github.com/NolanRudolph/UONetflowC
+printf "Node 1: "; 
+ssh $NODE1 "
+git clone https://github.com/NolanRudolph/UONetflowC;
+cd UONetflowC;
+git checkout sendmsg;
+"
 
+printf "Node 2: "; 
+ssh $NODE2 "
+git clone https://github.com/NolanRudolph/UONetflowC;
+cd UONetflowC;
+git checkout sendmsg;
+"
 
 INFO="127.0.0.1 127.0.0.2 443 57192 6"
 TEST_DIR="~/UONetflowC/Tests"
