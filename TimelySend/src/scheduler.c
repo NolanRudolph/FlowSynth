@@ -70,7 +70,7 @@ void round_robin() {
             curFlow = *pCurFlow;
             while (curFlow.cur_time < now) {
                 // Sending Packet
-    		if (sendmsg(sockfd, &curFlow.msg, 0) < 0) {
+    		if (unlikely(sendmsg(sockfd, &curFlow.msg, 0) < 0)) {
             		perror("sendto() error");
 			exit(EXIT_FAILURE);
 		}
@@ -79,7 +79,7 @@ void round_robin() {
                 curFlow.cur_time += curFlow.d_time;
 
                 // If the packet has no packets left, delete it
-                if (!curFlow.packets_left) {
+                if (unlikely(!curFlow.packets_left)) {
                     pCurFlow -> last -> next = pCurFlow -> next;
                     pCurFlow -> next -> last = pCurFlow -> last;
                     size -= 1;
