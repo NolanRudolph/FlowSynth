@@ -104,7 +104,7 @@ void round_robin() {
                 curFlow.cur_time += curFlow.d_time;
 
                 // If the packet has no packets left, delete it
-                if (!curFlow.packets_left) {
+                if (unlikely(!curFlow.packets_left)) {
                     pCurFlow -> last -> next = pCurFlow -> next;
                     pCurFlow -> next -> last = pCurFlow -> last;
                     size -= 1;

@@ -11,6 +11,9 @@
 
 #include "next.h"
 
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
+
 // Initializer for Round Robin Scheduler
 // Used for defining sockets, testing socket, etc.
 void round_robin_init(char *interface);
