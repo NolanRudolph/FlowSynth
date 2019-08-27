@@ -1,0 +1,14 @@
+1. Look into multiqueue (network card|driver attribute)
+2. Look into link emailed to me from Chris
+3. ethtool -S eno2
+	- Look into ethtool.h
+4. Obtain deeper control to the NIC to really see where the overhead is coming from
+	- Memory mapping directly to the NIC (there are libraries for this)
+	- Look into ntop packet-capture (PF_RING)
+5. "Kernel bypass networking"
+6. "Zero copy networking"
+	- https://stackoverflow.com/questions/18343365/zero-copy-networking-vs-kernel-bypass
+7. https:/github.com/luigirizzo/netmap
+	- https://tcpreplay.appneta.com/wiki/howto.html#increasing-flows-per-second-with-netmap
+
+(Default) Next Meeting: Monday @ 2pm
