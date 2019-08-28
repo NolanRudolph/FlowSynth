@@ -1,7 +1,12 @@
 ## Dependencies ##
 # 1. Plotly
 # 2. Numpy
-# 3. Orca (see https://github.com/plotly/orca#installation & use method 2)
+# 3. Orca (see https://github.com/plotly/orca#installation & use method 1)
+#   - Install conda via wget (I use anaconda2, where conda is found in bin)
+#   - Include /path/to/anaconda2/bin in $PATH variable (/etc/environment on Ubuntu)
+#   - $ conda install -c anaconda libgcc-ng
+#   - $ conda install -c conda-forge python-libarchive-c
+#   - $ conda install -c plotly plotly-orca
 
 import plotly.graph_objects as go
 import plotly

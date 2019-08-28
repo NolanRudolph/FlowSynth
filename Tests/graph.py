@@ -1,7 +1,12 @@
 ## Dependencies ##
 # 1. Plotly
 # 2. Numpy
-# 3. Orca (see https://github.com/plotly/orca#installation & use method 2)
+# 3. Orca (see https://github.com/plotly/orca#installation & use method 1)
+#   - Install conda via wget (I use anaconda2, where conda is found in bin)
+#   - Include /path/to/anaconda2/bin in $PATH variable (/etc/environment on Ubuntu)
+#   - $ conda install -c anaconda libgcc-ng
+#   - $ conda install -c conda-forge python-libarchive-c
+#   - $ conda install -c plotly plotly-orca
 
 import plotly.graph_objects as go
 import plotly
@@ -19,8 +24,6 @@ def main():
                 print("[PPS]: Text file with Packet Per Second results from each # threads sample in [# Threads], seperated by new lines.")
 		exit()
         else:
-            plotly.io.orca.config.executable = '/home/nolan/.local/lib/python2.7/site-packages/orca'
-            plotly.io.orca.config.save()
             graph(argv[1], argv[2], argv[3], argv[4], argv[5])
 
         return 0
