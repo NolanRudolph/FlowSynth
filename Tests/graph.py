@@ -36,11 +36,11 @@ def graph(title, x_title, y_title, num_threads, pps):
 
 	with open(num_threads) as f:
 		for line in f:
-			threads_list.append(float(line))
+			threads_list.append(int(line))
 
 	with open(pps) as f:
 		for line in f:
-			pps_list.append(float(line))
+			pps_list.append(int(line))
 
 	fig = go.Figure()
 
