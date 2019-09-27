@@ -141,6 +141,16 @@ python createTest.py 10 $INFO $pr20 $br20 $CSV_DIR/test20.csv;
 python createTest.py 10 $INFO $pr21 $br21 $CSV_DIR/test21.csv;
 python createTest.py 10 $INFO $pr22 $br22 $CSV_DIR/test22.csv;
 python createTest.py 10 $INFO $pr23 $br23 $CSV_DIR/test23.csv;
+python createTest.py 10 $INFO $pr24 $br24 $CSV_DIR/test24.csv;
+python createTest.py 10 $INFO $pr25 $br25 $CSV_DIR/test25.csv;
+python createTest.py 10 $INFO $pr26 $br26 $CSV_DIR/test26.csv;
+python createTest.py 10 $INFO $pr27 $br27 $CSV_DIR/test27.csv;
+python createTest.py 10 $INFO $pr28 $br28 $CSV_DIR/test28.csv;
+python createTest.py 10 $INFO $pr29 $br29 $CSV_DIR/test29.csv;
+python createTest.py 10 $INFO $pr30 $br30 $CSV_DIR/test30.csv;
+python createTest.py 10 $INFO $pr31 $br31 $CSV_DIR/test31.csv;
+python createTest.py 10 $INFO $pr32 $br32 $CSV_DIR/test32.csv;
+python createTest.py 10 $INFO $pr33 $br33 $CSV_DIR/test33.csv;
 " > /dev/null 2> /dev/null
 
 
@@ -365,6 +375,16 @@ testCase 20 $pr20 $br20 ./csv/test20.csv
 testCase 21 $pr21 $br21 ./csv/test21.csv
 testCase 22 $pr22 $br22 ./csv/test22.csv
 testCase 23 $pr23 $br23 ./csv/test23.csv
+testCase 24 $pr24 $br24 ./csv/test24.csv
+testCase 25 $pr25 $br25 ./csv/test25.csv
+testCase 26 $pr26 $br26 ./csv/test26.csv
+testCase 27 $pr27 $br27 ./csv/test27.csv
+testCase 28 $pr28 $br28 ./csv/test28.csv
+testCase 29 $pr29 $br29 ./csv/test29.csv
+testCase 30 $pr30 $br30 ./csv/test30.csv
+testCase 31 $pr31 $br31 ./csv/test31.csv
+testCase 32 $pr32 $br32 ./csv/test32.csv
+testCase 33 $pr33 $br33 ./csv/test33.csv
 #singleFlows
 
 # Truncating results for easier reading
