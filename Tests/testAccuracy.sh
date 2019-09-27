@@ -57,6 +57,16 @@ pr20=725000
 pr21=775000
 pr22=800000
 pr23=850000
+pr24=875000
+pr25=900000
+pr26=925000
+pr27=950000
+pr28=1000000
+pr29=1025000
+pr30=1050000
+pr31=1075000
+pr32=1125000
+pr33=1150000
 
 # Modify me when removing/adding new packet rates
 printf "$pr1\n$pr2\n$pr3\n$pr4\n$pr5\n$pr6\n$pr7\n$pr8\n" > pRates.txt
@@ -86,6 +96,16 @@ br20=8500000000
 br21=9000000000
 br22=9500000000
 br23=10000000000
+br24=10500000000
+br25=11000000000
+br26=11500000000
+br27=12000000000
+br28=12500000000
+br29=13000000000
+br30=13500000000
+br31=14000000000
+br32=14500000000
+br33=15000000000
 # Modify me when removing/adding new packet rates
 printf "$br1\n$br2\n$br3\n$br4\n$br5\n$br6\n$br7\n$br8\n" > bRates.txt
 printf "$br9\n$br10\n$br11\n$br12\n$br13\n$br14\n$br15\n$br16\n" >> bRates.txt
@@ -363,9 +383,11 @@ while read p; do
     ((++lineN))
 done < results.txt
 
+<<whengraphs
 # Graph Generation
 printf "Generating Performance Graph by Bit Rate\n"
 python graph.py bits bRates.txt bitResults.txt > /dev/null 2> /dev/null
 
 printf "Generating Performance Graph by Packet Rate\n"
 python graph.py packets pRates.txt packetResults.txt > /dev/null 2> /dev/null
+whengraphs
