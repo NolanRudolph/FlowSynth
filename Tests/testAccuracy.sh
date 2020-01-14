@@ -58,15 +58,15 @@ pr21=775000
 pr22=800000
 pr23=850000
 pr24=875000
-pr25=900000
-pr26=925000
-pr27=950000
-pr28=1000000
-pr29=1025000
-pr30=1050000
-pr31=1075000
-pr32=1125000
-pr33=1150000
+pr25=950000
+pr26=975000
+pr27=1000000
+pr28=1050000
+pr29=1100000
+pr30=1125000
+pr31=1175000
+pr32=1225000
+pr33=1275000
 
 # Modify me when removing/adding new packet rates
 printf "$pr1\n$pr2\n$pr3\n$pr4\n$pr5\n$pr6\n$pr7\n$pr8\n" > pRates.txt
@@ -116,42 +116,42 @@ echo "Preparing Node 1..."
 ssh -t $NODE1 "
 cd $MAKE_DIR;
 make &> /dev/null;
-mkdir csv;
+sudo mkdir csv;
 cd $TEST_DIR;
-python createTest.py 10 $INFO $pr1 $br1 $CSV_DIR/test1.csv;
-python createTest.py 10 $INFO $pr2 $br2 $CSV_DIR/test2.csv;
-python createTest.py 10 $INFO $pr3 $br3 $CSV_DIR/test3.csv;
-python createTest.py 10 $INFO $pr4 $br4 $CSV_DIR/test4.csv;
-python createTest.py 10 $INFO $pr5 $br5 $CSV_DIR/test5.csv;
-python createTest.py 10 $INFO $pr6 $br6 $CSV_DIR/test6.csv;
-python createTest.py 10 $INFO $pr7 $br7 $CSV_DIR/test7.csv;
-python createTest.py 10 $INFO $pr8 $br8 $CSV_DIR/test8.csv;
-python createTest.py 10 $INFO $pr9 $br9 $CSV_DIR/test9.csv;
-python createTest.py 10 $INFO $pr10 $br10 $CSV_DIR/test10.csv;
-python createTest.py 10 $INFO $pr11 $br11 $CSV_DIR/test11.csv;
-python createTest.py 10 $INFO $pr12 $br12 $CSV_DIR/test12.csv;
-python createTest.py 10 $INFO $pr13 $br13 $CSV_DIR/test13.csv;
-python createTest.py 10 $INFO $pr14 $br14 $CSV_DIR/test14.csv;
-python createTest.py 10 $INFO $pr15 $br15 $CSV_DIR/test15.csv;
-python createTest.py 10 $INFO $pr16 $br16 $CSV_DIR/test16.csv;
-python createTest.py 10 $INFO $pr17 $br17 $CSV_DIR/test17.csv;
-python createTest.py 10 $INFO $pr18 $br18 $CSV_DIR/test18.csv;
-python createTest.py 10 $INFO $pr19 $br19 $CSV_DIR/test19.csv;
-python createTest.py 10 $INFO $pr20 $br20 $CSV_DIR/test20.csv;
-python createTest.py 10 $INFO $pr21 $br21 $CSV_DIR/test21.csv;
-python createTest.py 10 $INFO $pr22 $br22 $CSV_DIR/test22.csv;
-python createTest.py 10 $INFO $pr23 $br23 $CSV_DIR/test23.csv;
-python createTest.py 10 $INFO $pr24 $br24 $CSV_DIR/test24.csv;
-python createTest.py 10 $INFO $pr25 $br25 $CSV_DIR/test25.csv;
-python createTest.py 10 $INFO $pr26 $br26 $CSV_DIR/test26.csv;
-python createTest.py 10 $INFO $pr27 $br27 $CSV_DIR/test27.csv;
-python createTest.py 10 $INFO $pr28 $br28 $CSV_DIR/test28.csv;
-python createTest.py 10 $INFO $pr29 $br29 $CSV_DIR/test29.csv;
-python createTest.py 10 $INFO $pr30 $br30 $CSV_DIR/test30.csv;
-python createTest.py 10 $INFO $pr31 $br31 $CSV_DIR/test31.csv;
-python createTest.py 10 $INFO $pr32 $br32 $CSV_DIR/test32.csv;
-python createTest.py 10 $INFO $pr33 $br33 $CSV_DIR/test33.csv;
-" > /dev/null 2> /dev/null
+sudo python createTest.py 10 $INFO $pr1 $br1 $CSV_DIR/test1.csv;
+sudo python createTest.py 10 $INFO $pr2 $br2 $CSV_DIR/test2.csv;
+sudo python createTest.py 10 $INFO $pr3 $br3 $CSV_DIR/test3.csv;
+sudo python createTest.py 10 $INFO $pr4 $br4 $CSV_DIR/test4.csv;
+sudo python createTest.py 10 $INFO $pr5 $br5 $CSV_DIR/test5.csv;
+sudo python createTest.py 10 $INFO $pr6 $br6 $CSV_DIR/test6.csv;
+sudo python createTest.py 10 $INFO $pr7 $br7 $CSV_DIR/test7.csv;
+sudo python createTest.py 10 $INFO $pr8 $br8 $CSV_DIR/test8.csv;
+sudo python createTest.py 10 $INFO $pr9 $br9 $CSV_DIR/test9.csv;
+sudo python createTest.py 10 $INFO $pr10 $br10 $CSV_DIR/test10.csv;
+sudo python createTest.py 10 $INFO $pr11 $br11 $CSV_DIR/test11.csv;
+sudo python createTest.py 10 $INFO $pr12 $br12 $CSV_DIR/test12.csv;
+sudo python createTest.py 10 $INFO $pr13 $br13 $CSV_DIR/test13.csv;
+sudo python createTest.py 10 $INFO $pr14 $br14 $CSV_DIR/test14.csv;
+sudo python createTest.py 10 $INFO $pr15 $br15 $CSV_DIR/test15.csv;
+sudo python createTest.py 10 $INFO $pr16 $br16 $CSV_DIR/test16.csv;
+sudo python createTest.py 10 $INFO $pr17 $br17 $CSV_DIR/test17.csv;
+sudo python createTest.py 10 $INFO $pr18 $br18 $CSV_DIR/test18.csv;
+sudo python createTest.py 10 $INFO $pr19 $br19 $CSV_DIR/test19.csv;
+sudo python createTest.py 10 $INFO $pr20 $br20 $CSV_DIR/test20.csv;
+sudo python createTest.py 10 $INFO $pr21 $br21 $CSV_DIR/test21.csv;
+sudo python createTest.py 10 $INFO $pr22 $br22 $CSV_DIR/test22.csv;
+sudo python createTest.py 10 $INFO $pr23 $br23 $CSV_DIR/test23.csv;
+sudo python createTest.py 10 $INFO $pr24 $br24 $CSV_DIR/test24.csv;
+sudo python createTest.py 10 $INFO $pr25 $br25 $CSV_DIR/test25.csv;
+sudo python createTest.py 10 $INFO $pr26 $br26 $CSV_DIR/test26.csv;
+sudo python createTest.py 10 $INFO $pr27 $br27 $CSV_DIR/test27.csv;
+sudo python createTest.py 10 $INFO $pr28 $br28 $CSV_DIR/test28.csv;
+sudo python createTest.py 10 $INFO $pr29 $br29 $CSV_DIR/test29.csv;
+sudo python createTest.py 10 $INFO $pr30 $br30 $CSV_DIR/test30.csv;
+sudo python createTest.py 10 $INFO $pr31 $br31 $CSV_DIR/test31.csv;
+sudo python createTest.py 10 $INFO $pr32 $br32 $CSV_DIR/test32.csv;
+sudo python createTest.py 10 $INFO $pr33 $br33 $CSV_DIR/test33.csv;
+" # > /dev/null 2> /dev/null
 
 
 <<multiFlows
@@ -288,12 +288,12 @@ function testCase {
 	if [ $1 -eq 1 ]; then
 		ssh $NODE2 "
 			cd $TEST_DIR;
-			python evalMace.py 10 $2 $3 $IF;
+			sudo python evalMace.py 10 $2 $3 $IF;
 		" | tee testResults.txt
 	else
 		ssh $NODE2 "
 			cd $TEST_DIR;
-			python evalMace.py 10 $2 $3 $IF;
+			sudo python evalMace.py 10 $2 $3 $IF;
 		" | tee -a testResults.txt 
 	fi
 }
@@ -388,17 +388,17 @@ testCase 33 $pr33 $br33 ./csv/test33.csv
 #singleFlows
 
 # Truncating results for easier reading
-cat testResults.txt | egrep -o "[0-9]+.[0-9]+%" > results.txt
+sudo cat testResults.txt | egrep -o "[0-9]+.[0-9]+%" > results.txt
 
 # Creating Text files for graphing
-touch packetResults.txt
-touch bitResults.txt
+sudo touch packetResults.txt
+sudo touch bitResults.txt
 lineN=0
 while read p; do
     if [ $[$lineN % 2] -eq 0 ]; then
-        echo "${p//%}" >> packetResults.txt
+        sudo echo "${p//%}" >> packetResults.txt
     else
-        echo "${p//%}" >> bitResults.txt
+        sudo echo "${p//%}" >> bitResults.txt
     fi
     ((++lineN))
 done < results.txt
